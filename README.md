@@ -23,6 +23,10 @@
 
 <br>
 
+**[View the full interactive README with CRT effects and theme switcher](https://escalonc.github.io/dotfiles)**
+
+<br>
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/escalonc/dotfiles/main/bootstrap.sh | bash
 ```
