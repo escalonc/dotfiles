@@ -1,125 +1,144 @@
 <div align="center">
 
 ```
-  ██████╗  ██████╗ ████████╗███████╗██╗██╗     ███████╗███████╗
-  ██╔══██╗██╔═══██╗╚══██╔══╝██╔════╝██║██║     ██╔════╝██╔════╝
-  ██║  ██║██║   ██║   ██║   █████╗  ██║██║     █████╗  ███████╗
-  ██║  ██║██║   ██║   ██║   ██╔══╝  ██║██║     ██╔══╝  ╚════██║
-  ██████╔╝╚██████╔╝   ██║   ██║     ██║███████╗███████╗███████║
-  ╚═════╝  ╚═════╝    ╚═╝   ╚═╝     ╚═╝╚══════╝╚══════╝╚══════╝
+       ▄▄▄▄    ▒█████   ▒█████  ▄▄▄█████▓     ██████ ▓█████  ██▀███
+      ▓█████▄ ▒██▒  ██▒▒██▒  ██▒▓  ██▒ ▓▒   ▒██    ▒ ▓█   ▀ ▓██ ▒ ██▒
+      ▒██▒ ▄██▒██░  ██▒▒██░  ██▒▒ ▓██░ ▒░   ░ ▓██▄   ▒███   ▓██ ░▄█ ▒
+      ▒██░█▀  ▒██   ██░▒██   ██░░ ▓██▓ ░      ▒   ██▒▒▓█  ▄ ▒██▀▀█▄
+      ░▓█  ▀█▓░ ████▓▒░░ ████▓▒░  ▒██▒ ░    ▒██████▒▒░▒████▒░██▓ ▒██▒
+      ░▒▓███▀▒░ ▒░▒░▒░ ░ ▒░▒░▒░   ▒ ░░      ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒▓ ░▒▓░
+
+         ██████╗  ██████╗ ████████╗███████╗██╗██╗     ███████╗███████╗
+         ██╔══██╗██╔═══██╗╚══██╔══╝██╔════╝██║██║     ██╔════╝██╔════╝
+         ██║  ██║██║   ██║   ██║   █████╗  ██║██║     █████╗  ███████╗
+         ██║  ██║██║   ██║   ██║   ██╔══╝  ██║██║     ██╔══╝  ╚════██║
+         ██████╔╝╚██████╔╝   ██║   ██║     ██║███████╗███████╗███████║
+         ╚═════╝  ╚═════╝    ╚═╝   ╚═╝     ╚═╝╚══════╝╚══════╝╚══════╝
 ```
 
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=22&duration=3000&pause=1000&color=00FF41&center=true&vCenter=true&width=500&lines=%24+one+command.+fully+loaded+mac.;%24+curl+%7C+bash+%E2%86%92+dev+machine+ready;%24+44+CLI+tools+%C2%B7+25+apps+%C2%B7+5+fonts;%24+zsh+%2B+p10k+%2B+fzf+%2B+atuin+%2B+zoxide" alt="Typing SVG">
-
-<br>
-
-![macOS](https://img.shields.io/badge/macOS-000000?style=for-the-badge&logo=apple&logoColor=white)
-![Homebrew](https://img.shields.io/badge/Homebrew-FBB040?style=for-the-badge&logo=homebrew&logoColor=black)
-![Zsh](https://img.shields.io/badge/Zsh-F15A24?style=for-the-badge&logo=zsh&logoColor=white)
-![Rust](https://img.shields.io/badge/Rust_Tools-000000?style=for-the-badge&logo=rust&logoColor=white)
-![pnpm](https://img.shields.io/badge/pnpm-F69220?style=for-the-badge&logo=pnpm&logoColor=white)
-![Node](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)
-![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
-
-<br>
-
-**[View the full interactive README with CRT effects and theme switcher](https://escalonc.github.io/dotfiles)**
-
-<br>
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/escalonc/dotfiles/main/bootstrap.sh | bash
 ```
+        ╔══════════════════════════════════════════════════════════════╗
+        ║  > SYSTEM: macOS · ARCH: arm64 · STATUS: [ READY ]           ║
+        ║  > OPERATOR: escalonc · UPLINK: 1Password · MODE: solo dev   ║
+        ╚══════════════════════════════════════════════════════════════╝
+```
+
+[![Typing](https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=20&duration=2800&pause=900&color=7AA2F7&center=true&vCenter=true&width=620&lines=%3E+initializing+escalonc%40dev...;%3E+one+command.+fully+loaded+mac.;%3E+44+CLI+tools+%C2%B7+25+apps+%C2%B7+5+fonts;%3E+zsh+%2B+p10k+%2B+fzf+%2B+atuin+%2B+zoxide;%3E+rust+rewrites+over+legacy+%E2%9C%93;%3E+ready_)](https://git.io/typing-svg)
+
+![macOS](https://img.shields.io/badge/macOS-1a1b26?style=for-the-badge&logo=apple&logoColor=C0CAF5&labelColor=1a1b26)
+![Shell](https://img.shields.io/badge/SHELL-zsh-7AA2F7?style=for-the-badge&logo=gnubash&logoColor=7AA2F7&labelColor=1a1b26)
+![Homebrew](https://img.shields.io/badge/BREW-44%20formulae-E0AF68?style=for-the-badge&logo=homebrew&logoColor=E0AF68&labelColor=1a1b26)
+![Rust](https://img.shields.io/badge/RUST-tools-7DCFFF?style=for-the-badge&logo=rust&logoColor=7DCFFF&labelColor=1a1b26)
+![Idempotent](https://img.shields.io/badge/IDEMPOTENT-yes-9ECE6A?style=for-the-badge&labelColor=1a1b26)
+![License](https://img.shields.io/badge/LICENSE-do%20what%20you%20want-BB9AF7?style=for-the-badge&labelColor=1a1b26)
 
 </div>
 
 ---
 
-<br>
+```
+┌─[ ENTRY POINT ]──────────────────────────────────────────────────────────┐
+│                                                                          │
+│   $ curl -fsSL https://raw.githubusercontent.com/escalonc/dotfiles/main/ │
+│         bootstrap.sh | bash                                              │
+│                                                                          │
+│   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  100%    │
+│   [ OK ] kernel handshake          [ OK ] toolchain forge              │
+│   [ OK ] homebrew core             [ OK ] vscode extensions            │
+│   [ OK ] oh-my-zsh + p10k          [ OK ] symlink dotfiles → $HOME    │
+│   [ OK ] fnm · uv · rustup         [ OK ] macOS defaults rewritten    │
+│                                                                          │
+└──────────────────────────────────────────────────────────────────────────┘
+```
 
-## `>_ what's inside`
+---
+
+## `>_ ./payload --list`
 
 <table>
-<tr>
-<td width="50%">
+<tr><td valign="top" width="50%">
 
 ```
-╔══════════════════════════════════╗
-║  SHELL & TERMINAL               ║
-╠══════════════════════════════════╣
-║                                  ║
-║  ➜ Zsh + Oh My Zsh              ║
-║  ➜ Powerlevel10k prompt          ║
-║  ➜ 23 plugins loaded             ║
-║  ➜ Ghostty + Warp terminals      ║
-║  ➜ Zellij multiplexer            ║
-║                                  ║
-╚══════════════════════════════════╝
+╔════════════════════════════════════╗
+║ ▓ SHELL & TERMINAL          [01] ║
+╠════════════════════════════════════╣
+║                                    ║
+║  ► zsh ............ default shell  ║
+║  ► oh-my-zsh ...... framework      ║
+║  ► powerlevel10k .. prompt         ║
+║  ► 23 plugins ..... loaded         ║
+║  ► ghostty ........ GPU terminal   ║
+║  ► warp ........... AI terminal    ║
+║  ► zellij ......... multiplexer    ║
+║                                    ║
+║  [ STATUS: ████████████ ONLINE ]  ║
+╚════════════════════════════════════╝
 ```
 
-</td>
-<td width="50%">
+</td><td valign="top" width="50%">
 
 ```
-╔══════════════════════════════════╗
-║  CLI ARSENAL                     ║
-╠══════════════════════════════════╣
-║                                  ║
-║  ➜ bat ─── syntax-highlighted cat║
-║  ➜ eza ─── modern ls with icons  ║
-║  ➜ fd ──── fast find             ║
-║  ➜ rg ──── ripgrep (fast grep)   ║
-║  ➜ fzf ─── fuzzy everything      ║
-║  ➜ zoxide ─ smart cd             ║
-║  ➜ atuin ── shell history search  ║
-║  ➜ delta ── beautiful git diffs   ║
-║  ➜ lazygit ─ terminal git UI     ║
-║  ➜ yazi ─── terminal file mgr    ║
-║                                  ║
-╚══════════════════════════════════╝
+╔════════════════════════════════════╗
+║ ▓ CLI ARSENAL              [02] ║
+╠════════════════════════════════════╣
+║                                    ║
+║  ► bat ........... cat++           ║
+║  ► eza ........... ls with icons   ║
+║  ► fd ............ find, faster    ║
+║  ► rg ............ ripgrep         ║
+║  ► fzf ........... fuzzy finder    ║
+║  ► zoxide ........ smarter cd      ║
+║  ► atuin ......... history search  ║
+║  ► delta ......... pretty diffs    ║
+║  ► lazygit ....... git TUI         ║
+║  ► yazi .......... file manager    ║
+║                                    ║
+║  [ STATUS: ████████████ ARMED  ]  ║
+╚════════════════════════════════════╝
 ```
 
-</td>
-</tr>
-<tr>
-<td width="50%">
+</td></tr>
+<tr><td valign="top">
 
 ```
-╔══════════════════════════════════╗
-║  LANGUAGES & RUNTIMES            ║
-╠══════════════════════════════════╣
-║                                  ║
-║  ➜ Node.js ── via fnm (fast)     ║
-║  ➜ Python ─── via uv (100x)      ║
-║  ➜ Rust ───── via rustup          ║
-║  ➜ pnpm ──── supply-chain safe   ║
-║                                  ║
-╚══════════════════════════════════╝
+╔════════════════════════════════════╗
+║ ▓ LANGUAGES & RUNTIMES     [03] ║
+╠════════════════════════════════════╣
+║                                    ║
+║  ► node ......... via fnm          ║
+║  ► python ....... via uv (100×)    ║
+║  ► rust ......... via rustup       ║
+║  ► pnpm ......... supply-safe      ║
+║                                    ║
+║  ┌──────────────────────────────┐ ║
+║  │ rust > legacy. always.       │ ║
+║  └──────────────────────────────┘ ║
+║                                    ║
+║  [ STATUS: ████████████ LIVE   ]  ║
+╚════════════════════════════════════╝
 ```
 
-</td>
-<td width="50%">
+</td><td valign="top">
 
 ```
-╔══════════════════════════════════╗
-║  macOS TUNING                    ║
-╠══════════════════════════════════╣
-║                                  ║
-║  ➜ Dark mode + Liquid Glass      ║
-║  ➜ Dock: autohide, no delay      ║
-║  ➜ Keyboard: fast repeat         ║
-║  ➜ Trackpad: tap-to-click        ║
-║  ➜ Finder: list view, folders 1st║
-║  ➜ Screenshots → ~/Pictures/     ║
-║                                  ║
-╚══════════════════════════════════╝
+╔════════════════════════════════════╗
+║ ▓ macOS TUNING             [04] ║
+╠════════════════════════════════════╣
+║                                    ║
+║  ► dark mode + liquid glass        ║
+║  ► dock: autohide, no delay        ║
+║  ► keyboard: fast repeat           ║
+║  ► trackpad: tap-to-click          ║
+║  ► finder: list view, folders 1st  ║
+║  ► screenshots → ~/Pictures        ║
+║  ► true tone ............ OFF      ║
+║                                    ║
+║  [ STATUS: ████████████ TUNED  ]  ║
+╚════════════════════════════════════╝
 ```
 
-</td>
-</tr>
+</td></tr>
 </table>
-
-<br>
 
 ---
 
@@ -128,129 +147,144 @@ curl -fsSL https://raw.githubusercontent.com/escalonc/dotfiles/main/bootstrap.sh
 ```
 ~/.dotfiles/
 │
-├── bootstrap.sh ·············· curl|bash entry point
-├── setup.sh ·················· orchestrator
-├── Brewfile ·················· 44 formulae · 25 casks · 5 fonts
+├── ⚡ bootstrap.sh ··············· curl|bash entry · installs brew · clones repo
+├── ⚙  setup.sh ··················· orchestrator · 9 phases · idempotent
+├── 🍺 Brewfile ··················· 44 formulae · 25 casks · 5 fonts
 │
-├── dotfiles/
-│   ├── .zshrc ················ shell config (symlinked → ~)
-│   ├── .gitignore_global ····· global gitignore
-│   └── .ssh/config ··········· 1Password SSH agent
+├── 📁 dotfiles/  ·················· symlinked into $HOME
+│   ├── .zshrc ···················· shell config
+│   ├── .gitignore_global ········· global ignore rules
+│   └── .ssh/config ··············· 1Password SSH agent
 │
-└── scripts/
-    ├── helpers.sh ············ colors & logging
-    ├── shell.sh ·············· oh-my-zsh + plugins
-    ├── languages.sh ·········· fnm · uv · rustup
-    ├── packages.sh ··········· pnpm globals · uv tools
-    ├── vscode.sh ············· 26 extensions
-    ├── git.sh ················ config + aliases + delta
-    ├── macos.sh ·············· system defaults
-    └── claude.sh ············· claude code
+└── 📁 scripts/  ··················· orchestrator modules
+    ├── helpers.sh ················ colors · logging
+    ├── shell.sh ·················· oh-my-zsh + 23 plugins
+    ├── languages.sh ·············· fnm · uv · rustup
+    ├── packages.sh ··············· pnpm globals · uv tools
+    ├── vscode.sh ················· 26 extensions
+    ├── git.sh ···················· config · aliases · delta
+    ├── macos.sh ·················· system defaults
+    └── claude.sh ················· claude code install
 ```
-
-<br>
 
 ---
 
-## `>_ how it works`
+## `>_ ./how-it-works`
 
-<div align="center">
+```mermaid
+graph LR
+    A["<b>curl | bash</b><br><i>internet</i>"] --> B["<b>bootstrap.sh</b><br><i>xcode CLT + homebrew<br>+ clone repo</i>"]
+    B --> C["<b>setup.sh</b>"]
+    C --> D["① brew bundle"]
+    C --> E["② oh-my-zsh + plugins"]
+    C --> F["③ fnm · uv · rustup"]
+    C --> G["④ pnpm globals · uv tools"]
+    C --> H["⑤ vscode extensions"]
+    C --> I["⑥ git config + SSH"]
+    C --> J["⑦ symlink dotfiles → $HOME"]
+    C --> K["⑧ macOS system defaults"]
+    C --> L["⑨ claude code"]
 
+    style A fill:#1a1b26,stroke:#7aa2f7,color:#c0caf5
+    style B fill:#1a1b26,stroke:#e0af68,color:#c0caf5
+    style C fill:#1a1b26,stroke:#9ece6a,color:#c0caf5
+    style D fill:#1a1b26,stroke:#565f89,color:#a9b1d6
+    style E fill:#1a1b26,stroke:#565f89,color:#a9b1d6
+    style F fill:#1a1b26,stroke:#565f89,color:#a9b1d6
+    style G fill:#1a1b26,stroke:#565f89,color:#a9b1d6
+    style H fill:#1a1b26,stroke:#565f89,color:#a9b1d6
+    style I fill:#1a1b26,stroke:#565f89,color:#a9b1d6
+    style J fill:#1a1b26,stroke:#565f89,color:#a9b1d6
+    style K fill:#1a1b26,stroke:#565f89,color:#a9b1d6
+    style L fill:#1a1b26,stroke:#565f89,color:#a9b1d6
 ```
-┌──────────────┐     ┌──────────────┐     ┌────────────────────────────────────┐
-│              │     │              │     │                                    │
-│  curl | bash │────▶│ bootstrap.sh │────▶│            setup.sh                │
-│              │     │              │     │                                    │
-└──────────────┘     └──────────────┘     │  ① brew bundle (Brewfile)          │
-                                          │  ② oh-my-zsh + plugins             │
-  installs Homebrew                       │  ③ fnm + uv + rustup               │
-  + Xcode CLT                             │  ④ pnpm/uv globals                 │
-  + clones repo                           │  ⑤ VS Code extensions              │
-                                          │  ⑥ git config + SSH                │
-                                          │  ⑦ symlink dotfiles → $HOME        │
-                                          │  ⑧ macOS system defaults            │
-                                          │  ⑨ Claude Code                     │
-                                          │                                    │
-                                          └────────────────────────────────────┘
-```
 
-</div>
-
-**Already set up?** Pull and re-run:
+**Already provisioned?** Re-run anytime — it's idempotent.
 
 ```bash
 cd ~/.dotfiles && git pull && ./setup.sh
 ```
 
-> Idempotent — safe to run repeatedly. Skips what's already installed.
+---
 
-<br>
+## `>_ ./customize`
+
+```
+╔═══════════════════════════════════════════════════════════════════════╗
+║  WHEN YOU WANT TO...               EDIT THIS FILE                     ║
+╠═══════════════════════════════════════════════════════════════════════╣
+║                                                                       ║
+║  ► add a CLI tool                  Brewfile                 brew ""   ║
+║  ► add a GUI app                   Brewfile                 cask ""   ║
+║  ► change shell config             dotfiles/.zshrc                    ║
+║  ► add a VS Code extension         scripts/vscode.sh                  ║
+║  ► tweak macOS defaults            scripts/macos.sh                   ║
+║  ► add a global pnpm package       scripts/packages.sh                ║
+║  ► machine-specific overrides      ~/.zshrc.local       (untracked)   ║
+║                                                                       ║
+╚═══════════════════════════════════════════════════════════════════════╝
+```
 
 ---
 
-## `>_ customize`
+## `>_ ./post-install --checklist`
 
 ```
-╔═══════════════════════════════════════════════════════════════════╗
-║  TASK                             FILE                           ║
-╠═══════════════════════════════════════════════════════════════════╣
-║  Add a CLI tool                   Brewfile (brew "name")         ║
-║  Add an app                       Brewfile (cask "name")         ║
-║  Change shell config              dotfiles/.zshrc                ║
-║  Add VS Code extension            scripts/vscode.sh             ║
-║  Tweak macOS defaults             scripts/macos.sh              ║
-║  Machine-specific overrides       ~/.zshrc.local (not tracked)  ║
-╚═══════════════════════════════════════════════════════════════════╝
+┌─[ HUMAN-IN-THE-LOOP STEPS ]──────────────────────────────────────────┐
+│                                                                      │
+│  [ ] restart terminal           ── or: source ~/.zshrc               │
+│  [ ] p10k configure             ── pick your prompt vibe             │
+│  [ ] 1password → ssh agent      ── settings · developer · enable     │
+│  [ ] gh auth login              ── github cli login                  │
+│  [ ] claude                     ── authenticate claude code          │
+│  [ ] orbstack + raycast         ── first-launch dance                │
+│  [ ] terminal font              ── JetBrains Mono Nerd Font          │
+│  [ ] displays                   ── uncheck True Tone                 │
+│  [ ] restart mac                ── one final cleanse                 │
+│                                                                      │
+│  ──────────────────────────────────────────────────────────────────  │
+│  finished? ────────────────────────────────> you are operational.   │
+│                                                                      │
+└──────────────────────────────────────────────────────────────────────┘
 ```
-
-<br>
 
 ---
 
-## `>_ post-install`
+## `>_ cat philosophy.txt`
 
 ```
- ┌────────────────────────────────────────────────────────────────┐
- │  MANUAL STEPS                                                  │
- ├────────────────────────────────────────────────────────────────┤
- │                                                                │
- │  [ ] Restart terminal (or source ~/.zshrc)                     │
- │  [ ] p10k configure                                            │
- │  [ ] 1Password → Settings → Developer → enable SSH agent       │
- │  [ ] gh auth login                                             │
- │  [ ] claude (authenticate)                                     │
- │  [ ] OrbStack + Raycast first-launch                           │
- │  [ ] Set JetBrains Mono Nerd Font in terminal                  │
- │  [ ] System Settings → Displays → uncheck True Tone           │
- │  [ ] Restart Mac                                               │
- │                                                                │
- └────────────────────────────────────────────────────────────────┘
+╔══════════════════════════════════════════════════════════════════════╗
+║                                                                      ║
+║   ▸ personal, not general ............. one developer, no committee  ║
+║   ▸ modern over legacy ................ rust rewrites win            ║
+║   ▸ minimal globals ................... pnpm > npm · supply hygiene  ║
+║   ▸ idempotent by design .............. run once or ten times        ║
+║   ▸ no magic .......................... shell scripts, 5 min read    ║
+║   ▸ keyboard > mouse .................. fzf · zoxide · lazygit       ║
+║                                                                      ║
+║   ────────────────────────────────────────────────────────────────   ║
+║                                                                      ║
+║       "your machine should feel like an extension of your hand,      ║
+║        not someone else's idea of a default."                        ║
+║                                                                      ║
+╚══════════════════════════════════════════════════════════════════════╝
 ```
-
-<br>
 
 ---
-
-## `>_ philosophy`
-
-```
-  ╔══════════════════════════════════════════════════════════════════╗
-  ║                                                                  ║
-  ║   ▸ Personal, not general — one developer, not a team            ║
-  ║   ▸ Modern tools — Rust rewrites over legacy                     ║
-  ║   ▸ Minimal globals — pnpm over npm (supply-chain hygiene)       ║
-  ║   ▸ Idempotent — run once or ten times, same result              ║
-  ║   ▸ No magic — shell scripts you can read in 5 minutes          ║
-  ║                                                                  ║
-  ╚══════════════════════════════════════════════════════════════════╝
-```
-
-<br>
 
 <div align="center">
 
----
+```
+   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+   ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+   █████████████████████████████████████████████████████████████████
+```
 
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=14&duration=4000&pause=2000&color=00FF41&center=true&vCenter=true&width=400&lines=%5Bprocess+complete%5D+built+with+caffeine+%2B+claude+code" alt="Footer">
+[![Footer](https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=14&duration=3800&pause=1800&color=7AA2F7&center=true&vCenter=true&width=520&lines=%5B+process+complete+%5D+%C2%B7+stay+caffeinated;built+with+zsh%2C+rust%2C+and+claude+code;EOF)](https://git.io/typing-svg)
+
+```
+END OF TRANSMISSION
+```
 
 </div>
