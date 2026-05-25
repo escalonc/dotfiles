@@ -1,12 +1,6 @@
 <div align="center">
 
 ```
-       ▄▄▄▄    ▒█████   ▒█████  ▄▄▄█████▓     ██████ ▓█████  ██▀███
-      ▓█████▄ ▒██▒  ██▒▒██▒  ██▒▓  ██▒ ▓▒   ▒██    ▒ ▓█   ▀ ▓██ ▒ ██▒
-      ▒██▒ ▄██▒██░  ██▒▒██░  ██▒▒ ▓██░ ▒░   ░ ▓██▄   ▒███   ▓██ ░▄█ ▒
-      ▒██░█▀  ▒██   ██░▒██   ██░░ ▓██▓ ░      ▒   ██▒▒▓█  ▄ ▒██▀▀█▄
-      ░▓█  ▀█▓░ ████▓▒░░ ████▓▒░  ▒██▒ ░    ▒██████▒▒░▒████▒░██▓ ▒██▒
-      ░▒▓███▀▒░ ▒░▒░▒░ ░ ▒░▒░▒░   ▒ ░░      ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒▓ ░▒▓░
 
          ██████╗  ██████╗ ████████╗███████╗██╗██╗     ███████╗███████╗
          ██╔══██╗██╔═══██╗╚══██╔══╝██╔════╝██║██║     ██╔════╝██╔════╝
@@ -42,11 +36,11 @@
 │   $ curl -fsSL https://raw.githubusercontent.com/escalonc/dotfiles/main/ │
 │         bootstrap.sh | bash                                              │
 │                                                                          │
-│   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  100%    │
-│   [ OK ] kernel handshake          [ OK ] toolchain forge              │
-│   [ OK ] homebrew core             [ OK ] vscode extensions            │
-│   [ OK ] oh-my-zsh + p10k          [ OK ] symlink dotfiles → $HOME    │
-│   [ OK ] fnm · uv · rustup         [ OK ] macOS defaults rewritten    │
+│   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  100%     │
+│   [ OK ] kernel handshake          [ OK ] toolchain forge                │
+│   [ OK ] homebrew core             [ OK ] vscode extensions              │
+│   [ OK ] oh-my-zsh + p10k          [ OK ] symlink dotfiles → $HOME       │
+│   [ OK ] fnm · uv · rustup         [ OK ] macOS defaults rewritten       │
 │                                                                          │
 └──────────────────────────────────────────────────────────────────────────┘
 ```
@@ -60,7 +54,7 @@
 
 ```
 ╔════════════════════════════════════╗
-║ ▓ SHELL & TERMINAL          [01] ║
+║ $ SHELL & TERMINAL            [01] ║
 ╠════════════════════════════════════╣
 ║                                    ║
 ║  ► zsh ............ default shell  ║
@@ -71,7 +65,7 @@
 ║  ► warp ........... AI terminal    ║
 ║  ► zellij ......... multiplexer    ║
 ║                                    ║
-║  [ STATUS: ████████████ ONLINE ]  ║
+║  [ STATUS: ████████████ ONLINE ]   ║
 ╚════════════════════════════════════╝
 ```
 
@@ -79,7 +73,7 @@
 
 ```
 ╔════════════════════════════════════╗
-║ ▓ CLI ARSENAL              [02] ║
+║ ▓ CLI ARSENAL                 [02] ║
 ╠════════════════════════════════════╣
 ║                                    ║
 ║  ► bat ........... cat++           ║
@@ -102,7 +96,7 @@
 
 ```
 ╔════════════════════════════════════╗
-║ ▓ LANGUAGES & RUNTIMES     [03] ║
+║ ▓ LANGUAGES & RUNTIMES        [03] ║
 ╠════════════════════════════════════╣
 ║                                    ║
 ║  ► node ......... via fnm          ║
@@ -110,11 +104,11 @@
 ║  ► rust ......... via rustup       ║
 ║  ► pnpm ......... supply-safe      ║
 ║                                    ║
-║  ┌──────────────────────────────┐ ║
-║  │ rust > legacy. always.       │ ║
-║  └──────────────────────────────┘ ║
+║  ┌──────────────────────────────┐  ║
+║  │ rust > legacy. always.       │  ║
+║  └──────────────────────────────┘  ║
 ║                                    ║
-║  [ STATUS: ████████████ LIVE   ]  ║
+║  [ STATUS: ████████████ LIVE   ]   ║
 ╚════════════════════════════════════╝
 ```
 
@@ -122,7 +116,7 @@
 
 ```
 ╔════════════════════════════════════╗
-║ ▓ macOS TUNING             [04] ║
+║ ▓ macOS TUNING                [04] ║
 ╠════════════════════════════════════╣
 ║                                    ║
 ║  ► dark mode + liquid glass        ║
@@ -133,7 +127,7 @@
 ║  ► screenshots → ~/Pictures        ║
 ║  ► true tone ............ OFF      ║
 ║                                    ║
-║  [ STATUS: ████████████ TUNED  ]  ║
+║  [ STATUS: ████████████ TUNED  ]   ║
 ╚════════════════════════════════════╝
 ```
 
@@ -173,30 +167,21 @@
 
 ```mermaid
 graph LR
-    A["<b>curl | bash</b><br><i>internet</i>"] --> B["<b>bootstrap.sh</b><br><i>xcode CLT + homebrew<br>+ clone repo</i>"]
-    B --> C["<b>setup.sh</b>"]
-    C --> D["① brew bundle"]
-    C --> E["② oh-my-zsh + plugins"]
-    C --> F["③ fnm · uv · rustup"]
-    C --> G["④ pnpm globals · uv tools"]
-    C --> H["⑤ vscode extensions"]
-    C --> I["⑥ git config + SSH"]
-    C --> J["⑦ symlink dotfiles → $HOME"]
-    C --> K["⑧ macOS system defaults"]
-    C --> L["⑨ claude code"]
+    A([🌐 curl ∣ bash]) ==>|"fetch + clone"| B{{⚡ bootstrap.sh}}
+    B ==>|"hands off to"| C{{"⚙️ setup.sh"}}
 
-    style A fill:#1a1b26,stroke:#7aa2f7,color:#c0caf5
-    style B fill:#1a1b26,stroke:#e0af68,color:#c0caf5
-    style C fill:#1a1b26,stroke:#9ece6a,color:#c0caf5
-    style D fill:#1a1b26,stroke:#565f89,color:#a9b1d6
-    style E fill:#1a1b26,stroke:#565f89,color:#a9b1d6
-    style F fill:#1a1b26,stroke:#565f89,color:#a9b1d6
-    style G fill:#1a1b26,stroke:#565f89,color:#a9b1d6
-    style H fill:#1a1b26,stroke:#565f89,color:#a9b1d6
-    style I fill:#1a1b26,stroke:#565f89,color:#a9b1d6
-    style J fill:#1a1b26,stroke:#565f89,color:#a9b1d6
-    style K fill:#1a1b26,stroke:#565f89,color:#a9b1d6
-    style L fill:#1a1b26,stroke:#565f89,color:#a9b1d6
+    C --> D["🍺 INSTALL<br>brew bundle · fnm<br>uv · rustup · pnpm"]
+    C --> E["🔧 CONFIGURE<br>oh-my-zsh · vscode ext<br>git config · ssh keys"]
+    C --> F["🖥️ PERSONALIZE<br>symlink dotfiles<br>macOS defaults · claude"]
+
+    D ~~~ E ~~~ F
+
+    style A fill:#1a1b26,stroke:#7aa2f7,color:#c0caf5,stroke-width:2px
+    style B fill:#1a1b26,stroke:#e0af68,color:#e0af68,stroke-width:2px
+    style C fill:#1a1b26,stroke:#9ece6a,color:#9ece6a,stroke-width:2px
+    style D fill:#1a1b26,stroke:#7dcfff,color:#c0caf5
+    style E fill:#1a1b26,stroke:#bb9af7,color:#c0caf5
+    style F fill:#1a1b26,stroke:#f7768e,color:#c0caf5
 ```
 
 **Already provisioned?** Re-run anytime — it's idempotent.
@@ -243,7 +228,7 @@ cd ~/.dotfiles && git pull && ./setup.sh
 │  [ ] restart mac                ── one final cleanse                 │
 │                                                                      │
 │  ──────────────────────────────────────────────────────────────────  │
-│  finished? ────────────────────────────────> you are operational.   │
+│  finished? ────────────────────────────────> you are operational.    │
 │                                                                      │
 └──────────────────────────────────────────────────────────────────────┘
 ```
