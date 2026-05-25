@@ -239,8 +239,4 @@ finished? ───────────────────────�
 
 [![Footer](https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=14&duration=3800&pause=1800&color=7AA2F7&center=true&vCenter=true&width=520&lines=%5B+process+complete+%5D+%C2%B7+stay+caffeinated;built+with+zsh%2C+rust%2C+and+claude+code;EOF)](https://git.io/typing-svg)
 
-```
-END OF TRANSMISSION
-```
-
 </div>
