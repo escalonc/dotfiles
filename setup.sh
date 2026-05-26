@@ -31,25 +31,35 @@ echo ""
 read -rp "  Press ENTER to begin or Ctrl+C to cancel..."
 
 # ─── Sudo keepalive ──────────────────────────────────────────────────────────
+# Keep sudo timestamp refreshed so long-running brew/macos steps don't prompt mid-run.
+# Trap ensures the background loop is killed promptly when this script exits.
 sudo -v
-while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+( while true; do sudo -n true; sleep 60; kill -0 "$$" 2>/dev/null || exit; done ) &
+SUDO_KEEPALIVE_PID=$!
+trap 'kill "$SUDO_KEEPALIVE_PID" 2>/dev/null' EXIT INT TERM
 
 # ─── Homebrew ────────────────────────────────────────────────────────────────
 section "»  Homebrew"
 
+BREW_PREFIX="/usr/local"
+[[ "$(uname -m)" == "arm64" ]] && BREW_PREFIX="/opt/homebrew"
+
 if command -v brew &>/dev/null; then
   success "Homebrew already installed"
   info "Updating Homebrew..."
-  brew update --quiet 2>>"$LOG_FILE" || warn "brew update failed — proceeding with cached formulae"
+  brew update --quiet || warn "brew update failed — proceeding with cached formulae"
 else
   info "Installing Homebrew..."
   NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  if [[ "$(uname -m)" == "arm64" ]]; then
-    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "$HOME/.zprofile"
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-  fi
   success "Homebrew installed"
 fi
+
+# Always ensure brew shellenv is loaded for this shell AND persisted to .zprofile
+# (covers the case where bootstrap installed brew but setup.sh sees it as already there).
+eval "$($BREW_PREFIX/bin/brew shellenv)"
+touch "$HOME/.zprofile"
+grep -qF "brew shellenv" "$HOME/.zprofile" || \
+  echo "eval \"\$($BREW_PREFIX/bin/brew shellenv)\"" >> "$HOME/.zprofile"
 
 brew analytics off
 
@@ -57,10 +67,13 @@ brew analytics off
 section "»  Installing Formulae & Casks (Brewfile)"
 
 info "Running brew bundle..."
-if brew bundle --file="$DOTFILES_DIR/Brewfile" 2>>"$LOG_FILE"; then
+if brew bundle --file="$DOTFILES_DIR/Brewfile"; then
   success "Brewfile installed"
 else
-  warn "Some Brewfile entries failed (see $LOG_FILE)"
+  # Capture which packages actually failed so the end-of-run summary names them.
+  while IFS= read -r missing; do
+    error "Brewfile entry failed: $missing"
+  done < <(brew bundle check --file="$DOTFILES_DIR/Brewfile" --verbose 2>/dev/null | grep -E '^(Cask|Formula|Tap) .* needs to be installed' || true)
 fi
 
 # ─── Shell ───────────────────────────────────────────────────────────────────
@@ -82,12 +95,21 @@ source "$DOTFILES_DIR/scripts/git.sh"
 section "»  SSH — 1Password Agent"
 
 mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
-if [ ! -f "$HOME/.ssh/config" ] || ! grep -q "1password" "$HOME/.ssh/config"; then
-  cp "$DOTFILES_DIR/dotfiles/.ssh/config" "$HOME/.ssh/config"
-  chmod 600 "$HOME/.ssh/config"
-  success "SSH config linked"
-else
+SSH_CONFIG="$HOME/.ssh/config"
+if [ -f "$SSH_CONFIG" ] && grep -q "1password" "$SSH_CONFIG"; then
   success "1Password SSH agent already configured"
+elif [ ! -f "$SSH_CONFIG" ]; then
+  cp "$DOTFILES_DIR/dotfiles/.ssh/config" "$SSH_CONFIG"
+  chmod 600 "$SSH_CONFIG"
+  success "SSH config written"
+else
+  # Pre-existing config without 1password line — append rather than overwrite,
+  # and back up the original so nothing the user already had is lost.
+  cp "$SSH_CONFIG" "$SSH_CONFIG.backup.$(date +%Y%m%d%H%M%S)"
+  info "Backed up existing ~/.ssh/config"
+  cat "$DOTFILES_DIR/dotfiles/.ssh/config" >> "$SSH_CONFIG"
+  chmod 600 "$SSH_CONFIG"
+  success "Appended 1Password block to existing SSH config"
 fi
 
 echo ""
@@ -115,6 +137,9 @@ link_dotfile "$DOTFILES_DIR/dotfiles/.zshrc" "$HOME/.zshrc"
 link_dotfile "$DOTFILES_DIR/dotfiles/.gitignore_global" "$HOME/.gitignore_global"
 
 # ─── macOS Defaults ──────────────────────────────────────────────────────────
+# Refresh sudo before macos.sh runs `sudo defaults write` — protects against the
+# keepalive having missed a beat during long-running brew/cargo installs.
+sudo -v
 source "$DOTFILES_DIR/scripts/macos.sh"
 
 # ─── Claude Code ─────────────────────────────────────────────────────────────
@@ -124,8 +149,13 @@ source "$DOTFILES_DIR/scripts/claude.sh"
 section "»  Cleanup"
 
 info "Running brew cleanup..."
-brew cleanup --quiet 2>>"$LOG_FILE" || warn "brew cleanup had issues (see $LOG_FILE)"
-brew autoremove --quiet 2>>"$LOG_FILE" || warn "brew autoremove had issues (see $LOG_FILE)"
+brew cleanup --quiet || warn "brew cleanup had issues (see $LOG_FILE)"
+brew autoremove --quiet || warn "brew autoremove had issues (see $LOG_FILE)"
+
+# Keep only the 3 newest dotfile backups so they don't pile up across runs.
+for base in "$HOME/.zshrc" "$HOME/.gitignore_global" "$HOME/.ssh/config"; do
+  ls -1t "$base".backup.* 2>/dev/null | tail -n +4 | xargs -I{} rm -f -- "{}" 2>/dev/null || true
+done
 
 # ─── Summary ─────────────────────────────────────────────────────────────────
 echo ""

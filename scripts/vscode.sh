@@ -7,7 +7,7 @@ VSCODE_BIN="/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
 
 if ! command -v code &>/dev/null; then
   warn "VS Code CLI not found, skipping extensions (launch VS Code once first)"
-  return 0 2>/dev/null || exit 0
+  return 0
 fi
 
 EXTENSIONS=(
