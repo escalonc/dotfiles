@@ -35,18 +35,27 @@ echo -e "  ${WARN}  ${YELLOW}sudo access is required. You may be prompted for yo
 echo ""
 # `read -rp` writes its prompt to stderr, which is now piped through tee —
 # pipe buffering can swallow the prompt. Print it explicitly first so the user
-# always sees it, then read from /dev/tty (interactive only).
+# always sees it, then read from /dev/tty if a tty is available (skips in CI / nohup / non-tty SSH).
 echo -en "  ${BOLD}Press ENTER to begin or Ctrl+C to cancel...${RESET}"
-read -r _ </dev/tty
+if [ -t 0 ] || [ -r /dev/tty ]; then
+  read -r _ </dev/tty || true
+fi
 echo ""
 
 # ─── Sudo keepalive ──────────────────────────────────────────────────────────
 # Keep sudo timestamp refreshed so long-running brew/macos steps don't prompt mid-run.
-# Trap ensures the background loop is killed promptly when this script exits.
-sudo -v
-( while true; do sudo -n true; sleep 60; kill -0 "$$" 2>/dev/null || exit; done ) &
-SUDO_KEEPALIVE_PID=$!
-trap 'kill "$SUDO_KEEPALIVE_PID" 2>/dev/null' EXIT INT TERM
+# Only spawn the keepalive after `sudo -v` succeeds — otherwise the loop would
+# spam `sudo -n true` failures every 60s with no working ticket. Install the
+# trap first so a Ctrl-C between fork and trap doesn't orphan the loop.
+if sudo -v; then
+  SUDO_KEEPALIVE_PID=""
+  trap '[ -n "$SUDO_KEEPALIVE_PID" ] && kill "$SUDO_KEEPALIVE_PID" 2>/dev/null' EXIT INT TERM
+  ( while true; do sudo -n true; sleep 60; kill -0 "$$" 2>/dev/null || exit; done ) &
+  SUDO_KEEPALIVE_PID=$!
+else
+  warn "sudo unavailable — macOS defaults section will be skipped"
+  SUDO_OK=false
+fi
 
 # ─── Homebrew ────────────────────────────────────────────────────────────────
 section "»  Homebrew"
@@ -79,22 +88,30 @@ brew analytics off
 section "»  Installing Formulae & Casks (Brewfile)"
 
 info "Running brew bundle..."
-if brew bundle --file="$DOTFILES_DIR/Brewfile"; then
+# Capture brew bundle's own output so we can surface the actual error when
+# `bundle check` doesn't match (e.g., tap fetch failure rather than missing pkg).
+BUNDLE_LOG=$(mktemp)
+if brew bundle --file="$DOTFILES_DIR/Brewfile" 2>&1 | tee "$BUNDLE_LOG" && [ "${PIPESTATUS[0]}" -eq 0 ]; then
   success "Brewfile installed"
+  rm -f "$BUNDLE_LOG"
 else
   # `brew bundle check --verbose` prefixes each missing entry with an arrow,
-  # e.g. "→ Cask 'foo' needs to be installed." Strip the arrow + quotes and
+  # e.g. "→ Cask 'foo' needs to be installed." Strip the prefix + suffix and
   # name each one in FAILED_STEPS so the summary points at real packages.
   missing_count=0
   while IFS= read -r line; do
     [[ -z "$line" ]] && continue
-    # Strip leading arrow/space and any wrapping quotes for readability
-    pkg=$(echo "$line" | sed -E 's/^[[:space:]]*[→>][[:space:]]*//; s/needs to be installed.*$//')
+    pkg=$(echo "$line" | sed -E 's/^[[:space:]]*[→>][[:space:]]*//; s/[[:space:]]*needs to be installed.*$//; s/^[[:space:]]*//')
     error "Brewfile entry failed: ${pkg:-$line}"
     missing_count=$((missing_count + 1))
   done < <(brew bundle check --file="$DOTFILES_DIR/Brewfile" --verbose 2>&1 | grep -E 'needs to be installed' || true)
-  # Fallback: if the parsing somehow caught nothing, still flag the overall failure.
-  [[ $missing_count -eq 0 ]] && error "brew bundle had failures (see $LOG_FILE)"
+  # Fallback: if `bundle check` matched nothing (network/tap error, etc.),
+  # surface the actual brew bundle output so the user has something to debug.
+  if [[ $missing_count -eq 0 ]]; then
+    error "brew bundle failed; tail of output:"
+    tail -10 "$BUNDLE_LOG" | sed 's/^/    /'
+  fi
+  rm -f "$BUNDLE_LOG"
 fi
 
 # ─── Shell ───────────────────────────────────────────────────────────────────
@@ -141,6 +158,9 @@ else
   mv "$tmp" "$SSH_CONFIG"
   chmod 600 "$SSH_CONFIG"
   success "Prepended 1Password block to existing SSH config"
+  warn "Our 'Host *' IdentityAgent now applies to all hosts; per-host"
+  warn "IdentityAgent settings in your existing config still win for those hosts."
+  warn "Review ~/.ssh/config and the .backup.* file if behavior changes."
 fi
 
 echo ""
@@ -171,13 +191,14 @@ link_dotfile "$DOTFILES_DIR/dotfiles/.zshrc" "$HOME/.zshrc"
 link_dotfile "$DOTFILES_DIR/dotfiles/.gitignore_global" "$HOME/.gitignore_global"
 
 # ─── macOS Defaults ──────────────────────────────────────────────────────────
-# Refresh sudo before macos.sh runs `sudo defaults write` — protects against the
-# keepalive having missed a beat during long-running brew/cargo installs.
-# Surface failures rather than silently continuing into prompts inside macos.sh.
-if ! sudo -v; then
-  error "sudo refresh failed before macos.sh — system defaults may not apply"
+# macos.sh needs sudo for `defaults write /Library/Preferences/...`. If sudo
+# refresh fails, skip the whole section rather than prompting interactively
+# from inside a long-running script that may be unattended.
+if [ "${SUDO_OK:-true}" = "true" ] && sudo -v; then
+  source "$DOTFILES_DIR/scripts/macos.sh"
+else
+  error "sudo refresh failed — skipping macOS system defaults (run setup.sh again later)"
 fi
-source "$DOTFILES_DIR/scripts/macos.sh"
 
 # ─── Claude Code ─────────────────────────────────────────────────────────────
 source "$DOTFILES_DIR/scripts/claude.sh"
@@ -190,7 +211,7 @@ brew cleanup --quiet || warn "brew cleanup had issues (see $LOG_FILE)"
 brew autoremove --quiet || warn "brew autoremove had issues (see $LOG_FILE)"
 
 # Keep only the 3 newest dotfile backups so they don't pile up across runs.
-for base in "$HOME/.zshrc" "$HOME/.gitignore_global" "$HOME/.ssh/config"; do
+for base in "$HOME/.zshrc" "$HOME/.gitignore_global" "$HOME/.ssh/config" "$HOME/.gitconfig"; do
   ls -1t "$base".backup.* 2>/dev/null | tail -n +4 | xargs -I{} rm -f -- "{}" 2>/dev/null || true
 done
 

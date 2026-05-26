@@ -7,21 +7,19 @@ if ! command -v fnm &>/dev/null; then
   error "fnm not on PATH — skipping Node install (check Brewfile)"
 else
   eval "$(fnm env)"
-  # Use `fnm current` as the idempotency check — works regardless of which
-  # alias name a given fnm version uses for LTS (lts-latest, lts/iron, etc).
-  NODE_CUR=$(fnm current 2>/dev/null || echo "none")
-  if [ "$NODE_CUR" != "none" ] && [ "$NODE_CUR" != "system" ]; then
-    success "Node.js already installed via fnm ($NODE_CUR)"
+  # Idempotency: any installed version satisfies "fnm is set up". `fnm current`
+  # returns "none" when nothing is active even if a version is installed, so
+  # we check `fnm list` for any version line.
+  if fnm list 2>/dev/null | grep -qE 'v[0-9]+'; then
+    success "Node.js already installed via fnm ($(fnm current 2>/dev/null || echo 'installed'))"
   else
     info "Installing Node.js LTS via fnm..."
     if fnm install --lts; then
-      # Don't rely on `lts-latest` (alias name varies by fnm version);
-      # default to whatever version is now current.
-      installed_ver=$(fnm current 2>/dev/null)
-      if [ -z "$installed_ver" ] || [ "$installed_ver" = "none" ]; then
-        # Fall back to picking the newest installed version
-        installed_ver=$(fnm list 2>/dev/null | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' | sort -V | tail -1)
-      fi
+      # `fnm install --lts` prints the version it installed; recapture it from
+      # `fnm list` filtering for LTS lines specifically, then default to that.
+      # This avoids picking a non-LTS version if one was somehow installed first.
+      installed_ver=$(NO_COLOR=1 fnm list 2>/dev/null | grep -i 'lts' | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' | sort -V | tail -1)
+      [ -z "$installed_ver" ] && installed_ver=$(NO_COLOR=1 fnm list 2>/dev/null | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' | sort -V | tail -1)
       if [ -n "$installed_ver" ] && fnm default "$installed_ver"; then
         success "Node.js LTS ($installed_ver)"
       else
