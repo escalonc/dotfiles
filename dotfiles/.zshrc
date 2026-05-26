@@ -55,8 +55,16 @@ export PATH="$HOME/.cargo/bin:$PATH"
   export PATH="/Applications/Visual Studio Code.app/Contents/Resources/app/bin:$PATH"
 
 # ── Language Managers ────────────────────────────────────────────────────────
-eval "$(fnm env --use-on-cd)"
-eval "$(uv generate-shell-completion zsh 2>/dev/null || true)"
+# Guard each so a missing/uninstalled tool doesn't spam errors on shell startup.
+command -v fnm >/dev/null 2>&1 && eval "$(fnm env --use-on-cd)"
+command -v uv  >/dev/null 2>&1 && eval "$(uv generate-shell-completion zsh 2>/dev/null || true)"
+
+# pnpm global bin (owned here so a future `pnpm setup` doesn't fight the symlinked rc)
+export PNPM_HOME="$HOME/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
 
 # ── Tool Config ──────────────────────────────────────────────────────────────
 eval "$(zoxide init zsh)"

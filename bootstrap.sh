@@ -1,41 +1,66 @@
 #!/usr/bin/env bash
 # curl -fsSL https://raw.githubusercontent.com/escalonc/dotfiles/main/bootstrap.sh | bash
-set -uo pipefail
+set -euo pipefail
 
 DOTFILES_REPO="https://github.com/escalonc/dotfiles.git"
 DOTFILES_DIR="$HOME/.dotfiles"
 LOG_FILE="$HOME/dev-setup.log"
 
-# Capture all bootstrap output (including the Homebrew install) to the log
+# Capture all bootstrap output (including the Homebrew install) to the log.
+# Sentinel tells setup.sh not to install its own tee on top of this one.
+export _DEV_SETUP_LOGGING=1
 exec > >(tee -a "$LOG_FILE") 2>&1
 echo "━━━ Bootstrap started at $(date) ━━━"
 
+# ── Homebrew ─────────────────────────────────────────────────────────────────
 echo "Installing Xcode Command Line Tools + Homebrew..."
 if ! command -v brew &>/dev/null; then
-  NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  if ! NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; then
+    echo "FATAL: Homebrew installer failed. See $LOG_FILE for details." >&2
+    exit 1
+  fi
 fi
 
-# Always ensure brew shellenv is on PATH for this shell AND in .zprofile for future login shells.
-# We do this even when brew was pre-installed, so future logins don't lose /opt/homebrew/bin.
+# Verify brew is actually present at the expected prefix.
 BREW_PREFIX="/usr/local"
 [[ "$(uname -m)" == "arm64" ]] && BREW_PREFIX="/opt/homebrew"
-SHELLENV_LINE="eval \"\$($BREW_PREFIX/bin/brew shellenv)\""
+if [ ! -x "$BREW_PREFIX/bin/brew" ]; then
+  echo "FATAL: Homebrew not found at $BREW_PREFIX/bin/brew after install" >&2
+  exit 1
+fi
 
 eval "$($BREW_PREFIX/bin/brew shellenv)"
 touch "$HOME/.zprofile"
-grep -qF "brew shellenv" "$HOME/.zprofile" || echo "$SHELLENV_LINE" >> "$HOME/.zprofile"
+# Match only an active (uncommented) shellenv line — commented-out lines
+# shouldn't block re-adding the active one.
+grep -qE '^[[:space:]]*eval.*brew shellenv' "$HOME/.zprofile" || \
+  echo "eval \"\$($BREW_PREFIX/bin/brew shellenv)\"" >> "$HOME/.zprofile"
 
+# ── Dotfiles repo ────────────────────────────────────────────────────────────
 echo "Cloning dotfiles..."
 if [ -d "$DOTFILES_DIR" ]; then
+  # Refuse to proceed if the repo is mid-rebase; setup.sh would source files
+  # with conflict markers and explode in confusing ways.
+  if [ -d "$DOTFILES_DIR/.git/rebase-merge" ] || [ -d "$DOTFILES_DIR/.git/rebase-apply" ]; then
+    echo "  ! ~/.dotfiles is mid-rebase. Fix manually first:" >&2
+    echo "      cd $DOTFILES_DIR && git rebase --abort" >&2
+    exit 1
+  fi
+
   echo "  ~/.dotfiles already exists, pulling latest..."
-  # --autostash so local edits to symlinked dotfiles don't abort the pull.
-  # If pull still fails (conflict, etc.), keep going with the existing tree.
-  git -C "$DOTFILES_DIR" pull --rebase --autostash || \
+  # --autostash so symlinked dotfile edits don't abort the pull.
+  if ! git -C "$DOTFILES_DIR" pull --rebase --autostash; then
     echo "  ! pull failed — continuing with existing local copy"
+    if git -C "$DOTFILES_DIR" stash list | grep -q '.'; then
+      echo "  ! your local edits may be in 'git stash list':"
+      git -C "$DOTFILES_DIR" stash list | head -3
+    fi
+  fi
 else
   git clone "$DOTFILES_REPO" "$DOTFILES_DIR"
 fi
 
+# ── Hand off to setup.sh ─────────────────────────────────────────────────────
 echo "Running setup..."
 cd "$DOTFILES_DIR"
 chmod +x setup.sh

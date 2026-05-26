@@ -2,6 +2,13 @@
 
 section "»  Git Configuration"
 
+# Back up any pre-existing ~/.gitconfig so the user can recover values we
+# overwrite (custom aliases, alternative user.email, etc.).
+if [ -f "$HOME/.gitconfig" ]; then
+  cp "$HOME/.gitconfig" "$HOME/.gitconfig.backup.$(date +%Y%m%d%H%M%S)"
+  info "Backed up existing ~/.gitconfig"
+fi
+
 GIT_NAME="Christopher Escalon"
 GIT_EMAIL="escalonc@users.noreply.github.com"
 

@@ -5,7 +5,12 @@ DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # ─── Logging ─────────────────────────────────────────────────────────────────
 LOG_FILE="$HOME/dev-setup.log"
-exec > >(tee -a "$LOG_FILE") 2>&1
+# Only install our own tee if bootstrap.sh isn't already tee'ing — otherwise
+# every line ends up in the log twice and writers race on the same file.
+if [ -z "${_DEV_SETUP_LOGGING:-}" ]; then
+  export _DEV_SETUP_LOGGING=1
+  exec > >(tee -a "$LOG_FILE") 2>&1
+fi
 echo "━━━ Setup started at $(date) ━━━"
 
 export HOMEBREW_NO_ANALYTICS=1
@@ -28,7 +33,12 @@ echo -e "  ${DIM}Estimated time: 20-40 minutes depending on your internet speed.
 echo ""
 echo -e "  ${WARN}  ${YELLOW}sudo access is required. You may be prompted for your password.${RESET}"
 echo ""
-read -rp "  Press ENTER to begin or Ctrl+C to cancel..."
+# `read -rp` writes its prompt to stderr, which is now piped through tee —
+# pipe buffering can swallow the prompt. Print it explicitly first so the user
+# always sees it, then read from /dev/tty (interactive only).
+echo -en "  ${BOLD}Press ENTER to begin or Ctrl+C to cancel...${RESET}"
+read -r _ </dev/tty
+echo ""
 
 # ─── Sudo keepalive ──────────────────────────────────────────────────────────
 # Keep sudo timestamp refreshed so long-running brew/macos steps don't prompt mid-run.
@@ -58,7 +68,9 @@ fi
 # (covers the case where bootstrap installed brew but setup.sh sees it as already there).
 eval "$($BREW_PREFIX/bin/brew shellenv)"
 touch "$HOME/.zprofile"
-grep -qF "brew shellenv" "$HOME/.zprofile" || \
+# Match only active (uncommented) shellenv lines so a deliberately
+# commented-out one doesn't block re-adding the active version.
+grep -qE '^[[:space:]]*eval.*brew shellenv' "$HOME/.zprofile" || \
   echo "eval \"\$($BREW_PREFIX/bin/brew shellenv)\"" >> "$HOME/.zprofile"
 
 brew analytics off
@@ -70,10 +82,19 @@ info "Running brew bundle..."
 if brew bundle --file="$DOTFILES_DIR/Brewfile"; then
   success "Brewfile installed"
 else
-  # Capture which packages actually failed so the end-of-run summary names them.
-  while IFS= read -r missing; do
-    error "Brewfile entry failed: $missing"
-  done < <(brew bundle check --file="$DOTFILES_DIR/Brewfile" --verbose 2>/dev/null | grep -E '^(Cask|Formula|Tap) .* needs to be installed' || true)
+  # `brew bundle check --verbose` prefixes each missing entry with an arrow,
+  # e.g. "→ Cask 'foo' needs to be installed." Strip the arrow + quotes and
+  # name each one in FAILED_STEPS so the summary points at real packages.
+  missing_count=0
+  while IFS= read -r line; do
+    [[ -z "$line" ]] && continue
+    # Strip leading arrow/space and any wrapping quotes for readability
+    pkg=$(echo "$line" | sed -E 's/^[[:space:]]*[→>][[:space:]]*//; s/needs to be installed.*$//')
+    error "Brewfile entry failed: ${pkg:-$line}"
+    missing_count=$((missing_count + 1))
+  done < <(brew bundle check --file="$DOTFILES_DIR/Brewfile" --verbose 2>&1 | grep -E 'needs to be installed' || true)
+  # Fallback: if the parsing somehow caught nothing, still flag the overall failure.
+  [[ $missing_count -eq 0 ]] && error "brew bundle had failures (see $LOG_FILE)"
 fi
 
 # ─── Shell ───────────────────────────────────────────────────────────────────
@@ -96,20 +117,30 @@ section "»  SSH — 1Password Agent"
 
 mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
 SSH_CONFIG="$HOME/.ssh/config"
-if [ -f "$SSH_CONFIG" ] && grep -q "1password" "$SSH_CONFIG"; then
+# Use a specific marker (the agent socket path) so we don't false-positive on
+# unrelated "1password" mentions in the user's config.
+SSH_MARKER='2BUA8C4S2C.com.1password'
+
+if [ -f "$SSH_CONFIG" ] && grep -qF "$SSH_MARKER" "$SSH_CONFIG"; then
   success "1Password SSH agent already configured"
 elif [ ! -f "$SSH_CONFIG" ]; then
   cp "$DOTFILES_DIR/dotfiles/.ssh/config" "$SSH_CONFIG"
   chmod 600 "$SSH_CONFIG"
   success "SSH config written"
 else
-  # Pre-existing config without 1password line — append rather than overwrite,
-  # and back up the original so nothing the user already had is lost.
+  # Pre-existing config without our agent block. Back it up, then PREPEND our
+  # block so OpenSSH's first-match-wins rule picks IdentityAgent from us even
+  # when the user already has a `Host *` block of their own.
   cp "$SSH_CONFIG" "$SSH_CONFIG.backup.$(date +%Y%m%d%H%M%S)"
   info "Backed up existing ~/.ssh/config"
-  cat "$DOTFILES_DIR/dotfiles/.ssh/config" >> "$SSH_CONFIG"
+  tmp=$(mktemp)
+  cat "$DOTFILES_DIR/dotfiles/.ssh/config" > "$tmp"
+  # Ensure a blank line between our block and the existing content
+  echo "" >> "$tmp"
+  cat "$SSH_CONFIG" >> "$tmp"
+  mv "$tmp" "$SSH_CONFIG"
   chmod 600 "$SSH_CONFIG"
-  success "Appended 1Password block to existing SSH config"
+  success "Prepended 1Password block to existing SSH config"
 fi
 
 echo ""
@@ -125,11 +156,14 @@ section "»  Linking Dotfiles"
 
 link_dotfile() {
   local src="$1" dst="$2"
-  if [ -f "$dst" ] && [ ! -L "$dst" ]; then
+  # Back up anything at $dst that isn't a symlink (file, dir, or other).
+  if [ -e "$dst" ] && [ ! -L "$dst" ]; then
     mv "$dst" "${dst}.backup.$(date +%Y%m%d%H%M%S)"
     info "Backed up existing $(basename "$dst")"
   fi
-  ln -sf "$src" "$dst"
+  # -n treats an existing symlink-to-directory as a regular file (BSD ln on
+  # macOS otherwise creates dst/src inside the linked directory).
+  ln -sfn "$src" "$dst"
   success "$(basename "$dst") → $src"
 }
 
@@ -139,7 +173,10 @@ link_dotfile "$DOTFILES_DIR/dotfiles/.gitignore_global" "$HOME/.gitignore_global
 # ─── macOS Defaults ──────────────────────────────────────────────────────────
 # Refresh sudo before macos.sh runs `sudo defaults write` — protects against the
 # keepalive having missed a beat during long-running brew/cargo installs.
-sudo -v
+# Surface failures rather than silently continuing into prompts inside macos.sh.
+if ! sudo -v; then
+  error "sudo refresh failed before macos.sh — system defaults may not apply"
+fi
 source "$DOTFILES_DIR/scripts/macos.sh"
 
 # ─── Claude Code ─────────────────────────────────────────────────────────────

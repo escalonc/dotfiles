@@ -6,16 +6,16 @@ section "»  Package Managers & Build Tools"
 if ! command -v pnpm &>/dev/null; then
   error "pnpm not on PATH — skipping global JS tooling (check Brewfile)"
 else
-  # `pnpm setup` configures PNPM_HOME and ensures the global bin dir is on PATH
-  # for future shells. Without this, `pnpm add -g` installs binaries that aren't
-  # invocable. Safe to run repeatedly.
-  if [[ -z "${PNPM_HOME:-}" ]]; then
-    info "Running pnpm setup..."
-    pnpm setup >/dev/null 2>&1 || true
-    # Use the location pnpm setup wrote for the remainder of this script.
-    export PNPM_HOME="${PNPM_HOME:-$HOME/Library/pnpm}"
-    export PATH="$PNPM_HOME:$PATH"
-  fi
+  # We don't call `pnpm setup` because it edits ~/.zshrc, and setup.sh later
+  # replaces ~/.zshrc with a symlink to dotfiles/.zshrc — wiping the edits.
+  # Instead, dotfiles/.zshrc owns PNPM_HOME + PATH for future shells, and we
+  # export the same values here so this setup process can use the globals too.
+  export PNPM_HOME="${PNPM_HOME:-$HOME/Library/pnpm}"
+  mkdir -p "$PNPM_HOME"
+  case ":$PATH:" in
+    *":$PNPM_HOME:"*) ;;
+    *) export PATH="$PNPM_HOME:$PATH" ;;
+  esac
 
   PNPM_GLOBALS=(
     "typescript"
