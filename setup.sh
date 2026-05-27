@@ -139,8 +139,7 @@ source "$DOTFILES_DIR/scripts/packages.sh"
 # ─── VS Code ────────────────────────────────────────────────────────────────
 source "$DOTFILES_DIR/scripts/vscode.sh"
 
-# ─── Git ─────────────────────────────────────────────────────────────────────
-source "$DOTFILES_DIR/scripts/git.sh"
+# ─── Git (config symlinked in the Linking Dotfiles section below) ─────────────
 
 # ─── SSH (1Password Agent) ───────────────────────────────────────────────────
 section "»  SSH — 1Password Agent"
@@ -203,6 +202,7 @@ link_dotfile() {
 
 link_dotfile "$DOTFILES_DIR/dotfiles/.zshrc" "$HOME/.zshrc"
 link_dotfile "$DOTFILES_DIR/dotfiles/.gitignore_global" "$HOME/.gitignore_global"
+link_dotfile "$DOTFILES_DIR/dotfiles/.gitconfig" "$HOME/.gitconfig"
 
 # ─── macOS Defaults ──────────────────────────────────────────────────────────
 # macos.sh needs sudo for `defaults write /Library/Preferences/...`. Use the

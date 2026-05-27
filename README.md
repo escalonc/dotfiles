@@ -131,6 +131,7 @@ $ curl -fsSL https://raw.githubusercontent.com/escalonc/dotfiles/main/bootstrap.
 │
 ├── 📁 dotfiles/  ·················· symlinked into $HOME
 │   ├── .zshrc ···················· shell config
+│   ├── .gitconfig ··············· git config · aliases · delta
 │   ├── .gitignore_global ········· global ignore rules
 │   └── .ssh/config ··············· 1Password SSH agent
 │
@@ -140,7 +141,6 @@ $ curl -fsSL https://raw.githubusercontent.com/escalonc/dotfiles/main/bootstrap.
     ├── languages.sh ·············· fnm · uv · rustup
     ├── packages.sh ··············· pnpm globals · uv tools
     ├── vscode.sh ················· 26 extensions
-    ├── git.sh ···················· config · aliases · delta
     ├── macos.sh ·················· system defaults
     └── claude.sh ················· claude code install
 ```
@@ -184,6 +184,7 @@ WHEN YOU WANT TO...               EDIT THIS FILE
 ► add a CLI tool                  Brewfile                 brew ""
 ► add a GUI app                   Brewfile                 cask ""
 ► change shell config             dotfiles/.zshrc
+► change git config / aliases     dotfiles/.gitconfig
 ► add a VS Code extension         scripts/vscode.sh
 ► tweak macOS defaults            scripts/macos.sh
 ► add a global pnpm package       scripts/packages.sh

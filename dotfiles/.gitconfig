@@ -1,0 +1,54 @@
+[user]
+	name = Christopher Escalon
+	email = escalonc@users.noreply.github.com
+
+[core]
+	editor = code --wait
+	autocrlf = input
+	excludesfile = ~/.gitignore_global
+	pager = delta
+
+[init]
+	defaultBranch = main
+
+[push]
+	default = current
+
+[pull]
+	rebase = true
+
+[rebase]
+	autoStash = true
+
+[fetch]
+	prune = true
+
+[diff]
+	colorMoved = default
+
+[rerere]
+	enabled = true
+
+[help]
+	autocorrect = 1
+
+[color]
+	ui = auto
+
+[interactive]
+	diffFilter = delta --color-only
+
+[delta]
+	navigate = true
+	light = false
+	side-by-side = true
+	line-numbers = true
+
+[alias]
+	st = status -sb
+	co = checkout
+	br = branch
+	lg = log --oneline --graph --decorate --all
+	undo = reset HEAD~1 --mixed
+	wip = commit -am 'WIP'
+	oops = commit --amend --no-edit
