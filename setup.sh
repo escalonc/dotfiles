@@ -45,17 +45,25 @@ echo ""
 # ─── Sudo keepalive ──────────────────────────────────────────────────────────
 # Keep sudo timestamp refreshed so long-running brew/macos steps don't prompt mid-run.
 # Only spawn the keepalive after `sudo -v` succeeds — otherwise the loop would
-# spam `sudo -n true` failures every 60s with no working ticket. Install the
-# trap first so a Ctrl-C between fork and trap doesn't orphan the loop.
+# spam `sudo -n true` failures every 60s with no working ticket.
 if sudo -v; then
-  SUDO_KEEPALIVE_PID=""
-  trap '[ -n "$SUDO_KEEPALIVE_PID" ] && kill "$SUDO_KEEPALIVE_PID" 2>/dev/null' EXIT INT TERM
+  # The loop self-terminates when the parent shell dies (kill -0 "$$"), so even
+  # if a Ctrl-C lands in the tiny window before SUDO_KEEPALIVE_PID is assigned,
+  # the loop still exits within ~60s. We kill by PID (not `%1`) to avoid job-spec
+  # ambiguity with the `exec > >(tee ...)` process substitution.
   ( while true; do sudo -n true; sleep 60; kill -0 "$$" 2>/dev/null || exit; done ) &
   SUDO_KEEPALIVE_PID=$!
 else
   warn "sudo unavailable — macOS defaults section will be skipped"
   SUDO_OK=false
 fi
+cleanup() { [ -n "${SUDO_KEEPALIVE_PID:-}" ] && kill "$SUDO_KEEPALIVE_PID" 2>/dev/null || true; }
+# EXIT cleans up on normal exit; INT/TERM clean up AND exit with the conventional
+# 128+signal code so Ctrl-C during a foreground step (e.g. brew bundle) stops the
+# whole script instead of letting it continue.
+trap 'cleanup' EXIT
+trap 'cleanup; exit 130' INT
+trap 'cleanup; exit 143' TERM
 
 # ─── Homebrew ────────────────────────────────────────────────────────────────
 section "»  Homebrew"
@@ -90,10 +98,15 @@ section "»  Installing Formulae & Casks (Brewfile)"
 info "Running brew bundle..."
 # Capture brew bundle's own output so we can surface the actual error when
 # `bundle check` doesn't match (e.g., tap fetch failure rather than missing pkg).
-BUNDLE_LOG=$(mktemp)
-if brew bundle --file="$DOTFILES_DIR/Brewfile" 2>&1 | tee "$BUNDLE_LOG" && [ "${PIPESTATUS[0]}" -eq 0 ]; then
+# Fall back to /dev/null if mktemp fails so we never `tee` to an empty path.
+BUNDLE_LOG=$(mktemp 2>/dev/null) || BUNDLE_LOG=/dev/null
+# Run the pipeline, then capture brew's exit (PIPESTATUS[0]) into a var
+# immediately — clearer than chaining `&& [ PIPESTATUS ]`, and pipefail alone
+# would already mask which side failed.
+brew bundle --file="$DOTFILES_DIR/Brewfile" 2>&1 | tee "$BUNDLE_LOG"
+bundle_status=${PIPESTATUS[0]}
+if [ "$bundle_status" -eq 0 ]; then
   success "Brewfile installed"
-  rm -f "$BUNDLE_LOG"
 else
   # `brew bundle check --verbose` prefixes each missing entry with an arrow,
   # e.g. "→ Cask 'foo' needs to be installed." Strip the prefix + suffix and
@@ -109,10 +122,10 @@ else
   # surface the actual brew bundle output so the user has something to debug.
   if [[ $missing_count -eq 0 ]]; then
     error "brew bundle failed; tail of output:"
-    tail -10 "$BUNDLE_LOG" | sed 's/^/    /'
+    [ "$BUNDLE_LOG" != /dev/null ] && tail -10 "$BUNDLE_LOG" | sed 's/^/    /'
   fi
-  rm -f "$BUNDLE_LOG"
 fi
+[ "$BUNDLE_LOG" != /dev/null ] && rm -f "$BUNDLE_LOG"
 
 # ─── Shell ───────────────────────────────────────────────────────────────────
 source "$DOTFILES_DIR/scripts/shell.sh"
@@ -158,9 +171,10 @@ else
   mv "$tmp" "$SSH_CONFIG"
   chmod 600 "$SSH_CONFIG"
   success "Prepended 1Password block to existing SSH config"
-  warn "Our 'Host *' IdentityAgent now applies to all hosts; per-host"
-  warn "IdentityAgent settings in your existing config still win for those hosts."
-  warn "Review ~/.ssh/config and the .backup.* file if behavior changes."
+  warn "Our 'Host *' block is now FIRST, and OpenSSH uses the first IdentityAgent"
+  warn "it sees — so 1Password's agent now applies to ALL hosts, OVERRIDING any"
+  warn "per-host IdentityAgent you had later in the file. If a host needs a"
+  warn "different agent, move its block above ours or restore the .backup.* file."
 fi
 
 echo ""
@@ -191,13 +205,14 @@ link_dotfile "$DOTFILES_DIR/dotfiles/.zshrc" "$HOME/.zshrc"
 link_dotfile "$DOTFILES_DIR/dotfiles/.gitignore_global" "$HOME/.gitignore_global"
 
 # ─── macOS Defaults ──────────────────────────────────────────────────────────
-# macos.sh needs sudo for `defaults write /Library/Preferences/...`. If sudo
-# refresh fails, skip the whole section rather than prompting interactively
-# from inside a long-running script that may be unattended.
-if [ "${SUDO_OK:-true}" = "true" ] && sudo -v; then
+# macos.sh needs sudo for `defaults write /Library/Preferences/...`. Use the
+# non-interactive `sudo -n -v` here: if the cached ticket is still valid (the
+# keepalive kept it warm) it succeeds silently; if not, it fails fast and we
+# skip the section rather than blocking on a password prompt in an unattended run.
+if [ "${SUDO_OK:-true}" = "true" ] && sudo -n -v 2>/dev/null; then
   source "$DOTFILES_DIR/scripts/macos.sh"
 else
-  error "sudo refresh failed — skipping macOS system defaults (run setup.sh again later)"
+  error "sudo unavailable — skipping macOS system defaults (run setup.sh again later)"
 fi
 
 # ─── Claude Code ─────────────────────────────────────────────────────────────

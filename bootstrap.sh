@@ -50,18 +50,27 @@ if [ -d "$DOTFILES_DIR" ]; then
   echo "  ~/.dotfiles already exists, pulling latest..."
   # --autostash so symlinked dotfile edits don't abort the pull.
   if ! git -C "$DOTFILES_DIR" pull --rebase --autostash; then
-    # Re-check rebase state — the pull itself may have left it mid-rebase.
+    # The pull may have left the repo mid-rebase, OR finished the rebase but
+    # failed reapplying the autostash (which removes .git/rebase-* but leaves
+    # unmerged files with conflict markers). Check BOTH before continuing —
+    # running setup.sh against conflict markers in scripts/*.sh explodes.
     if [ -d "$DOTFILES_DIR/.git/rebase-merge" ] || [ -d "$DOTFILES_DIR/.git/rebase-apply" ]; then
       echo "  ! pull left ~/.dotfiles mid-rebase. Fix manually first:" >&2
       echo "      cd $DOTFILES_DIR && git rebase --abort" >&2
       exit 1
     fi
+    if [ -n "$(git -C "$DOTFILES_DIR" ls-files -u 2>/dev/null)" ]; then
+      echo "  ! pull left unmerged files in ~/.dotfiles (autostash conflict)." >&2
+      echo "      Resolve conflicts or: cd $DOTFILES_DIR && git checkout -- . && git stash pop" >&2
+      exit 1
+    fi
     echo "  ! pull failed — continuing with existing local copy"
-    # `head` closing the pipe SIGPIPEs git under pipefail; `|| true` keeps us
-    # past the diagnostic.
-    if git -C "$DOTFILES_DIR" stash list 2>/dev/null | grep -q '.'; then
+    # Deterministic stash check (avoids the pipefail/SIGPIPE footgun of piping
+    # `git stash list` into grep/head).
+    stash_list=$(git -C "$DOTFILES_DIR" stash list 2>/dev/null || true)
+    if [ -n "$stash_list" ]; then
       echo "  ! your local edits may be in 'git stash list':"
-      git -C "$DOTFILES_DIR" stash list 2>/dev/null | head -3 || true
+      echo "$stash_list" | head -3
     fi
   fi
 else

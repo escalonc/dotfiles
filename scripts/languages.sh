@@ -7,23 +7,24 @@ if ! command -v fnm &>/dev/null; then
   error "fnm not on PATH — skipping Node install (check Brewfile)"
 else
   eval "$(fnm env)"
-  # Idempotency: any installed version satisfies "fnm is set up". `fnm current`
-  # returns "none" when nothing is active even if a version is installed, so
-  # we check `fnm list` for any version line.
-  if fnm list 2>/dev/null | grep -qE 'v[0-9]+'; then
-    success "Node.js already installed via fnm ($(fnm current 2>/dev/null || echo 'installed'))"
+  # Idempotency: the real goal is "a default Node is set" — just having a
+  # version installed isn't enough, because future shells need a default to
+  # resolve `node`. `fnm list` marks the default line with the word "default".
+  if NO_COLOR=1 fnm list 2>/dev/null | grep -q 'default'; then
+    success "Node.js already configured via fnm ($(fnm current 2>/dev/null || echo 'default set'))"
   else
     info "Installing Node.js LTS via fnm..."
     if fnm install --lts; then
-      # `fnm install --lts` prints the version it installed; recapture it from
-      # `fnm list` filtering for LTS lines specifically, then default to that.
-      # This avoids picking a non-LTS version if one was somehow installed first.
-      installed_ver=$(NO_COLOR=1 fnm list 2>/dev/null | grep -i 'lts' | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' | sort -V | tail -1)
-      [ -z "$installed_ver" ] && installed_ver=$(NO_COLOR=1 fnm list 2>/dev/null | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' | sort -V | tail -1)
-      if [ -n "$installed_ver" ] && fnm default "$installed_ver"; then
-        success "Node.js LTS ($installed_ver)"
+      # Identify the installed LTS version from the LTS-tagged lines only.
+      # If we can't find one, fail closed (warn, no default) rather than
+      # defaulting to an arbitrary non-LTS version that might be installed.
+      lts_ver=$(NO_COLOR=1 fnm list 2>/dev/null | grep -i 'lts' | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' | sort -V | tail -1)
+      if [ -z "$lts_ver" ]; then
+        warn "Node.js LTS installed but couldn't identify the version to set as default — run 'fnm default <version>' manually"
+      elif fnm default "$lts_ver"; then
+        success "Node.js LTS ($lts_ver)"
       else
-        warn "Node.js installed but default not set"
+        warn "Node.js LTS installed but 'fnm default $lts_ver' failed"
       fi
     else
       error "fnm install --lts failed"
