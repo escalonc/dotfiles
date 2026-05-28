@@ -1,0 +1,7 @@
+README.md
+Brewfile
+.gitignore
+.github/
+.claude/
+.DS_Store
+LICENSE

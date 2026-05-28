@@ -1,243 +1,88 @@
-<div align="center">
+# dotfiles
 
-```
+> `> one command. fresh Mac, fully provisioned. _`
 
-    ██████╗  ██████╗ ████████╗███████╗██╗██╗     ███████╗███████╗
-    ██╔══██╗██╔═══██╗╚══██╔══╝██╔════╝██║██║     ██╔════╝██╔════╝
-    ██║  ██║██║   ██║   ██║   █████╗  ██║██║     █████╗  ███████╗
-    ██║  ██║██║   ██║   ██║   ██╔══╝  ██║██║     ██╔══╝  ╚════██║
-    ██████╔╝╚██████╔╝   ██║   ██║     ██║███████╗███████╗███████║
-    ╚═════╝  ╚═════╝    ╚═╝   ╚═╝     ╚═╝╚══════╝╚══════╝╚══════╝
-```
+Personal macOS development setup managed by [chezmoi](https://www.chezmoi.io).
+Homebrew packages, shell config, language runtimes, editor extensions, macOS
+defaults, and a small set of dotfiles. Re-runnable — safe to apply twice.
 
-```
-        ╔══════════════════════════════════════════════════════════════╗
-        ║  > SYSTEM: macOS · ARCH: arm64 · STATUS: [ READY ]           ║
-        ║  > OPERATOR: escalonc · UPLINK: 1Password · MODE: solo dev   ║
-        ╚══════════════════════════════════════════════════════════════╝
-```
+![macOS](https://img.shields.io/badge/macOS-Apple%20Silicon-black?style=flat-square&logo=apple)
+![Shell](https://img.shields.io/badge/shell-zsh-blue?style=flat-square)
+![chezmoi](https://img.shields.io/badge/managed%20by-chezmoi-7B68EE?style=flat-square)
 
-[![Typing](https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=20&duration=2800&pause=900&color=7AA2F7&center=true&vCenter=true&width=620&lines=%3E+initializing+escalonc%40dev...;%3E+one+command.+fully+loaded+mac.;%3E+44+CLI+tools+%C2%B7+25+apps+%C2%B7+5+fonts;%3E+zsh+%2B+p10k+%2B+fzf+%2B+atuin+%2B+zoxide;%3E+rust+rewrites+over+legacy+%E2%9C%93;%3E+ready_)](https://git.io/typing-svg)
+## Install
 
-![macOS](https://img.shields.io/badge/macOS-1a1b26?style=for-the-badge&logo=apple&logoColor=C0CAF5&labelColor=1a1b26)
-![Shell](https://img.shields.io/badge/SHELL-zsh-7AA2F7?style=for-the-badge&logo=gnubash&logoColor=7AA2F7&labelColor=1a1b26)
-![Homebrew](https://img.shields.io/badge/BREW-44%20formulae-E0AF68?style=for-the-badge&logo=homebrew&logoColor=E0AF68&labelColor=1a1b26)
-![Rust](https://img.shields.io/badge/RUST-tools-7DCFFF?style=for-the-badge&logo=rust&logoColor=7DCFFF&labelColor=1a1b26)
-![Idempotent](https://img.shields.io/badge/IDEMPOTENT-yes-9ECE6A?style=for-the-badge&labelColor=1a1b26)
-![License](https://img.shields.io/badge/LICENSE-do%20what%20you%20want-BB9AF7?style=for-the-badge&labelColor=1a1b26)
-
-</div>
-
----
+One command. Installs chezmoi, clones this repo into `~/.local/share/chezmoi`,
+applies dotfiles, runs setup hooks:
 
 ```bash
-$ curl -fsSL https://raw.githubusercontent.com/escalonc/dotfiles/main/bootstrap.sh | bash
+sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply escalonc/dotfiles
 ```
 
-```
-░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  100%
+Re-apply anytime: `chezmoi update` (pulls + reapplies). Just preview: `chezmoi diff`.
 
-[ OK ] kernel handshake          [ OK ] toolchain forge
-[ OK ] homebrew core             [ OK ] vscode extensions
-[ OK ] oh-my-zsh + p10k          [ OK ] symlink dotfiles → $HOME
-[ OK ] fnm · uv · rustup         [ OK ] macOS defaults rewritten
-```
+## After Install
 
----
+Restart the terminal (or `source ~/.zshrc`) and run `p10k configure`. Enable the
+1Password SSH agent, add your public key to GitHub / GitLab, then `gh auth login`.
+Launch Claude Code, OrbStack, Raycast, and CleanShot once to finish their setup.
+Finally, set JetBrains Mono Nerd Font in your terminal and restart macOS to
+apply system defaults.
 
-## `>_ ./payload --list`
+## What It Sets Up
 
-<table>
-<tr><td valign="top" width="50%">
+| Area | Details |
+| --- | --- |
+| Packages | Homebrew formulae, GUI apps, fonts (`Brewfile`) |
+| Shell | zsh, Oh My Zsh, Powerlevel10k, fzf, atuin, zoxide |
+| Languages | Node via fnm, Python via uv, Rust via rustup |
+| Editor | Visual Studio Code with extensions (see `run_onchange_before_50-vscode-extensions.sh`) |
+| Git/SSH | Git config, global ignore rules, 1Password SSH agent |
+| macOS | Dock, Finder, keyboard, trackpad, screenshots, security defaults |
 
-**`SHELL & TERMINAL`** `[01]`
+## Layout
 
-```
-► zsh ............ default shell
-► oh-my-zsh ...... framework
-► powerlevel10k .. prompt
-► 23 plugins ..... loaded
-► ghostty ........ GPU terminal
-► warp ........... AI terminal
-► zellij ......... multiplexer
-```
-
-`████████████ ONLINE`
-
-</td><td valign="top" width="50%">
-
-**`CLI ARSENAL`** `[02]`
-
-```
-► bat ........... cat++
-► eza ........... ls with icons
-► fd ............ find, faster
-► rg ............ ripgrep
-► fzf ........... fuzzy finder
-► zoxide ........ smarter cd
-► atuin ......... history search
-► delta ......... pretty diffs
-► lazygit ....... git TUI
-► yazi .......... file manager
+```text
+.
+├── Brewfile                                        # Homebrew formulae, casks, fonts
+├── dot_zshrc                                       # → ~/.zshrc
+├── dot_gitconfig                                   # → ~/.gitconfig
+├── dot_gitignore_global                            # → ~/.gitignore_global
+├── private_dot_ssh/private_config                  # → ~/.ssh/config (dir 700, file 600)
+├── run_onchange_before_00-bootstrap.sh.tmpl        # Xcode CLT + Homebrew preflight
+├── run_onchange_before_10-brew-bundle.sh.tmpl      # brew bundle (re-runs if Brewfile changes)
+├── run_onchange_before_20-omz.sh                   # Oh My Zsh + community plugins
+├── run_onchange_before_30-languages.sh             # Node (fnm), Python (uv), Rust (rustup)
+├── run_onchange_before_40-pkg-managers.sh          # pnpm globals + uv tools
+├── run_onchange_before_50-vscode-extensions.sh     # VS Code extensions
+├── run_onchange_after_60-macos-defaults.sh.tmpl    # Dock, Finder, keyboard, etc.
+└── run_once_after_70-claude.sh                     # Claude Code install
 ```
 
-`████████████ ARMED`
+`run_onchange_*` scripts re-run whenever their content changes (so editing the
+Brewfile re-triggers `brew bundle`, editing the macOS-defaults script re-applies
+those preferences). `run_once_*` runs exactly once per machine.
+`*_before_*` runs before dotfiles are applied; `*_after_*` runs after. `.tmpl`
+files are Go templates that gate macOS-only steps via `{{ if eq .chezmoi.os "darwin" }}`.
 
-</td></tr>
-<tr><td valign="top">
+## Customize
 
-**`LANGUAGES & RUNTIMES`** `[03]`
+| Change | File |
+| --- | --- |
+| Add a CLI tool or GUI app | `Brewfile` |
+| Change shell config | `dot_zshrc` |
+| Change Git config | `dot_gitconfig` |
+| Add a VS Code extension | `run_onchange_before_50-vscode-extensions.sh` |
+| Add global JS/Python tools | `run_onchange_before_40-pkg-managers.sh` |
+| Tweak macOS defaults | `run_onchange_after_60-macos-defaults.sh.tmpl` |
+| Machine-local shell overrides | `~/.zshrc.local` (untracked) |
 
-```
-► node ......... via fnm
-► python ....... via uv (100×)
-► rust ......... via rustup
-► pnpm ......... supply-safe
-```
+After editing, run `chezmoi apply` (or `chezmoi update` to pull first).
 
-> *rust > legacy. always.*
+## Notes
 
-`████████████ LIVE`
-
-</td><td valign="top">
-
-**`macOS TUNING`** `[04]`
-
-```
-► dark mode + liquid glass
-► dock: autohide, no delay
-► keyboard: fast repeat
-► trackpad: tap-to-click
-► finder: list view, folders 1st
-► screenshots → ~/Pictures
-► true tone ............ OFF
-```
-
-`████████████ TUNED`
-
-</td></tr>
-</table>
-
----
-
-## `>_ tree ~/.dotfiles`
-
-```
-~/.dotfiles/
-│
-├── ⚡ bootstrap.sh ··············· curl|bash entry · installs brew · clones repo
-├── ⚙  setup.sh ··················· orchestrator · 9 phases · idempotent
-├── 🍺 Brewfile ··················· 44 formulae · 25 casks · 5 fonts
-│
-├── 📁 dotfiles/  ·················· symlinked into $HOME
-│   ├── .zshrc ···················· shell config
-│   ├── .gitconfig ··············· git config · aliases · delta
-│   ├── .gitignore_global ········· global ignore rules
-│   └── .ssh/config ··············· 1Password SSH agent
-│
-└── 📁 scripts/  ··················· orchestrator modules
-    ├── helpers.sh ················ colors · logging
-    ├── shell.sh ·················· oh-my-zsh + 23 plugins
-    ├── languages.sh ·············· fnm · uv · rustup
-    ├── packages.sh ··············· pnpm globals · uv tools
-    ├── vscode.sh ················· 26 extensions
-    ├── macos.sh ·················· system defaults
-    └── claude.sh ················· claude code install
-```
-
----
-
-## `>_ ./how-it-works`
-
-```mermaid
-graph LR
-    A([🌐 curl ∣ bash]) ==>|"fetch + clone"| B{{⚡ bootstrap.sh}}
-    B ==>|"hands off to"| C{{"⚙️ setup.sh"}}
-
-    C --> D["🍺 INSTALL<br>brew bundle · fnm<br>uv · rustup · pnpm"]
-    C --> E["🔧 CONFIGURE<br>oh-my-zsh · vscode ext<br>git config · ssh keys"]
-    C --> F["🖥️ PERSONALIZE<br>symlink dotfiles<br>macOS defaults · claude"]
-
-    D ~~~ E ~~~ F
-
-    style A fill:#1a1b26,stroke:#7aa2f7,color:#c0caf5,stroke-width:2px
-    style B fill:#1a1b26,stroke:#e0af68,color:#e0af68,stroke-width:2px
-    style C fill:#1a1b26,stroke:#9ece6a,color:#9ece6a,stroke-width:2px
-    style D fill:#1a1b26,stroke:#7dcfff,color:#c0caf5
-    style E fill:#1a1b26,stroke:#bb9af7,color:#c0caf5
-    style F fill:#1a1b26,stroke:#f7768e,color:#c0caf5
-```
-
-**Already provisioned?** Re-run anytime — it's idempotent.
-
-```bash
-cd ~/.dotfiles && git pull && ./setup.sh
-```
-
----
-
-## `>_ ./customize`
-
-```
-WHEN YOU WANT TO...               EDIT THIS FILE
-
-► add a CLI tool                  Brewfile                 brew ""
-► add a GUI app                   Brewfile                 cask ""
-► change shell config             dotfiles/.zshrc
-► change git config / aliases     dotfiles/.gitconfig
-► add a VS Code extension         scripts/vscode.sh
-► tweak macOS defaults            scripts/macos.sh
-► add a global pnpm package       scripts/packages.sh
-► machine-specific overrides      ~/.zshrc.local       (untracked)
-```
-
----
-
-## `>_ ./post-install --checklist`
-
-```
-HUMAN-IN-THE-LOOP STEPS
-
-[ ] restart terminal           ── or: source ~/.zshrc
-[ ] p10k configure             ── pick your prompt vibe
-[ ] 1password → ssh agent      ── settings · developer · enable
-[ ] gh auth login              ── github cli login
-[ ] claude                     ── authenticate claude code
-[ ] orbstack + raycast         ── first-launch dance
-[ ] terminal font              ── JetBrains Mono Nerd Font
-[ ] displays                   ── uncheck True Tone
-[ ] restart mac                ── one final cleanse
-
-finished? ──────────────────────────> you are operational.
-```
-
----
-
-## `>_ cat philosophy.txt`
-
-```
-▸ personal, not general ............. one developer, no committee
-▸ modern over legacy ................ rust rewrites win
-▸ minimal globals ................... pnpm > npm · supply hygiene
-▸ idempotent by design .............. run once or ten times
-▸ no magic .......................... shell scripts, 5 min read
-▸ keyboard > mouse .................. fzf · zoxide · lazygit
-```
-
-> *"your machine should feel like an extension of your hand,
-> not someone else's idea of a default."*
-
----
-
-<div align="center">
-
-```
-    ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
-    ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
-    ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
-    █████████████████████████████████████████████████████████████████
-```
-
-[![Footer](https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=14&duration=3800&pause=1800&color=7AA2F7&center=true&vCenter=true&width=520&lines=%5B+process+complete+%5D+%C2%B7+stay+caffeinated;built+with+zsh%2C+rust%2C+and+claude+code;EOF)](https://git.io/typing-svg)
-
-</div>
+Intentionally personal and macOS-focused. Read the `run_*.sh` scripts before
+applying on a machine you care about. The Linux branch is reserved (every
+macOS-only step is wrapped in `{{ if eq .chezmoi.os "darwin" }}`); adding apt /
+pacman package lists and per-OS `dot_zshrc.tmpl` branches is additive when
+that time comes.

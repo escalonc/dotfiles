@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -uo pipefail
+
+have_claude() {
+  hash -r 2>/dev/null
+  command -v claude &>/dev/null || [ -x "$HOME/.local/bin/claude" ]
+}
+
+if have_claude; then
+  echo "✓ Claude Code already installed"
+else
+  echo "→ Installing Claude Code (native installer)..."
+  if curl -fsSL https://claude.ai/install.sh | bash && have_claude; then
+    echo "✓ Claude Code installed (native)"
+  elif command -v pnpm &>/dev/null && pnpm add -g @anthropic-ai/claude-code && have_claude; then
+    echo "✓ Claude Code installed (pnpm)"
+  elif command -v npm &>/dev/null && npm install -g @anthropic-ai/claude-code && have_claude; then
+    echo "✓ Claude Code installed (npm)"
+  else
+    echo "✗ Claude Code installation failed via all methods" >&2
+  fi
+fi
+
+# VS Code extension (best-effort).
+if command -v code &>/dev/null; then
+  if code --install-extension anthropic.claude-code --force &>/dev/null; then
+    echo "✓ Claude Code VS Code extension"
+  else
+    echo "! Claude Code VS Code extension install skipped"
+  fi
+fi

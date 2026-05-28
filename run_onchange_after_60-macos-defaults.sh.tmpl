@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
+{{- if eq .chezmoi.os "darwin" }}
+set -uo pipefail
 
-section "»  macOS System Preferences"
+echo "→ Applying macOS system preferences..."
 
-# ── Dock ─────────────────────────────────────────────────────────────────────
-info "Configuring Dock..."
+# Sudo for the login-window security default. If unavailable, skip silently.
+SUDO_OK=true
+sudo -n -v 2>/dev/null || SUDO_OK=false
+
+# Dock
 defaults write com.apple.dock autohide               -bool true
 defaults write com.apple.dock autohide-delay         -float 0
 defaults write com.apple.dock autohide-time-modifier -float 0.15
@@ -14,10 +19,8 @@ defaults write com.apple.dock mineffect              -string "scale"
 defaults write com.apple.dock mru-spaces             -bool false
 defaults write com.apple.WindowManager EnableStandardClickToShowDesktop -bool false
 defaults write NSGlobalDomain NSQuitAlwaysKeepsWindows -bool false
-success "Dock"
 
-# ── Finder ───────────────────────────────────────────────────────────────────
-info "Configuring Finder..."
+# Finder
 defaults write com.apple.finder FXPreferredViewStyle        -string "Nlsv"
 defaults write com.apple.finder FXDefaultSearchScope        -string "SCcf"
 defaults write com.apple.finder _FXSortFoldersFirst         -bool true
@@ -27,10 +30,8 @@ defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool true
 defaults write NSGlobalDomain AppleShowAllExtensions        -bool true
 defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
 defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
-success "Finder"
 
-# ── Keyboard & Input ─────────────────────────────────────────────────────────
-info "Configuring keyboard..."
+# Keyboard
 defaults write NSGlobalDomain KeyRepeat                -int 2
 defaults write NSGlobalDomain InitialKeyRepeat         -int 15
 defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
@@ -39,44 +40,42 @@ defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled  -bool false
 defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled   -bool false
 defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled     -bool false
 defaults write NSGlobalDomain AppleKeyboardUIMode                  -int 2
-success "Keyboard"
 
-# ── Trackpad ─────────────────────────────────────────────────────────────────
-info "Configuring trackpad..."
+# Trackpad
 defaults write com.apple.AppleMultitouchTrackpad Clicking -bool true
 defaults write NSGlobalDomain com.apple.swipescrolldirection -bool false
 defaults write com.apple.AppleMultitouchTrackpad Dragging -bool true
-success "Trackpad"
 
-# ── Screenshots ──────────────────────────────────────────────────────────────
-info "Configuring screenshots..."
+# Screenshots
 mkdir -p "$HOME/Pictures/Screenshots"
 defaults write com.apple.screencapture location "$HOME/Pictures/Screenshots"
 defaults write com.apple.screencapture type     "png"
 defaults write com.apple.screencapture disable-shadow -bool true
-success "Screenshots → ~/Pictures/Screenshots"
 
-# ── Menu Bar & UI ────────────────────────────────────────────────────────────
-info "Configuring UI..."
-defaults write NSGlobalDomain AppleInterfaceStyle    -string "Dark"
-defaults write NSGlobalDomain AppleIconAppearanceTheme -string "RegularDark"
+# UI
+defaults write NSGlobalDomain AppleInterfaceStyle       -string "Dark"
+defaults write NSGlobalDomain AppleIconAppearanceTheme  -string "RegularDark"
 defaults write NSGlobalDomain AppleReduceDesktopTinting -int 1
 defaults write NSGlobalDomain NSGlassDiffusionSetting   -int 1
-defaults write NSGlobalDomain NSWindowResizeTime     -float 0.001
+defaults write NSGlobalDomain NSWindowResizeTime        -float 0.001
 defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
 defaults write NSGlobalDomain PMPrintingExpandedStateForPrint    -bool true
-success "UI"
 
-# ── Security ─────────────────────────────────────────────────────────────────
-info "Configuring security..."
-sudo defaults write /Library/Preferences/com.apple.loginwindow DisableConsoleAccess -bool true
-defaults write com.apple.screensaver askForPassword        -int 1
-defaults write com.apple.screensaver askForPasswordDelay   -int 0
-success "Security"
+# Security
+if [ "$SUDO_OK" = true ]; then
+  sudo defaults write /Library/Preferences/com.apple.loginwindow DisableConsoleAccess -bool true
+else
+  echo "! sudo unavailable — skipped login-window security default" >&2
+fi
+defaults write com.apple.screensaver askForPassword      -int 1
+defaults write com.apple.screensaver askForPasswordDelay -int 0
 
-# Apply changes
-killall Dock    2>/dev/null || true
-killall Finder  2>/dev/null || true
+# Apply.
+killall Dock           2>/dev/null || true
+killall Finder         2>/dev/null || true
 killall SystemUIServer 2>/dev/null || true
 
-success "macOS defaults applied"
+echo "✓ macOS defaults applied"
+{{- else }}
+exit 0
+{{- end }}

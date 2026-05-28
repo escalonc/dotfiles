@@ -59,7 +59,7 @@ export PATH="$HOME/.cargo/bin:$PATH"
 command -v fnm >/dev/null 2>&1 && eval "$(fnm env --use-on-cd)"
 command -v uv  >/dev/null 2>&1 && eval "$(uv generate-shell-completion zsh 2>/dev/null || true)"
 
-# pnpm global bin (owned here so a future `pnpm setup` doesn't fight the symlinked rc)
+# pnpm global bin
 export PNPM_HOME="$HOME/Library/pnpm"
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
