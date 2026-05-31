@@ -25,7 +25,7 @@ fi
 # in ~/.zprofile for future login shells. Apple Silicon only (/opt/homebrew).
 eval "$(/opt/homebrew/bin/brew shellenv zsh)"
 touch "$HOME/.zprofile"
-if ! grep -qE '^[[:space:]]*eval.*brew shellenv' "$HOME/.zprofile"; then
+if ! grep -qF 'brew shellenv' "$HOME/.zprofile"; then
   echo 'eval "$(/opt/homebrew/bin/brew shellenv zsh)"' >> "$HOME/.zprofile"
 fi
 {{- else }}
