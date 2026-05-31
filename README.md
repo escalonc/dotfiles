@@ -36,7 +36,7 @@ apply system defaults.
 | Packages | Homebrew formulae, GUI apps, fonts (`Brewfile`) |
 | Shell | zsh, Oh My Zsh, Powerlevel10k, fzf, atuin, zoxide |
 | Languages | Node via fnm, Python via uv, Rust via rustup |
-| Editor | Visual Studio Code with extensions (see `run_onchange_before_50-vscode-extensions.sh`) |
+| Editor | Visual Studio Code with extensions (see `run_onchange_before_50-editor.sh`) |
 | Git/SSH | Git config, global ignore rules, 1Password SSH agent |
 | macOS | Dock, Finder, keyboard, trackpad, screenshots, security defaults |
 
@@ -50,18 +50,18 @@ apply system defaults.
 ├── dot_gitignore_global                            # → ~/.gitignore_global
 ├── private_dot_ssh/private_config                  # → ~/.ssh/config (dir 700, file 600)
 ├── run_onchange_before_00-bootstrap.sh.tmpl        # Xcode CLT + Homebrew preflight
-├── run_onchange_before_10-brew-bundle.sh.tmpl      # brew bundle (re-runs if Brewfile changes)
-├── run_onchange_before_20-omz.sh                   # Oh My Zsh + community plugins
+├── run_onchange_before_10-packages.sh.tmpl         # Packages: brew bundle (Linux branch reserved)
+├── run_onchange_before_20-shell.sh                 # Oh My Zsh + community plugins
 ├── run_onchange_before_30-languages.sh             # Node (fnm), Python (uv), Rust (rustup)
 ├── run_onchange_before_40-pkg-managers.sh          # pnpm globals + uv tools
-├── run_onchange_before_50-vscode-extensions.sh     # VS Code extensions
-├── run_onchange_after_60-macos-defaults.sh.tmpl    # Dock, Finder, keyboard, etc.
-└── run_once_after_70-claude.sh                     # Claude Code install
+├── run_onchange_before_50-editor.sh                # VS Code extensions
+├── run_onchange_after_60-system-defaults.sh.tmpl   # macOS Dock/Finder/keyboard (Linux reserved)
+└── run_onchange_after_70-claude.sh                 # Claude Code install
 ```
 
 `run_onchange_*` scripts re-run whenever their content changes (so editing the
-Brewfile re-triggers `brew bundle`, editing the macOS-defaults script re-applies
-those preferences). `run_once_*` runs exactly once per machine.
+Brewfile re-triggers `brew bundle`, editing the system-defaults script re-applies
+those preferences). Each is written to be idempotent, so re-runs are safe.
 `*_before_*` runs before dotfiles are applied; `*_after_*` runs after. `.tmpl`
 files are Go templates that gate macOS-only steps via `{{ if eq .chezmoi.os "darwin" }}`.
 
@@ -72,9 +72,9 @@ files are Go templates that gate macOS-only steps via `{{ if eq .chezmoi.os "dar
 | Add a CLI tool or GUI app | `Brewfile` |
 | Change shell config | `dot_zshrc` |
 | Change Git config | `dot_gitconfig` |
-| Add a VS Code extension | `run_onchange_before_50-vscode-extensions.sh` |
+| Add a VS Code extension | `run_onchange_before_50-editor.sh` |
 | Add global JS/Python tools | `run_onchange_before_40-pkg-managers.sh` |
-| Tweak macOS defaults | `run_onchange_after_60-macos-defaults.sh.tmpl` |
+| Tweak macOS defaults | `run_onchange_after_60-system-defaults.sh.tmpl` |
 | Machine-local shell overrides | `~/.zshrc.local` (untracked) |
 
 After editing, run `chezmoi apply` (or `chezmoi update` to pull first).

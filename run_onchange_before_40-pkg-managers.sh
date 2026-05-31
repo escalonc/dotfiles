@@ -14,14 +14,14 @@ if command -v pnpm &>/dev/null; then
 
   for pkg in typescript tsx vercel; do
     echo "→ pnpm global: $pkg"
-    pnpm add -g "$pkg"
+    pnpm add -g "$pkg" || echo "! skipped: $pkg" >&2
   done
 fi
 
-# uv tools.
+# uv tools. Only CLI tools belong here (uv tool install needs a console script).
 if command -v uv &>/dev/null; then
-  for tool in ruff mypy httpx rich ipython; do
+  for tool in ruff mypy ipython; do
     echo "→ uv tool: $tool"
-    uv tool install "$tool"
+    uv tool install "$tool" || echo "! skipped: $tool" >&2
   done
 fi

@@ -5,9 +5,9 @@ Reference document for what each reviewer focuses on during `/code-review` in th
 ## Repo Context
 
 - Personal macOS dotfiles bootstrap; not a library, not a team project
-- Entry: `bootstrap.sh` (curl|bash) → `setup.sh` → sources `scripts/*.sh` → symlinks `dotfiles/*` into `$HOME`
+- Managed by chezmoi: `chezmoi init --apply` runs `run_onchange_*` provisioning scripts (numbered phases) and applies `dot_*` files into `$HOME`
 - Brewfile is declarative; `brew bundle` does the heavy lifting
-- Target: macOS (Apple Silicon primary, Intel secondary), bash 3.2 minimum (system bash) and bash 5+ (Homebrew bash)
+- Target: macOS Apple Silicon only (`/opt/homebrew`), bash 3.2 minimum (system bash) and bash 5+ (Homebrew bash)
 - User explicitly distrusts npm globals → pnpm is the default; npm is fallback only
 
 ## Claude Reviewer Focus

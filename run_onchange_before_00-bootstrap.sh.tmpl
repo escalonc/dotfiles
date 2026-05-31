@@ -2,35 +2,31 @@
 {{- if eq .chezmoi.os "darwin" }}
 set -euo pipefail
 
-echo "→ Pre-flight: Xcode Command Line Tools + Homebrew"
+echo "→ Pre-flight: Homebrew"
 
-# Xcode CLT — required by Homebrew and git.
-if ! xcode-select -p &>/dev/null; then
-  echo "  Installing Xcode Command Line Tools (a GUI prompt will appear)..."
-  xcode-select --install || true
-  until xcode-select -p &>/dev/null; do
-    sleep 5
-  done
-fi
-
-# Homebrew. chezmoi does not install it; we do.
+# Homebrew. chezmoi does not install it; we do. The installer also installs the
+# Xcode Command Line Tools, and NONINTERACTIVE=1 does it headlessly (no GUI prompt).
 if ! command -v brew &>/dev/null; then
-  echo "  Installing Homebrew..."
+  # NONINTERACTIVE never prompts for a password — it expects sudo to be authorized
+  # already, otherwise it aborts with "Need sudo access ... needs to be an
+  # Administrator" even for admins. Authorize once, then keep the timestamp warm so
+  # the slow CLT + brew install can't hit the 5-minute sudo timeout mid-run.
+  echo "  Authorizing sudo (you'll be prompted for your password once)..."
+  sudo -v
+  while true; do sudo -n true; sleep 60; kill -0 "$$" 2>/dev/null || exit; done 2>/dev/null &
+  keepalive_pid=$!
+  trap 'kill "$keepalive_pid" 2>/dev/null || true' EXIT
+
+  echo "  Installing Homebrew (installs Xcode CLT headlessly)..."
   NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 
-# Make brew available for subsequent chezmoi scripts in this run.
-if [ -x /opt/homebrew/bin/brew ]; then
-  eval "$(/opt/homebrew/bin/brew shellenv)"
-elif [ -x /usr/local/bin/brew ]; then
-  eval "$(/usr/local/bin/brew shellenv)"
-fi
-
-# Persist brew shellenv in ~/.zprofile for future login shells.
+# Make brew available for subsequent chezmoi scripts in this run, and persist it
+# in ~/.zprofile for future login shells. Apple Silicon only (/opt/homebrew).
+eval "$(/opt/homebrew/bin/brew shellenv zsh)"
 touch "$HOME/.zprofile"
 if ! grep -qE '^[[:space:]]*eval.*brew shellenv' "$HOME/.zprofile"; then
-  prefix=$([ -x /opt/homebrew/bin/brew ] && echo /opt/homebrew || echo /usr/local)
-  echo "eval \"\$($prefix/bin/brew shellenv)\"" >> "$HOME/.zprofile"
+  echo 'eval "$(/opt/homebrew/bin/brew shellenv zsh)"' >> "$HOME/.zprofile"
 fi
 {{- else }}
 # Linux bootstrap goes here when added — apt/pacman/dnf, brew on linuxbrew, etc.

@@ -40,11 +40,7 @@ plugins=(
 source "$ZSH/oh-my-zsh.sh"
 
 # ── PATH ─────────────────────────────────────────────────────────────────────
-if [[ "$(uname -m)" == "arm64" ]]; then
-  eval "$(/opt/homebrew/bin/brew shellenv)"
-else
-  eval "$(/usr/local/bin/brew shellenv)"
-fi
+eval "$(/opt/homebrew/bin/brew shellenv)"
 export HOMEBREW_NO_ANALYTICS=1
 export HOMEBREW_NO_ENV_HINTS=1
 
@@ -99,6 +95,9 @@ alias dprune="docker system prune -a"
 # Python / uv
 alias venv="uv venv && source .venv/bin/activate"
 alias activate="source .venv/bin/activate"
+
+# Claude Code
+alias c="claude"
 
 # Misc
 alias reload="source ~/.zshrc"
