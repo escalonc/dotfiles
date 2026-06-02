@@ -35,7 +35,7 @@ apply system defaults.
 | --- | --- |
 | Packages | Homebrew formulae, GUI apps, fonts (`Brewfile`) |
 | Shell | zsh, Oh My Zsh, Powerlevel10k, fzf, atuin, zoxide |
-| Languages | Node via fnm, Python via uv, Rust via rustup |
+| Languages | Node via fnm |
 | Editor | Visual Studio Code with extensions (see `run_onchange_before_50-editor.sh`) |
 | Git/SSH | Git config, global ignore rules, 1Password SSH agent |
 | macOS | Dock, Finder, keyboard, trackpad, screenshots, security defaults |
@@ -52,8 +52,8 @@ apply system defaults.
 ├── run_onchange_before_00-bootstrap.sh.tmpl        # Xcode CLT + Homebrew preflight
 ├── run_onchange_before_10-packages.sh.tmpl         # Packages: brew bundle (Linux branch reserved)
 ├── run_onchange_before_20-shell.sh                 # Oh My Zsh + community plugins
-├── run_onchange_before_30-languages.sh             # Node (fnm), Python (uv), Rust (rustup)
-├── run_onchange_before_40-pkg-managers.sh          # pnpm globals + uv tools
+├── run_onchange_before_30-languages.sh             # Node (fnm)
+├── run_onchange_before_40-pkg-managers.sh          # pnpm globals
 ├── run_onchange_before_50-editor.sh                # VS Code extensions
 ├── run_onchange_after_60-system-defaults.sh.tmpl   # macOS Dock/Finder/keyboard (Linux reserved)
 └── run_onchange_after_70-claude.sh                 # Claude Code install
@@ -73,7 +73,7 @@ files are Go templates that gate macOS-only steps via `{{ if eq .chezmoi.os "dar
 | Change shell config | `dot_zshrc` |
 | Change Git config | `dot_gitconfig` |
 | Add a VS Code extension | `run_onchange_before_50-editor.sh` |
-| Add global JS/Python tools | `run_onchange_before_40-pkg-managers.sh` |
+| Add global JS tools | `run_onchange_before_40-pkg-managers.sh` |
 | Tweak macOS defaults | `run_onchange_after_60-system-defaults.sh.tmpl` |
 | Machine-local shell overrides | `~/.zshrc.local` (untracked) |
 

@@ -22,8 +22,6 @@ plugins=(
   docker-compose
   node
   npm
-  python
-  rust
   brew
   macos
   vscode
@@ -45,15 +43,13 @@ export HOMEBREW_NO_ANALYTICS=1
 export HOMEBREW_NO_ENV_HINTS=1
 
 export PATH="$HOME/.local/bin:$PATH"
-export PATH="$HOME/.cargo/bin:$PATH"
 
 [[ -d "/Applications/Visual Studio Code.app/Contents/Resources/app/bin" ]] && \
   export PATH="/Applications/Visual Studio Code.app/Contents/Resources/app/bin:$PATH"
 
 # ── Language Managers ────────────────────────────────────────────────────────
 # Guard each so a missing/uninstalled tool doesn't spam errors on shell startup.
-command -v fnm >/dev/null 2>&1 && eval "$(fnm env --use-on-cd)"
-command -v uv  >/dev/null 2>&1 && eval "$(uv generate-shell-completion zsh 2>/dev/null || true)"
+command -v fnm >/dev/null 2>&1 && eval "$(fnm env --use-on-cd --shell zsh)"
 
 # pnpm global bin
 export PNPM_HOME="$HOME/Library/pnpm"
@@ -91,10 +87,6 @@ alias dc="docker compose"
 alias dex="docker exec -it"
 alias drmi="docker rmi"
 alias dprune="docker system prune -a"
-
-# Python / uv
-alias venv="uv venv && source .venv/bin/activate"
-alias activate="source .venv/bin/activate"
 
 # Claude Code
 alias c="claude"

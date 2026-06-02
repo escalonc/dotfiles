@@ -12,23 +12,3 @@ if command -v fnm &>/dev/null; then
     echo "✓ Node.js LTS — set as default"
   fi
 fi
-
-# Python via uv. uv is installed standalone (not in Brewfile).
-if ! command -v uv &>/dev/null; then
-  echo "→ Installing uv..."
-  curl -LsSf https://astral.sh/uv/install.sh | sh
-  [ -f "$HOME/.local/bin/env" ] && . "$HOME/.local/bin/env"
-  export PATH="$HOME/.local/bin:$PATH"
-fi
-if command -v uv &>/dev/null; then
-  if ! uv python list --only-installed 2>/dev/null | grep -q .; then
-    echo "→ Installing latest Python via uv..."
-    uv python install
-  fi
-fi
-
-# Rust via rustup. Standalone install.
-if ! command -v rustup &>/dev/null; then
-  echo "→ Installing Rust via rustup..."
-  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --quiet
-fi
