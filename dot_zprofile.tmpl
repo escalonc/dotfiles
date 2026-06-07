@@ -1,0 +1,11 @@
+# vim: set ft=sh:
+{{- if eq .chezmoi.os "darwin" }}
+# Homebrew environment (PATH, MANPATH, …) for login shells. Apple Silicon only.
+eval "$(/opt/homebrew/bin/brew shellenv zsh)"
+
+# Editor CLIs on PATH (only if the app is installed).
+[[ -d "/Applications/Sublime Text.app/Contents/SharedSupport/bin" ]] && \
+  export PATH="/Applications/Sublime Text.app/Contents/SharedSupport/bin:$PATH"
+[[ -d "/Applications/Visual Studio Code.app/Contents/Resources/app/bin" ]] && \
+  export PATH="/Applications/Visual Studio Code.app/Contents/Resources/app/bin:$PATH"
+{{- end }}

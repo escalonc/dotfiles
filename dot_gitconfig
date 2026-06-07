@@ -3,7 +3,7 @@
 	email = escalonc@users.noreply.github.com
 
 [core]
-	editor = code --wait
+	editor = subl --wait
 	autocrlf = input
 	excludesfile = ~/.gitignore_global
 	pager = delta

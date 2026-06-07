@@ -21,13 +21,11 @@ if ! command -v brew &>/dev/null; then
   NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 
-# Make brew available for subsequent chezmoi scripts in this run, and persist it
-# in ~/.zprofile for future login shells. Apple Silicon only (/opt/homebrew).
+# Make brew available for the subsequent chezmoi scripts in THIS run (10-packages
+# etc. need it on PATH). Future login shells get it from the chezmoi-managed
+# ~/.zprofile (dot_zprofile.tmpl), applied right after these before-scripts.
+# Apple Silicon only (/opt/homebrew).
 eval "$(/opt/homebrew/bin/brew shellenv zsh)"
-touch "$HOME/.zprofile"
-if ! grep -q 'brew shellenv' "$HOME/.zprofile"; then
-  echo 'eval "$(/opt/homebrew/bin/brew shellenv zsh)"' >> "$HOME/.zprofile"
-fi
 {{- else }}
 # Linux bootstrap goes here when added — apt/pacman/dnf, brew on linuxbrew, etc.
 exit 0
