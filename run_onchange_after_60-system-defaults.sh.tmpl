@@ -17,8 +17,16 @@ defaults write com.apple.dock show-recents           -bool false
 defaults write com.apple.dock minimize-to-application -bool true
 defaults write com.apple.dock mineffect              -string "scale"
 defaults write com.apple.dock mru-spaces             -bool false
+defaults write com.apple.dock expose-animation-duration -float 0.1
+defaults write com.apple.dock enterMissionControlByTopWindowDrag -bool false
 defaults write com.apple.WindowManager EnableStandardClickToShowDesktop -bool false
 defaults write NSGlobalDomain NSQuitAlwaysKeepsWindows -bool false
+
+# Window tiling — disable macOS native tiling; Rectangle handles window management.
+defaults write com.apple.WindowManager EnableTilingByEdgeDrag       -bool false  # drag to left/right edge to tile
+defaults write com.apple.WindowManager EnableTopTilingByEdgeDrag    -bool false  # drag to menu bar to fill screen
+defaults write com.apple.WindowManager EnableTilingOptionAccelerator -bool false # hold ⌥ while dragging to tile
+defaults write com.apple.WindowManager EnableTiledWindowMargins     -bool false  # margins between tiled windows
 
 # Finder
 defaults write com.apple.finder FXPreferredViewStyle        -string "Nlsv"
@@ -58,8 +66,20 @@ defaults write NSGlobalDomain AppleIconAppearanceTheme  -string "RegularDark"
 defaults write NSGlobalDomain AppleReduceDesktopTinting -int 1
 defaults write NSGlobalDomain NSGlassDiffusionSetting   -int 1
 defaults write NSGlobalDomain NSWindowResizeTime        -float 0.001
+defaults write NSGlobalDomain AppleActionOnDoubleClick  -string "None"
 defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
 defaults write NSGlobalDomain PMPrintingExpandedStateForPrint    -bool true
+
+# Reduce Motion — replaces the slow desktop-switch slide with an instant
+# crossfade (removes the "debounce" when switching Spaces back and forth).
+# NOTE: com.apple.universalaccess is a TCC-protected domain; `defaults write`
+# is blocked (even with sudo). Enable manually once per machine:
+#   System Settings → Accessibility → Display → Reduce Motion
+# (or deploy a configuration profile via MDM).
+
+# Menu bar
+defaults write NSGlobalDomain AppleMenuBarFontSize           -string "large"
+defaults write NSGlobalDomain SLSMenuBarUseBlurredAppearance -bool true
 
 # Security
 if [ "$SUDO_OK" = true ]; then
@@ -74,6 +94,7 @@ defaults write com.apple.screensaver askForPasswordDelay -int 0
 killall Dock           2>/dev/null || true
 killall Finder         2>/dev/null || true
 killall SystemUIServer 2>/dev/null || true
+killall WindowManager  2>/dev/null || true
 
 echo "✓ macOS defaults applied"
 {{- else }}
