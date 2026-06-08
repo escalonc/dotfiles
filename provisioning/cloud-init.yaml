@@ -1,0 +1,51 @@
+#cloud-config
+# One-shot provisioning for the remote dev box (Fedora).
+#
+# SECURITY: the OP_SERVICE_ACCOUNT_TOKEN below is a secret. Do NOT commit a real
+# token. Paste it into your provider's cloud-init / user-data field at create
+# time (Hetzner: "Cloud config" box), keeping this file as the template.
+#
+# Flow: create the user → install `op` (so chezmoi's onepasswordRead works during
+# the first apply) → chezmoi init --apply clones the (public) dotfiles over HTTPS
+# and runs the run_onchange scripts, which install everything and pull the SSH key
+# from 1Password.
+
+users:
+  - name: chris
+    groups: [wheel]             # Fedora's sudo group
+    shell: /bin/bash            # bootstrap chsh's this to zsh
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh_authorized_keys:
+      - REPLACE_WITH_YOUR_LAPTOP_PUBLIC_KEY
+
+write_files:
+  - path: /home/chris/.op-token
+    owner: chris:chris
+    permissions: '0600'
+    content: |
+      REPLACE_WITH_OP_SERVICE_ACCOUNT_TOKEN
+
+package_update: true
+packages: [curl, git, gnupg2, jq]
+
+runcmd:
+  # 1Password CLI — installed here so template secret-reads work on the first apply.
+  - rpm --import https://downloads.1password.com/linux/keys/1password.asc
+  - |
+    cat > /etc/yum.repos.d/1password.repo <<'REPO'
+    [1password]
+    name=1Password Stable Channel
+    baseurl=https://downloads.1password.com/linux/rpm/stable/$basearch
+    enabled=1
+    gpgcheck=1
+    repo_gpgcheck=1
+    gpgkey=https://downloads.1password.com/linux/keys/1password.asc
+    REPO
+  - dnf install -y 1password-cli
+  # Install chezmoi and apply the dotfiles as the user, then shred the token.
+  - >-
+    sudo -u chris -H bash -lc
+    'export OP_SERVICE_ACCOUNT_TOKEN="$(cat ~/.op-token)";
+     sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply
+     https://github.com/escalonc/dotfiles.git --branch server-support;
+     shred -u ~/.op-token'

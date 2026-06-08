@@ -1,0 +1,10 @@
+{{- if eq .chezmoi.os "darwin" }}
+Host *
+  IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+{{- else }}
+# Headless server: use the key materialized from 1Password (see private_id_ed25519.tmpl).
+Host github.com
+  User git
+  IdentityFile ~/.ssh/id_ed25519
+  IdentitiesOnly yes
+{{- end }}

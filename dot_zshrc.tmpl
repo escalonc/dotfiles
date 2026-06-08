@@ -22,9 +22,11 @@ plugins=(
   docker-compose
   node
   npm
+{{- if eq .chezmoi.os "darwin" }}
   brew
   macos
   vscode
+{{- end }}
   fzf
   colored-man-pages
   command-not-found
@@ -38,9 +40,11 @@ plugins=(
 source "$ZSH/oh-my-zsh.sh"
 
 # ── PATH ─────────────────────────────────────────────────────────────────────
+{{- if eq .chezmoi.os "darwin" }}
 eval "$(/opt/homebrew/bin/brew shellenv)"
 export HOMEBREW_NO_ANALYTICS=1
 export HOMEBREW_NO_ENV_HINTS=1
+{{- end }}
 
 export PATH="$HOME/.local/bin:$PATH"
 
@@ -49,18 +53,22 @@ export PATH="$HOME/.local/bin:$PATH"
 command -v fnm >/dev/null 2>&1 && eval "$(fnm env --use-on-cd --shell zsh)"
 
 # pnpm global bin
+{{- if eq .chezmoi.os "darwin" }}
 export PNPM_HOME="$HOME/Library/pnpm"
+{{- else }}
+export PNPM_HOME="$HOME/.local/share/pnpm"
+{{- end }}
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 
 # ── Tool Config ──────────────────────────────────────────────────────────────
-eval "$(zoxide init zsh)"
-eval "$(atuin init zsh)"
-eval "$(direnv hook zsh)"
+command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
+command -v atuin  >/dev/null 2>&1 && eval "$(atuin init zsh)"
+command -v direnv >/dev/null 2>&1 && eval "$(direnv hook zsh)"
 
-source <(fzf --zsh)
+command -v fzf >/dev/null 2>&1 && source <(fzf --zsh)
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
 export FZF_DEFAULT_OPTS='--height 40% --reverse --border --preview "bat --style=numbers --color=always --line-range :500 {}"'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
@@ -90,13 +98,20 @@ alias c="claude"
 
 # Misc
 alias reload="source ~/.zshrc"
+alias myip="curl -s ifconfig.me; echo"
+{{- if eq .chezmoi.os "darwin" }}
 alias zshconfig="subl ~/.zshrc"
 alias hosts="sudo subl /etc/hosts"
-alias myip="curl -s ifconfig.me; echo"
 alias localip="ipconfig getifaddr en0"
 alias flushdns="sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder && echo 'DNS flushed'"
 alias cleanup="find . -name '.DS_Store' -delete"
 alias brewup="brew update && brew upgrade && brew cleanup"
+{{- else }}
+alias zshconfig="$EDITOR ~/.zshrc"
+alias hosts="sudo $EDITOR /etc/hosts"
+alias localip="hostname -I | awk '{print \$1}'"
+alias flushdns="sudo resolvectl flush-caches && echo 'DNS flushed'"
+{{- end }}
 alias ports="sudo lsof -i -P -n | grep LISTEN"
 
 # ── Functions ────────────────────────────────────────────────────────────────
@@ -133,7 +148,7 @@ extract() {
       *.tgz)     tar xzf "$1"    ;;
       *.zip)     unzip "$1"      ;;
       *.Z)       uncompress "$1" ;;
-      *)         echo "'$1' cannot be extracted (use Keka for .rar/.7z)" ;;
+      *)         echo "'$1' cannot be extracted" ;;
     esac
   else
     echo "'$1' is not a valid file"
@@ -149,7 +164,11 @@ jwt-decode() {
 }
 
 # ── Environment ──────────────────────────────────────────────────────────────
+{{- if eq .chezmoi.os "darwin" }}
 export EDITOR="subl --wait"
+{{- else }}
+export EDITOR="nvim"
+{{- end }}
 export VISUAL="$EDITOR"
 export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"

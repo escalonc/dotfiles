@@ -1,0 +1,8 @@
+{{- /* Asked once at `chezmoi init`; stored in this machine's chezmoi config.
+       Lets a future Linux *desktop* differ from this Linux *server*. */ -}}
+{{- $headless := false -}}
+{{- if eq .chezmoi.os "linux" -}}
+{{-   $headless = promptBoolOnce . "headless" "Headless server (no GUI apps)" -}}
+{{- end -}}
+[data]
+    headless = {{ $headless }}

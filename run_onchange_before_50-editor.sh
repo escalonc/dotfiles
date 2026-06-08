@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# VS Code + this extension set are part of the macOS workstation only. The
+# headless server has no GUI editor, so skip entirely on non-macOS.
+[ "$(uname -s)" = "Darwin" ] || exit 0
+
 # Add the macOS VS Code app's `code` CLI to PATH if present. On Linux,
 # `code` is a regular binary so this no-ops.
 VSCODE_BIN="/Applications/Visual Studio Code.app/Contents/Resources/app/bin"

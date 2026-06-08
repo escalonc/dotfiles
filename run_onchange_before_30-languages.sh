@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Node via fnm. fnm itself is installed via the Brewfile.
+# fnm provides Node — from the Brewfile on macOS, from ~/.local/bin on Linux
+# (10-packages). Ensure that dir is on PATH so we can find it during this run.
+export PATH="$HOME/.local/bin:$PATH"
+
+# Node via fnm.
 if command -v fnm &>/dev/null; then
   eval "$(fnm env)"
   # fnm aliases a freshly-installed LTS as `lts-latest`; check for a default alias.

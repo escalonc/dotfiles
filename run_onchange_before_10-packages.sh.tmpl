@@ -15,6 +15,49 @@ fi
 echo "→ brew bundle..."
 brew bundle --file={{ .chezmoi.sourceDir }}/Brewfile
 brew analytics off || true
+{{- else if eq .chezmoi.os "linux" }}
+set -euo pipefail
+mkdir -p "$HOME/.local/bin"
+
+# Fedora ships these in the default repos (and does NOT rename bat/fd like Debian).
+echo "→ dnf CLI tools..."
+sudo dnf install -y \
+  ripgrep fd-find bat fzf zoxide btop tmux direnv neovim \
+  eza git-delta just lazygit gh httpie
+
+# --- Tools not in Fedora's default repos → release binaries into ~/.local/bin ---
+ARCH="$(uname -m)"
+dl_tarbin() {  # $1=binary name  $2=tarball URL — extracts the matching binary
+  local name=$1 url=$2 tmp
+  command -v "$name" >/dev/null 2>&1 && return 0
+  echo "→ $name"
+  tmp=$(mktemp -d)
+  curl -fsSL "$url" | tar -xz -C "$tmp"
+  install -m0755 "$(find "$tmp" -type f -name "$name" | head -1)" "$HOME/.local/bin/$name"
+  rm -rf "$tmp"
+}
+if [ "$ARCH" = "x86_64" ]; then
+  dl_tarbin atuin "https://github.com/atuinsh/atuin/releases/latest/download/atuin-x86_64-unknown-linux-gnu.tar.gz"
+  if ! command -v yq &>/dev/null; then  # Fedora's `yq` is the python one; we want mikefarah/yq
+    echo "→ yq"
+    curl -fsSL https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -o "$HOME/.local/bin/yq"
+    chmod 0755 "$HOME/.local/bin/yq"
+  fi
+else
+  echo "! non-x86_64 ($ARCH): skipping atuin/yq — install manually" >&2
+fi
+
+# --- fnm (Node manager) into ~/.local/bin; Node LTS comes from 30-languages ---
+if ! command -v fnm &>/dev/null && [ ! -x "$HOME/.local/bin/fnm" ]; then
+  echo "→ fnm"
+  curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir "$HOME/.local/bin" --skip-shell
+fi
+
+# --- pnpm (official standalone installer; NOT via npm, per policy) ---
+if ! command -v pnpm &>/dev/null && [ ! -x "$HOME/.local/share/pnpm/pnpm" ]; then
+  echo "→ pnpm"
+  curl -fsSL https://get.pnpm.io/install.sh | env PNPM_HOME="$HOME/.local/share/pnpm" SHELL=bash sh -
+fi
 {{- else }}
 exit 0
 {{- end }}
