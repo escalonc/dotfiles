@@ -1,0 +1,13 @@
+# Copy to `terraform.tfvars` (gitignored) and uncomment what you want to override.
+# Defaults live in variables.tf, so you can also leave this empty.
+#
+# SECRETS DO NOT GO HERE. Export the two tokens as env vars instead, so they
+# never touch disk:
+#   export TF_VAR_hcloud_token="$(op read 'op://Private/Hetzner/api-token')"
+#   export TF_VAR_op_service_account_token="$(op read 'op://Private/op-sa/token')"
+
+# server_type = "cpx41"
+# location    = "fsn1"
+
+# Recommended: lock SSH to your home IP. Find it with: curl -s ifconfig.me
+# ssh_allowed_ips = ["YOUR.IP.HERE/32"]

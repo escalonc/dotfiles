@@ -1,14 +1,16 @@
 #cloud-config
 # One-shot provisioning for the remote dev box (Ubuntu 24.04 LTS).
 #
-# SECURITY: the OP_SERVICE_ACCOUNT_TOKEN below is a secret. Do NOT commit a real
-# token. Paste it into your provider's cloud-init / user-data field at create
-# time (Hetzner: "Cloud config" box), keeping this file as the template.
+# This file is a TEMPLATE rendered by OpenTofu (main.tf, via templatefile). The
+# laptop_pubkey and op_token placeholders below are filled at `tofu apply` time
+# from your variables — do NOT replace them by hand, and never commit a real
+# token. templatefile substitutes the $-brace placeholders; the shell $(...) in
+# runcmd below has no braces, so it is passed through verbatim.
 #
-# Flow: create the user → install `op` (so chezmoi's onepasswordRead works during
-# the first apply) → chezmoi init --apply clones the (public) dotfiles over HTTPS
-# and runs the run_onchange scripts, which install everything and pull the SSH key
-# from 1Password.
+# Flow: tofu creates the server with this as user_data → cloud-init creates the
+# user, installs `op` (so chezmoi's onepasswordRead works on the first apply),
+# then runs `chezmoi init --apply`, which clones the public dotfiles over HTTPS,
+# installs everything, and pulls the SSH key from 1Password.
 
 users:
   - name: chris
@@ -16,14 +18,14 @@ users:
     shell: /bin/bash            # bootstrap chsh's this to zsh
     sudo: ['ALL=(ALL) NOPASSWD:ALL']
     ssh_authorized_keys:
-      - REPLACE_WITH_YOUR_LAPTOP_PUBLIC_KEY
+      - ${laptop_pubkey}
 
 write_files:
   - path: /home/chris/.op-token
     owner: chris:chris
     permissions: '0600'
     content: |
-      REPLACE_WITH_OP_SERVICE_ACCOUNT_TOKEN
+      ${op_token}
 
 package_update: true
 packages: [curl, git, gnupg, jq, ca-certificates]

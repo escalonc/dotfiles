@@ -1,0 +1,19 @@
+# OpenTofu / Terraform — never commit state or real variable values.
+
+# State can contain rendered secrets (the op token).
+*.tfstate
+*.tfstate.*
+
+# Real values (your IP, overrides) live here; keep local...
+*.tfvars
+# ...but DO track the example template.
+!*.tfvars.example
+
+# Downloaded provider binaries — large, machine-specific.
+.terraform/
+
+crash.log
+crash.*.log
+
+# Note: .terraform.lock.hcl is intentionally NOT ignored — commit it so everyone
+# (and future you) installs the exact same provider versions.
