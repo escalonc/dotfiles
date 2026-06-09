@@ -24,8 +24,9 @@ inside it. One `tofu apply` replaces the old "click create, paste cloud-init" da
    export TF_VAR_hcloud_token="$(op read 'op://Private/Hetzner/api-token')"
    ```
    - `hcloud_token`: Hetzner console → project → Security → API Tokens → Read & Write.
-3. *(Optional but recommended)* `cp terraform.tfvars.example terraform.tfvars` and
-   lock SSH to your IP.
+3. **Required:** `cp terraform.tfvars.example terraform.tfvars` and set
+   `ssh_allowed_ips` to your IP (`curl -s ifconfig.me`). There's no default — apply
+   fails until you set it, so SSH is never accidentally open to the world.
 
 ## Daily commands
 

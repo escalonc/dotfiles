@@ -2,7 +2,13 @@
        Lets a future Linux *desktop* differ from this Linux *server*. */ -}}
 {{- $headless := false -}}
 {{- if eq .chezmoi.os "linux" -}}
-{{-   $headless = promptBoolOnce . "headless" "Headless machine, no GUI apps (yes for a server)" -}}
+{{-   if stdinIsATTY -}}
+{{-     $headless = promptBoolOnce . "headless" "Headless machine, no GUI apps (yes for a server)" -}}
+{{-   else -}}
+{{-     /* No terminal (e.g. cloud-init `chezmoi init --apply` on the server):
+           can't prompt, so assume headless. A Linux desktop is set up interactively. */ -}}
+{{-     $headless = true -}}
+{{-   end -}}
 {{- end -}}
 [data]
     headless = {{ $headless }}

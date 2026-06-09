@@ -41,6 +41,15 @@ variable "image" {
   default     = "fedora-42"
 }
 
+variable "dotfiles_branch" {
+  description = <<-EOT
+    Branch of the dotfiles repo that cloud-init clones on first boot. Defaults to
+    main; override (e.g. "server-support") only while testing a branch before merge.
+  EOT
+  type        = string
+  default     = "main"
+}
+
 variable "ssh_public_key_path" {
   description = "Path to YOUR laptop's public key; added to root and the chris user."
   type        = string
@@ -49,10 +58,15 @@ variable "ssh_public_key_path" {
 
 variable "ssh_allowed_ips" {
   description = <<-EOT
-    CIDRs allowed to reach SSH (port 22). Default is open to the world, which is
-    OK with key-only auth — but tighter is better. Lock it to your home IP in
+    CIDRs allowed to reach SSH (port 22). REQUIRED — no default, so you can't
+    accidentally open SSH to the world. Lock it to your home IP in
     terraform.tfvars: ssh_allowed_ips = ["1.2.3.4/32"]  (find it: curl -s ifconfig.me)
+    To intentionally open it up, set ["0.0.0.0/0", "::/0"] explicitly.
   EOT
   type        = list(string)
-  default     = ["0.0.0.0/0", "::/0"]
+
+  validation {
+    condition     = length(var.ssh_allowed_ips) > 0
+    error_message = "Set ssh_allowed_ips (e.g. [\"<your-ip>/32\"]); leaving it empty would block all SSH."
+  }
 }

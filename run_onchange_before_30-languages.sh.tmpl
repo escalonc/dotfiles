@@ -1,13 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# fnm provides Node — from the Brewfile on macOS, from ~/.local/bin on Linux
-# (10-packages). Ensure that dir is on PATH so we can find it during this run.
-export PATH="$HOME/.local/bin:$PATH"
+{{ template "dev-env.sh" . }}
 
-# Node via fnm.
+# Node via fnm (the prelude already put ~/.local/bin on PATH and ran `fnm env`).
 if command -v fnm &>/dev/null; then
-  eval "$(fnm env)"
   # fnm aliases a freshly-installed LTS as `lts-latest`; check for a default alias.
   if ! NO_COLOR=1 fnm alias 2>/dev/null | grep -q 'default'; then
     echo "→ Installing Node.js LTS via fnm..."

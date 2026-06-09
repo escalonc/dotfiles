@@ -8,5 +8,9 @@
 # server_type = "cpx41"
 # location    = "fsn1"
 
-# Recommended: lock SSH to your home IP. Find it with: curl -s ifconfig.me
-# ssh_allowed_ips = ["YOUR.IP.HERE/32"]
+# Defaults to "main". Override only to provision from a branch before it merges:
+# dotfiles_branch = "server-support"
+
+# REQUIRED: which IPs may reach SSH. Lock it to your home IP (curl -s ifconfig.me).
+# To open SSH to the world (key-only auth still applies), use ["0.0.0.0/0", "::/0"].
+ssh_allowed_ips = ["YOUR.IP.HERE/32"]

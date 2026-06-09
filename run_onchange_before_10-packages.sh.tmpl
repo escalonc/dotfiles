@@ -28,13 +28,18 @@ sudo dnf install -y \
 # --- Tools not in Fedora's default repos → release binaries into ~/.local/bin ---
 ARCH="$(uname -m)"
 dl_tarbin() {  # $1=binary name  $2=tarball URL — extracts the matching binary
-  local name=$1 url=$2 tmp
+  local name=$1 url=$2 tmp bin
   command -v "$name" >/dev/null 2>&1 && return 0
   echo "→ $name"
   tmp=$(mktemp -d)
+  trap 'rm -rf "$tmp"' RETURN          # clean up even if curl/tar/install fails
   curl -fsSL "$url" | tar -xz -C "$tmp"
-  install -m0755 "$(find "$tmp" -type f -name "$name" | head -1)" "$HOME/.local/bin/$name"
-  rm -rf "$tmp"
+  bin=$(find "$tmp" -type f -name "$name" -print -quit)
+  if [ -z "$bin" ]; then
+    echo "! $name not found in tarball — skipping" >&2
+    return 0
+  fi
+  install -m0755 "$bin" "$HOME/.local/bin/$name"
 }
 if [ "$ARCH" = "x86_64" ]; then
   dl_tarbin atuin "https://github.com/atuinsh/atuin/releases/latest/download/atuin-x86_64-unknown-linux-gnu.tar.gz"

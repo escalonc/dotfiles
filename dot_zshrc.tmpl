@@ -107,8 +107,8 @@ alias flushdns="sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder 
 alias cleanup="find . -name '.DS_Store' -delete"
 alias brewup="brew update && brew upgrade && brew cleanup"
 {{- else }}
-alias zshconfig="$EDITOR ~/.zshrc"
-alias hosts="sudo $EDITOR /etc/hosts"
+alias zshconfig='$EDITOR ~/.zshrc'
+alias hosts='sudo $EDITOR /etc/hosts'
 alias localip="hostname -I | awk '{print \$1}'"
 alias flushdns="sudo resolvectl flush-caches && echo 'DNS flushed'"
 {{- end }}

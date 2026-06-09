@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-{{- if .headless }}
+{{- if (.headless | default false) }}
 # Headless profile (e.g. the Linux server): no GUI editor, so skip VS Code
 # extensions entirely. Gated on the `headless` flag (.chezmoi.toml.tmpl), not the
 # OS — a non-headless Linux desktop falls through to the install path below.

@@ -6,8 +6,14 @@
 
 # Real values (your IP, overrides) live here; keep local...
 *.tfvars
+*.tfvars.json
 # ...but DO track the example template.
 !*.tfvars.example
+
+# Saved plans — can embed rendered cloud-init + variable values.
+tfplan
+*.tfplan
+plan.out
 
 # Downloaded provider binaries — large, machine-specific.
 .terraform/

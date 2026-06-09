@@ -24,7 +24,8 @@ resource "hcloud_firewall" "devbox" {
 # untouched. trimspace drops the trailing newline on the pubkey so the YAML stays valid.
 locals {
   user_data = templatefile("${path.module}/cloud-init.yaml", {
-    laptop_pubkey = trimspace(file(pathexpand(var.ssh_public_key_path)))
+    laptop_pubkey   = trimspace(file(pathexpand(var.ssh_public_key_path)))
+    dotfiles_branch = var.dotfiles_branch
   })
 }
 

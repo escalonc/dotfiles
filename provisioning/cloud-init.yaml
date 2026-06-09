@@ -2,10 +2,10 @@
 # One-shot provisioning for the remote dev box (Fedora).
 #
 # This file is a TEMPLATE rendered by OpenTofu (main.tf, via templatefile). The
-# laptop_pubkey placeholder below is filled at `tofu apply` time from your
-# variables — do NOT replace it by hand. templatefile substitutes the $-brace
-# placeholder; the shell $(...) in runcmd below has no braces, so it is passed
-# through verbatim.
+# ${laptop_pubkey} and ${dotfiles_branch} placeholders below are filled at
+# `tofu apply` time from your variables — do NOT replace them by hand.
+# templatefile substitutes the $-brace placeholders; the shell $(...) in runcmd
+# below has no braces, so it is passed through verbatim.
 #
 # Flow: tofu creates the server with this as user_data → cloud-init creates the
 # user, then runs `chezmoi init --apply`, which clones the public dotfiles over
@@ -19,6 +19,11 @@ users:
     ssh_authorized_keys:
       - ${laptop_pubkey}
 
+# Key-only auth: no password logins, and root may only log in with a key
+# (Hetzner injects the laptop key into root as a fallback path).
+ssh_pwauth: false
+disable_root: false
+
 package_update: true
 packages: [curl, git, gnupg2, jq]
 
@@ -27,4 +32,4 @@ runcmd:
   - >-
     sudo -u chris -H bash -lc
     'sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply
-     https://github.com/escalonc/dotfiles.git --branch server-support'
+     https://github.com/escalonc/dotfiles.git --branch ${dotfiles_branch}'
