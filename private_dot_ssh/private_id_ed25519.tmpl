@@ -1,5 +1,0 @@
-{{- /* SSH private key for the headless server, fetched from 1Password.
-       Only applied on Linux (ignored elsewhere via .chezmoiignore).
-       REPLACE the op:// reference with your vault/item. The ?ssh-format=openssh
-       modifier makes `op` return a usable OpenSSH private key. */ -}}
-{{ onepasswordRead "op://Private/vps-ssh/private key?ssh-format=openssh" }}

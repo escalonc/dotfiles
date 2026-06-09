@@ -25,7 +25,6 @@ resource "hcloud_firewall" "devbox" {
 locals {
   user_data = templatefile("${path.module}/cloud-init.yaml", {
     laptop_pubkey = trimspace(file(pathexpand(var.ssh_public_key_path)))
-    op_token      = var.op_service_account_token
   })
 }
 

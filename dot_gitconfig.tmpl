@@ -1,19 +1,6 @@
 [user]
 	name = Christopher Escalon
 	email = escalonc@users.noreply.github.com
-{{- if ne .chezmoi.os "darwin" }}
-	signingkey = ~/.ssh/id_ed25519.pub
-{{- end }}
-
-{{- if ne .chezmoi.os "darwin" }}
-# Sign commits with the SSH key materialized from 1Password. Set gpgsign = false
-# if unsigned commits are preferable (e.g. to avoid blocking the agent should the
-# key ever be missing).
-[gpg]
-	format = ssh
-[commit]
-	gpgsign = true
-{{- end }}
 
 [core]
 {{- if eq .chezmoi.os "darwin" }}

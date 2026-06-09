@@ -1,6 +1,6 @@
 # OpenTofu / Terraform — never commit state or real variable values.
 
-# State can contain rendered secrets (the op token).
+# State — gitignored as good practice (it can capture sensitive values).
 *.tfstate
 *.tfstate.*
 

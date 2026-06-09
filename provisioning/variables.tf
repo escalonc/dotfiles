@@ -1,25 +1,11 @@
-# ── Secrets ────────────────────────────────────────────────────────────────
-# NEVER put these in a committed file. OpenTofu automatically reads any env var
-# named TF_VAR_<name>, so export them at apply time and they stay off disk:
+# ── Secret ───────────────────────────────────────────────────────────────--
+# NEVER put this in a committed file. OpenTofu automatically reads any env var
+# named TF_VAR_<name>, so export it at apply time and it stays off disk:
 #
 #   export TF_VAR_hcloud_token="$(op read 'op://Private/Hetzner/api-token')"
-#   export TF_VAR_op_service_account_token="$(op read 'op://Private/op-sa/token')"
 
 variable "hcloud_token" {
   description = "Hetzner Cloud API token (Read & Write). Set via TF_VAR_hcloud_token."
-  type        = string
-  sensitive   = true
-}
-
-variable "op_service_account_token" {
-  description = <<-EOT
-    1Password service-account token. cloud-init writes it to ~/.op-token so
-    chezmoi's onepasswordRead works on first boot, then shreds it.
-
-    HEADS UP: this value is baked into the server's user_data, which means it
-    lands in your LOCAL tofu state file. That's why state is gitignored and
-    must stay on your laptop only. Set via TF_VAR_op_service_account_token.
-  EOT
   type        = string
   sensitive   = true
 }

@@ -19,13 +19,11 @@ inside it. One `tofu apply` replaces the old "click create, paste cloud-init" da
 ## One-time setup
 
 1. **Install OpenTofu** — `brew install opentofu`
-2. **Two secrets, as env vars** (never in a file). Adjust the `op://` paths:
+2. **One secret, as an env var** (never in a file). Adjust the `op://` path:
    ```sh
    export TF_VAR_hcloud_token="$(op read 'op://Private/Hetzner/api-token')"
-   export TF_VAR_op_service_account_token="$(op read 'op://Private/op-sa/token')"
    ```
    - `hcloud_token`: Hetzner console → project → Security → API Tokens → Read & Write.
-   - `op_service_account_token`: the 1Password service account chezmoi reads secrets with.
 3. *(Optional but recommended)* `cp terraform.tfvars.example terraform.tfvars` and
    lock SSH to your IP.
 
@@ -45,7 +43,7 @@ tofu destroy    # tear it all down (stop paying Hetzner)
 - **Editing `cloud-init.yaml` rebuilds the box.** cloud-init only runs on first
   boot, so changing it forces a destroy+recreate on the next `apply`. That's the
   intended way to re-provision cleanly — just know `apply` isn't always harmless.
-- **The 1Password token ends up in local state.** It's baked into the server's
-  `user_data`. That's why `*.tfstate` is gitignored and must stay on your laptop.
+- **State holds no secrets now**, but `*.tfstate` stays gitignored as good practice
+  (the `hcloud_token` lives only in provider config / env, never in state).
 - **`tofu` vs `terraform`.** Identical commands; this repo uses OpenTofu. If you
   have `terraform` installed instead, every command above works by swapping the name.

@@ -2,15 +2,14 @@
 # One-shot provisioning for the remote dev box (Fedora).
 #
 # This file is a TEMPLATE rendered by OpenTofu (main.tf, via templatefile). The
-# laptop_pubkey and op_token placeholders below are filled at `tofu apply` time
-# from your variables — do NOT replace them by hand, and never commit a real
-# token. templatefile substitutes the $-brace placeholders; the shell $(...) in
-# runcmd below has no braces, so it is passed through verbatim.
+# laptop_pubkey placeholder below is filled at `tofu apply` time from your
+# variables — do NOT replace it by hand. templatefile substitutes the $-brace
+# placeholder; the shell $(...) in runcmd below has no braces, so it is passed
+# through verbatim.
 #
 # Flow: tofu creates the server with this as user_data → cloud-init creates the
-# user, installs `op` (so chezmoi's onepasswordRead works on the first apply),
-# then runs `chezmoi init --apply`, which clones the public dotfiles over HTTPS,
-# installs everything, and pulls the SSH key from 1Password.
+# user, then runs `chezmoi init --apply`, which clones the public dotfiles over
+# HTTPS and installs everything.
 
 users:
   - name: chris
@@ -20,34 +19,12 @@ users:
     ssh_authorized_keys:
       - ${laptop_pubkey}
 
-write_files:
-  - path: /home/chris/.op-token
-    owner: chris:chris
-    permissions: '0600'
-    content: |
-      ${op_token}
-
 package_update: true
 packages: [curl, git, gnupg2, jq]
 
 runcmd:
-  # 1Password CLI — installed here so template secret-reads work on the first apply.
-  - rpm --import https://downloads.1password.com/linux/keys/1password.asc
-  - |
-    cat > /etc/yum.repos.d/1password.repo <<'REPO'
-    [1password]
-    name=1Password Stable Channel
-    baseurl=https://downloads.1password.com/linux/rpm/stable/$basearch
-    enabled=1
-    gpgcheck=1
-    repo_gpgcheck=1
-    gpgkey=https://downloads.1password.com/linux/keys/1password.asc
-    REPO
-  - dnf install -y 1password-cli
-  # Install chezmoi and apply the dotfiles as the user, then shred the token.
+  # Install chezmoi and apply the dotfiles as the user.
   - >-
     sudo -u chris -H bash -lc
-    'export OP_SERVICE_ACCOUNT_TOKEN="$(cat ~/.op-token)";
-     sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply
-     https://github.com/escalonc/dotfiles.git --branch server-support;
-     shred -u ~/.op-token'
+    'sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply
+     https://github.com/escalonc/dotfiles.git --branch server-support'

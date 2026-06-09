@@ -40,22 +40,6 @@ ZSH_BIN="$(command -v zsh)"
 if [ "$(getent passwd "$USER" | cut -d: -f7)" != "$ZSH_BIN" ]; then
   sudo chsh -s "$ZSH_BIN" "$USER" || echo "! could not chsh to zsh; set it manually" >&2
 fi
-
-# 1Password CLI (op) — chezmoi templates use it (stage 3) to fetch secrets.
-if ! command -v op &>/dev/null; then
-  echo "→ Installing 1Password CLI (op)..."
-  sudo rpm --import https://downloads.1password.com/linux/keys/1password.asc
-  sudo tee /etc/yum.repos.d/1password.repo >/dev/null <<'REPO'
-[1password]
-name=1Password Stable Channel
-baseurl=https://downloads.1password.com/linux/rpm/stable/$basearch
-enabled=1
-gpgcheck=1
-repo_gpgcheck=1
-gpgkey=https://downloads.1password.com/linux/keys/1password.asc
-REPO
-  sudo dnf install -y 1password-cli
-fi
 {{- else }}
 exit 0
 {{- end }}
