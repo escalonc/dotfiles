@@ -39,6 +39,7 @@ brew "dust"
 brew "gnu-sed"
 brew "coreutils"
 brew "awscli"
+brew "opentofu"
 brew "mas"
 
 # ─── Languages & Runtimes ────────────────────────────────────────────────────
