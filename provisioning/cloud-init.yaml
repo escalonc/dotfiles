@@ -1,5 +1,5 @@
 #cloud-config
-# One-shot provisioning for the remote dev box (Ubuntu 24.04 LTS).
+# One-shot provisioning for the remote dev box (Fedora).
 #
 # This file is a TEMPLATE rendered by OpenTofu (main.tf, via templatefile). The
 # laptop_pubkey and op_token placeholders below are filled at `tofu apply` time
@@ -14,7 +14,7 @@
 
 users:
   - name: chris
-    groups: [sudo]              # Ubuntu's sudo group
+    groups: [wheel]             # Fedora's sudo group
     shell: /bin/bash            # bootstrap chsh's this to zsh
     sudo: ['ALL=(ALL) NOPASSWD:ALL']
     ssh_authorized_keys:
@@ -28,19 +28,22 @@ write_files:
       ${op_token}
 
 package_update: true
-packages: [curl, git, gnupg, jq, ca-certificates]
+packages: [curl, git, gnupg2, jq]
 
 runcmd:
   # 1Password CLI — installed here so template secret-reads work on the first apply.
-  - curl -fsSL https://downloads.1password.com/linux/keys/1password.asc | gpg --dearmor --output /usr/share/keyrings/1password-archive-keyring.gpg
+  - rpm --import https://downloads.1password.com/linux/keys/1password.asc
   - |
-    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/1password-archive-keyring.gpg] https://downloads.1password.com/linux/debian/amd64 stable main" > /etc/apt/sources.list.d/1password.list
-  - mkdir -p /etc/debsig/policies/AC2D62742012EA22/
-  - curl -fsSL https://downloads.1password.com/linux/debian/debsig/1password.pol > /etc/debsig/policies/AC2D62742012EA22/1password.pol
-  - mkdir -p /usr/share/debsig/keyrings/AC2D62742012EA22
-  - curl -fsSL https://downloads.1password.com/linux/keys/1password.asc | gpg --dearmor --output /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg
-  - apt-get update
-  - DEBIAN_FRONTEND=noninteractive apt-get install -y 1password-cli
+    cat > /etc/yum.repos.d/1password.repo <<'REPO'
+    [1password]
+    name=1Password Stable Channel
+    baseurl=https://downloads.1password.com/linux/rpm/stable/$basearch
+    enabled=1
+    gpgcheck=1
+    repo_gpgcheck=1
+    gpgkey=https://downloads.1password.com/linux/keys/1password.asc
+    REPO
+  - dnf install -y 1password-cli
   # Install chezmoi and apply the dotfiles as the user, then shred the token.
   - >-
     sudo -u chris -H bash -lc

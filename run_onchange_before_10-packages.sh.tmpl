@@ -18,19 +18,14 @@ brew analytics off || true
 {{- else if eq .chezmoi.os "linux" }}
 set -euo pipefail
 mkdir -p "$HOME/.local/bin"
-export PATH="$HOME/.local/bin:$PATH"
 
-# Tools Ubuntu (24.04 LTS) ships in its default repos. Ubuntu renames a couple of
-# binaries vs upstream (bat→batcat, fd→fdfind) to avoid clashes; symlink them back.
-echo "→ apt CLI tools..."
-sudo apt-get update
-sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
+# Fedora ships these in the default repos (and does NOT rename bat/fd like Debian).
+echo "→ dnf CLI tools..."
+sudo dnf install -y \
   ripgrep fd-find bat fzf zoxide btop tmux direnv neovim \
-  git-delta httpie
-[ -x /usr/bin/batcat ] && ln -sf /usr/bin/batcat "$HOME/.local/bin/bat"
-[ -x /usr/bin/fdfind ] && ln -sf /usr/bin/fdfind "$HOME/.local/bin/fd"
+  eza git-delta just lazygit gh httpie
 
-# --- Tools NOT in Ubuntu's default repos → release binaries into ~/.local/bin ---
+# --- Tools not in Fedora's default repos → release binaries into ~/.local/bin ---
 ARCH="$(uname -m)"
 dl_tarbin() {  # $1=binary name  $2=tarball URL — extracts the matching binary
   local name=$1 url=$2 tmp
@@ -41,31 +36,15 @@ dl_tarbin() {  # $1=binary name  $2=tarball URL — extracts the matching binary
   install -m0755 "$(find "$tmp" -type f -name "$name" | head -1)" "$HOME/.local/bin/$name"
   rm -rf "$tmp"
 }
-# Latest release tag from GitHub's /releases/latest redirect (no API token/jq).
-gh_latest() { curl -fsSLI -o /dev/null -w '%{url_effective}' "https://github.com/$1/releases/latest" | sed 's#.*/tag/##'; }
 if [ "$ARCH" = "x86_64" ]; then
   dl_tarbin atuin "https://github.com/atuinsh/atuin/releases/latest/download/atuin-x86_64-unknown-linux-gnu.tar.gz"
-  dl_tarbin eza   "https://github.com/eza-community/eza/releases/latest/download/eza_x86_64-unknown-linux-gnu.tar.gz"
-  # just/lazygit/gh embed the version in the asset name → resolve the tag first.
-  if ! command -v just &>/dev/null; then
-    t=$(gh_latest casey/just)              # tag has no leading 'v'
-    dl_tarbin just "https://github.com/casey/just/releases/download/${t}/just-${t}-x86_64-unknown-linux-musl.tar.gz"
-  fi
-  if ! command -v lazygit &>/dev/null; then
-    t=$(gh_latest jesseduffield/lazygit); v=${t#v}
-    dl_tarbin lazygit "https://github.com/jesseduffield/lazygit/releases/download/${t}/lazygit_${v}_Linux_x86_64.tar.gz"
-  fi
-  if ! command -v gh &>/dev/null; then
-    t=$(gh_latest cli/cli); v=${t#v}
-    dl_tarbin gh "https://github.com/cli/cli/releases/download/${t}/gh_${v}_linux_amd64.tar.gz"
-  fi
-  if ! command -v yq &>/dev/null; then  # we want mikefarah/yq (the Go one)
+  if ! command -v yq &>/dev/null; then  # Fedora's `yq` is the python one; we want mikefarah/yq
     echo "→ yq"
     curl -fsSL https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -o "$HOME/.local/bin/yq"
     chmod 0755 "$HOME/.local/bin/yq"
   fi
 else
-  echo "! non-x86_64 ($ARCH): skipping atuin/eza/just/lazygit/gh/yq — install manually" >&2
+  echo "! non-x86_64 ($ARCH): skipping atuin/yq — install manually" >&2
 fi
 
 # --- fnm (Node manager) into ~/.local/bin; Node LTS comes from 30-languages ---

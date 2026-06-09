@@ -45,9 +45,14 @@ variable "location" {
 }
 
 variable "image" {
-  description = "OS image. Keep in sync with the server-support branch (Ubuntu 24.04)."
+  description = <<-EOT
+    Hetzner OS image. The server-support branch targets Fedora. Hetzner only
+    keeps the latest Fedora releases, so this pin goes stale — CONFIRM the exact
+    name before first apply: `hcloud image list --type system | grep -i fedora`
+    (or check the Hetzner console), then bump if needed.
+  EOT
   type        = string
-  default     = "ubuntu-24.04"
+  default     = "fedora-42"
 }
 
 variable "ssh_public_key_path" {
