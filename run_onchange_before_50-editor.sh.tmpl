@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
+{{- if .headless }}
+# Headless profile (e.g. the Linux server): no GUI editor, so skip VS Code
+# extensions entirely. Gated on the `headless` flag (.chezmoi.toml.tmpl), not the
+# OS — a non-headless Linux desktop falls through to the install path below.
+exit 0
+{{- else }}
 set -euo pipefail
 
-# VS Code + this extension set are part of the macOS workstation only. The
-# headless server has no GUI editor, so skip entirely on non-macOS.
-[ "$(uname -s)" = "Darwin" ] || exit 0
-
-# Add the macOS VS Code app's `code` CLI to PATH if present. On Linux,
-# `code` is a regular binary so this no-ops.
+# VS Code extensions for a GUI workstation — macOS today, a Linux desktop later.
+# Add the macOS VS Code app's `code` CLI to PATH if present; on Linux `code` is
+# already a normal binary, so this no-ops.
 VSCODE_BIN="/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
 [ -d "$VSCODE_BIN" ] && export PATH="$VSCODE_BIN:$PATH"
 
@@ -51,3 +54,4 @@ for ext in "${EXTENSIONS[@]}"; do
     echo "! skipped: $ext"
   fi
 done
+{{- end }}

@@ -2,7 +2,7 @@
        Lets a future Linux *desktop* differ from this Linux *server*. */ -}}
 {{- $headless := false -}}
 {{- if eq .chezmoi.os "linux" -}}
-{{-   $headless = promptBoolOnce . "headless" "Headless server (no GUI apps)" -}}
+{{-   $headless = promptBoolOnce . "headless" "Headless machine, no GUI apps (yes for a server)" -}}
 {{- end -}}
 [data]
     headless = {{ $headless }}
