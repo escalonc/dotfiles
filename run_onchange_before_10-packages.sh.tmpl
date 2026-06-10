@@ -2,6 +2,8 @@
 {{- if eq .chezmoi.os "darwin" }}
 set -euo pipefail
 
+{{ template "dev-env.sh" . }}
+
 # The Brewfile's hash below is what makes Brewfile edits trigger a re-run.
 # chezmoi diffs the rendered script content; embedding the hash means the
 # script visibly changes whenever the Brewfile changes.
@@ -27,13 +29,18 @@ sudo dnf install -y \
 
 # --- Tools not in Fedora's default repos → release binaries into ~/.local/bin ---
 ARCH="$(uname -m)"
-dl_tarbin() {  # $1=binary name  $2=tarball URL — extracts the matching binary
-  local name=$1 url=$2 tmp bin
+dl_tarbin() {  # $1=binary name  $2=tarball URL  $3=expected sha256 — verify, then extract
+  local name=$1 url=$2 sha=$3 tmp bin
   command -v "$name" >/dev/null 2>&1 && return 0
   echo "→ $name"
   tmp=$(mktemp -d)
   trap 'rm -rf "$tmp"' RETURN          # clean up even if curl/tar/install fails
-  curl -fsSL "$url" | tar -xz -C "$tmp"
+  curl -fsSL "$url" -o "$tmp/archive.tar.gz"
+  echo "$sha  $tmp/archive.tar.gz" | sha256sum -c --quiet - || {
+    echo "✗ $name: checksum mismatch — refusing to install" >&2
+    return 1
+  }
+  tar -xzf "$tmp/archive.tar.gz" -C "$tmp"
   bin=$(find "$tmp" -type f -name "$name" -print -quit)
   if [ -z "$bin" ]; then
     echo "! $name not found in tarball — skipping" >&2
@@ -41,12 +48,24 @@ dl_tarbin() {  # $1=binary name  $2=tarball URL — extracts the matching binary
   fi
   install -m0755 "$bin" "$HOME/.local/bin/$name"
 }
+# Versions + checksums are pinned (hashes verified against each project's published
+# checksum file). To bump: pick the new tag, download the asset, `sha256sum` it,
+# and update the URL and hash TOGETHER.
 if [ "$ARCH" = "x86_64" ]; then
-  dl_tarbin atuin "https://github.com/atuinsh/atuin/releases/latest/download/atuin-x86_64-unknown-linux-gnu.tar.gz"
+  dl_tarbin atuin \
+    "https://github.com/atuinsh/atuin/releases/download/v18.16.1/atuin-x86_64-unknown-linux-gnu.tar.gz" \
+    "5c41e20c0130ac84fa4bfa42c19bb55a07855838506063caad0d2922593b39be"
   if ! command -v yq &>/dev/null; then  # Fedora's `yq` is the python one; we want mikefarah/yq
     echo "→ yq"
-    curl -fsSL https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -o "$HOME/.local/bin/yq"
-    chmod 0755 "$HOME/.local/bin/yq"
+    yq_tmp=$(mktemp)
+    curl -fsSL "https://github.com/mikefarah/yq/releases/download/v4.53.3/yq_linux_amd64" -o "$yq_tmp"
+    echo "fa52a4e758c63d38299163fbdd1edfb4c4963247918bf9c1c5d31d84789eded4  $yq_tmp" | sha256sum -c --quiet - || {
+      echo "✗ yq: checksum mismatch — refusing to install" >&2
+      rm -f "$yq_tmp"
+      exit 1
+    }
+    install -m0755 "$yq_tmp" "$HOME/.local/bin/yq"
+    rm -f "$yq_tmp"
   fi
 else
   echo "! non-x86_64 ($ARCH): skipping atuin/yq — install manually" >&2

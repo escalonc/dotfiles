@@ -40,4 +40,12 @@ resource "hcloud_server" "devbox" {
   ssh_keys     = [hcloud_ssh_key.laptop.id]
   firewall_ids = [hcloud_firewall.devbox.id]
   user_data    = local.user_data
+
+  lifecycle {
+    # Any plan that would destroy this box — a user_data change from editing
+    # cloud-init.yaml, or `tofu destroy` itself — FAILS until you flip this to
+    # false. Deliberate two-step so a routine apply can't silently take un-pushed
+    # work down with the server. Rebuild/teardown: set false → apply/destroy → revert.
+    prevent_destroy = true
+  }
 }

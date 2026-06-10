@@ -17,7 +17,9 @@ users:
     shell: /bin/bash            # bootstrap chsh's this to zsh
     sudo: ['ALL=(ALL) NOPASSWD:ALL']
     ssh_authorized_keys:
-      - ${laptop_pubkey}
+      # Quoted: an unquoted scalar would be truncated at " #" (YAML comment start),
+      # which an SSH key's trailing comment field can legitimately contain.
+      - '${laptop_pubkey}'
 
 # Key-only auth: no password logins, and root may only log in with a key
 # (Hetzner injects the laptop key into root as a fallback path).

@@ -36,14 +36,17 @@ tofu init       # first time only: downloads the provider
 tofu plan       # preview — shows exactly what will be created/changed
 tofu apply      # do it; prints the box's IP and an ssh command
 tofu output ssh # reprint the ssh command later
-tofu destroy    # tear it all down (stop paying Hetzner)
+tofu destroy    # tear it all down — requires flipping prevent_destroy first (see Gotchas)
 ```
 
 ## Gotchas
 
 - **Editing `cloud-init.yaml` rebuilds the box.** cloud-init only runs on first
   boot, so changing it forces a destroy+recreate on the next `apply`. That's the
-  intended way to re-provision cleanly — just know `apply` isn't always harmless.
+  intended way to re-provision cleanly — but the box dies with any un-pushed work
+  on it. So the server has `prevent_destroy = true` (main.tf): any destroying plan,
+  including `tofu destroy`, errors out until you flip it to `false` (then revert
+  after). A deliberate two-step instead of a silent loss.
 - **State holds no secrets now**, but `*.tfstate` stays gitignored as good practice
   (the `hcloud_token` lives only in provider config / env, never in state).
 - **`tofu` vs `terraform`.** Identical commands; this repo uses OpenTofu. If you
