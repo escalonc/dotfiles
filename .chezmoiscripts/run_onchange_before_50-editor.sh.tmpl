@@ -18,21 +18,19 @@ if ! command -v code &>/dev/null; then
   exit 0
 fi
 
+# No AI extensions on purpose (Claude Code in the terminal is the AI layer; the
+# managed settings.json disables the built-in AI UI). Python/Rust were cut as
+# speculative — not part of the contract-stack rotation.
 EXTENSIONS=(
   esbenp.prettier-vscode
   dbaeumer.vscode-eslint
   eamodio.gitlens
   mhutchie.git-graph
-  github.copilot
-  github.copilot-chat
   bradlc.vscode-tailwindcss
   ms-vscode.vscode-typescript-next
   prisma.prisma
-  ms-python.python
-  charliermarsh.ruff
-  ms-python.mypy-type-checker
-  rust-lang.rust-analyzer
   tamasfe.even-better-toml
+  monokai.theme-monokai-pro-vscode  # theme referenced by the managed settings.json
   ms-vscode-remote.remote-ssh
   ms-vscode-remote.remote-containers
   ms-azuretools.vscode-docker

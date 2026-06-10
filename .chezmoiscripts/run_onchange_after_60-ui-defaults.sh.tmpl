@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+{{- if eq .chezmoi.os "darwin" }}
+# Deliberately no `set -e`: one failed `defaults write` shouldn't abort the rest.
+set -uo pipefail
+
+{{ template "macos-defaults.sh" . }}
+{{- else }}
+exit 0
+{{- end }}

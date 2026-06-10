@@ -16,7 +16,7 @@ export PATH="$PNPM_HOME:$PATH"
 # The prelude put ~/.local/bin on PATH and activated fnm's Node, which `pnpm add -g`
 # needs as a runtime.
 if command -v pnpm &>/dev/null; then
-  for pkg in typescript tsx vercel; do
+  for pkg in typescript tsx; do
     echo "→ pnpm global: $pkg"
     pnpm add -g "$pkg" || echo "! skipped: $pkg" >&2
   done

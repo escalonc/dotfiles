@@ -46,9 +46,9 @@ apply system defaults.
 | Area | Details |
 | --- | --- |
 | Packages | macOS: Homebrew formulae, GUI apps, fonts (`Brewfile`). Linux: `dnf` packages + release binaries into `~/.local/bin` |
-| Shell | zsh, Oh My Zsh, Powerlevel10k, fzf, atuin, zoxide |
+| Shell | zsh, Oh My Zsh, Powerlevel10k, fzf, atuin, zoxide — OMZ/p10k/plugins arrive via `.chezmoiexternal.toml` (chezmoi-managed, weekly refresh) |
 | Languages | Node via fnm; pnpm globals |
-| Editor | VS Code extensions — GUI machines only; skipped on a headless box (see `run_onchange_before_50-editor.sh.tmpl`) |
+| Editor | VS Code extensions + managed `settings.json` (built-in AI/Copilot UI disabled, telemetry off — Claude Code is the AI layer). GUI machines only; skipped on a headless box |
 | Git/SSH | Git config, global ignore rules; 1Password SSH agent on macOS (agent-forwarding/HTTPS on the server) |
 | macOS | Dock, Finder, keyboard, trackpad, screenshots, security defaults (skipped on Linux) |
 | Provisioning | `provisioning/` — OpenTofu/Hetzner config that creates the Linux dev box (machine, not software) |
@@ -57,28 +57,31 @@ apply system defaults.
 
 ```text
 .
-├── Brewfile                                        # Homebrew formulae, casks, fonts (macOS)
-├── .chezmoi.toml.tmpl                              # per-machine config; asks `headless` on Linux
-├── .chezmoitemplates/dev-env.sh                    # shared PATH/fnm prelude, included by run scripts
-├── dot_zshrc.tmpl                                  # → ~/.zshrc (per-OS aliases/env)
-├── dot_zprofile.tmpl                               # → ~/.zprofile (login-shell PATH)
-├── dot_gitconfig.tmpl                              # → ~/.gitconfig
-├── dot_gitignore_global                            # → ~/.gitignore_global
-├── private_dot_ssh/private_config.tmpl             # → ~/.ssh/config (dir 700, file 600)
-├── run_onchange_before_00-bootstrap.sh.tmpl        # macOS: Xcode CLT + Homebrew. Linux: dnf base + zsh
-├── run_onchange_before_10-packages.sh.tmpl         # macOS: brew bundle. Linux: dnf + release binaries
-├── run_onchange_before_20-shell.sh                 # Oh My Zsh + community plugins
-├── run_onchange_before_30-languages.sh.tmpl        # Node (fnm)
-├── run_onchange_before_40-pkg-managers.sh.tmpl     # pnpm globals
-├── run_onchange_before_50-editor.sh.tmpl           # VS Code extensions (skipped if headless)
-├── run_onchange_after_60-system-defaults.sh.tmpl   # macOS Dock/Finder/keyboard (no-op on Linux)
-├── run_onchange_after_70-claude.sh.tmpl            # Claude Code install
-└── provisioning/                                   # OpenTofu: create the Hetzner Linux box (see its README)
+├── Brewfile                                          # Homebrew formulae, casks, fonts (macOS)
+├── .chezmoi.toml.tmpl                                # per-machine config; asks `headless` on Linux
+├── .chezmoiexternal.toml                             # Oh My Zsh + p10k + zsh plugins, fetched/refreshed by chezmoi
+├── .chezmoitemplates/dev-env.sh                      # shared PATH/fnm prelude, included by run scripts
+├── .chezmoitemplates/macos-defaults.sh               # the `defaults write` payload, included by 60-ui-defaults
+├── .chezmoiscripts/
+│   ├── run_onchange_before_00-bootstrap.sh.tmpl      # macOS: Xcode CLT + Homebrew. Linux: dnf base + zsh
+│   ├── run_onchange_before_10-packages.sh.tmpl       # macOS: brew bundle. Linux: dnf + release binaries
+│   ├── run_onchange_before_30-languages.sh.tmpl      # Node (fnm)
+│   ├── run_onchange_before_40-pkg-managers.sh.tmpl   # pnpm globals
+│   ├── run_onchange_before_50-editor.sh.tmpl         # VS Code extensions (skipped if headless)
+│   ├── run_onchange_after_60-ui-defaults.sh.tmpl     # macOS Dock/Finder/keyboard (no-op on Linux)
+│   └── run_onchange_after_70-claude.sh.tmpl          # Claude Code install
+├── dot_zshrc.tmpl                                    # → ~/.zshrc (per-OS aliases/env)
+├── dot_zprofile.tmpl                                 # → ~/.zprofile (login-shell PATH)
+├── dot_gitconfig.tmpl                                # → ~/.gitconfig
+├── dot_gitignore_global                              # → ~/.gitignore_global
+├── private_dot_ssh/private_config.tmpl               # → ~/.ssh/config (dir 700, file 600)
+├── Library/Application Support/Code/User/            # → VS Code settings.json (macOS only; keep Settings Sync OFF)
+└── provisioning/                                     # OpenTofu: create the Hetzner Linux box (see its README)
 ```
 
-`run_onchange_*` scripts re-run whenever their content changes (so editing the
-Brewfile re-triggers `brew bundle`, editing the system-defaults script re-applies
-those preferences). Each is written to be idempotent, so re-runs are safe.
+`run_onchange_*` scripts re-run whenever their *rendered* content changes (so
+editing the Brewfile re-triggers `brew bundle`, and editing an included template
+like `macos-defaults.sh` re-applies those preferences). Each is written to be idempotent, so re-runs are safe.
 `*_before_*` runs before dotfiles are applied; `*_after_*` runs after. `.tmpl`
 files are Go templates that branch per OS via `{{ if eq .chezmoi.os "darwin" }}`
 (macOS) / `{{ else if eq .chezmoi.os "linux" }}` (Fedora).
@@ -96,9 +99,11 @@ which re-establishes that environment. Edit the prelude once in
 | Add a CLI tool or GUI app | `Brewfile` |
 | Change shell config | `dot_zshrc` |
 | Change Git config | `dot_gitconfig` |
-| Add a VS Code extension | `run_onchange_before_50-editor.sh.tmpl` |
-| Add global JS tools | `run_onchange_before_40-pkg-managers.sh.tmpl` |
-| Tweak macOS defaults | `run_onchange_after_60-system-defaults.sh.tmpl` |
+| Add a VS Code extension | `.chezmoiscripts/run_onchange_before_50-editor.sh.tmpl` |
+| Tweak VS Code settings | `Library/Application Support/Code/User/settings.json` |
+| Add global JS tools | `.chezmoiscripts/run_onchange_before_40-pkg-managers.sh.tmpl` |
+| Bump/pin the shell stack (OMZ, p10k, plugins) | `.chezmoiexternal.toml` |
+| Tweak macOS defaults | `.chezmoitemplates/macos-defaults.sh` |
 | Machine-local shell overrides | `~/.zshrc.local` (untracked) |
 
 After editing, run `chezmoi apply` (or `chezmoi update` to pull first).

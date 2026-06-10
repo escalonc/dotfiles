@@ -1,5 +1,11 @@
 README.md
 Brewfile
+
+{{ if ne .chezmoi.os "darwin" -}}
+# ~/Library only exists on macOS (VS Code settings live there). A Linux desktop
+# would need a separate dot_config/Code/ path — add it when that machine exists.
+Library/
+{{ end -}}
 .gitignore
 .github/
 .claude/

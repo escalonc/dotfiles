@@ -7,32 +7,21 @@ fi
 export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
-zstyle ':omz:update' mode auto
-zstyle ':omz:update' frequency 7
-zstyle ':omz:update' verbose silent
+# Never nag about updates: the self-updater is fully off — OMZ (and p10k + plugins)
+# are refreshed weekly by chezmoi instead (.chezmoiexternal.toml), with no interaction.
+zstyle ':omz:update' mode disabled
 
+# Trimmed (2026-06-10) to plugins that do passive work — completions and key
+# widgets — plus the `git` alias pack, kept deliberately. A cut plugin is one
+# line to restore.
 plugins=(
   git
-  git-lfs
   gh
   zsh-autosuggestions
   zsh-completions
   docker
-  docker-compose
-  node
-  npm
-{{- if eq .chezmoi.os "darwin" }}
-  brew
-  macos
-  vscode
-{{- end }}
-  colored-man-pages
-  command-not-found
   sudo
-  copybuffer
-  copypath
-  web-search
-  encode64
+  colored-man-pages
   # Keep last: it hooks the line editor and must load after every other plugin
   # has registered its widgets, or highlighting silently misses them.
   zsh-syntax-highlighting
@@ -120,14 +109,6 @@ alias flushdns="sudo resolvectl flush-caches && echo 'DNS flushed'"
 alias ports="sudo lsof -i -P -n | grep LISTEN"
 
 # ── Functions ────────────────────────────────────────────────────────────────
-
-y() {
-  command -v yazi >/dev/null 2>&1 || { echo "yazi not installed" >&2; return 1; }
-  local tmp; tmp=$(mktemp -t "yazi-cwd.XXXXXX")
-  yazi "$@" --cwd-file="$tmp"
-  local cwd; cwd=$(cat -- "$tmp") && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && cd -- "$cwd"
-  rm -f -- "$tmp"
-}
 
 gclone() { git clone "$1" && cd "$(basename "$1" .git)" || return; }
 
