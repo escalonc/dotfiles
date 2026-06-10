@@ -1,0 +1,21 @@
+{{- if eq .chezmoi.os "darwin" }}
+# Machine-local, untracked additions (same idea as ~/.zshrc.local). ssh ignores
+# the Include silently if the file doesn't exist. The devbox's IP lives there —
+# chezmoi owns this file, so an IP edited here directly would be reverted on apply.
+Include ~/.ssh/config.local
+
+Host *
+  IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+
+# Hetzner devbox: `ssh devbox` forwards the 1Password agent (no keys on the box).
+# After `tofu apply`, put the IP in ~/.ssh/config.local:
+#   Host devbox
+#     HostName <tofu output ipv4>
+Host devbox
+  User chris
+  ForwardAgent yes
+{{- else }}
+# Linux: no dotfiles-managed SSH key — use agent forwarding (ssh -A) from your
+# laptop, or HTTPS for git. Machine-local additions go in ~/.ssh/config.local.
+Include ~/.ssh/config.local
+{{- end }}

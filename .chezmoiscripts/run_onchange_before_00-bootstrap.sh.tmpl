@@ -21,12 +21,24 @@ if ! command -v brew &>/dev/null; then
   NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 
-# Make brew available for the subsequent chezmoi scripts in THIS run (10-packages
-# etc. need it on PATH). Future login shells get it from the chezmoi-managed
-# ~/.zprofile (dot_zprofile.tmpl), applied right after these before-scripts.
-# Apple Silicon only (/opt/homebrew).
-eval "$(/opt/homebrew/bin/brew shellenv zsh)"
+# NOTE: nothing exported here survives this script — each chezmoi run script is
+# its own process. Later scripts (10-packages etc.) put brew on their own PATH via
+# the dev-env.sh prelude; future login shells get it from the chezmoi-managed
+# ~/.zprofile (dot_zprofile.tmpl).
+{{- else if eq .chezmoi.os "linux" }}
+set -euo pipefail
+
+echo "→ Pre-flight: dnf base packages"
+# util-linux-user provides chsh on Fedora.
+sudo dnf install -y \
+  zsh git git-lfs curl wget unzip tar gcc gcc-c++ make \
+  gnupg2 jq util-linux-user
+
+# Make zsh this user's login shell (no-op if already set).
+ZSH_BIN="$(command -v zsh)"
+if [ "$(getent passwd "$USER" | cut -d: -f7)" != "$ZSH_BIN" ]; then
+  sudo chsh -s "$ZSH_BIN" "$USER" || echo "! could not chsh to zsh; set it manually" >&2
+fi
 {{- else }}
-# Linux bootstrap goes here when added — apt/pacman/dnf, brew on linuxbrew, etc.
 exit 0
 {{- end }}

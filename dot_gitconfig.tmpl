@@ -3,7 +3,11 @@
 	email = escalonc@users.noreply.github.com
 
 [core]
+{{- if eq .chezmoi.os "darwin" }}
 	editor = subl --wait
+{{- else }}
+	editor = nvim
+{{- end }}
 	autocrlf = input
 	excludesfile = ~/.gitignore_global
 	pager = delta

@@ -7,40 +7,34 @@ fi
 export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
-zstyle ':omz:update' mode auto
-zstyle ':omz:update' frequency 7
-zstyle ':omz:update' verbose silent
+# Never nag about updates: the self-updater is fully off — OMZ (and p10k + plugins)
+# are refreshed weekly by chezmoi instead (.chezmoiexternal.toml), with no interaction.
+zstyle ':omz:update' mode disabled
 
+# Trimmed (2026-06-10) to plugins that do passive work — completions and key
+# widgets — plus the `git` alias pack, kept deliberately. A cut plugin is one
+# line to restore.
 plugins=(
   git
-  git-lfs
   gh
   zsh-autosuggestions
-  zsh-syntax-highlighting
   zsh-completions
   docker
-  docker-compose
-  node
-  npm
-  brew
-  macos
-  vscode
-  fzf
-  colored-man-pages
-  command-not-found
   sudo
-  copybuffer
-  copypath
-  web-search
-  encode64
+  colored-man-pages
+  # Keep last: it hooks the line editor and must load after every other plugin
+  # has registered its widgets, or highlighting silently misses them.
+  zsh-syntax-highlighting
 )
 
 source "$ZSH/oh-my-zsh.sh"
 
 # ── PATH ─────────────────────────────────────────────────────────────────────
-eval "$(/opt/homebrew/bin/brew shellenv)"
+{{- if eq .chezmoi.os "darwin" }}
+[[ -x /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
 export HOMEBREW_NO_ANALYTICS=1
 export HOMEBREW_NO_ENV_HINTS=1
+{{- end }}
 
 export PATH="$HOME/.local/bin:$PATH"
 
@@ -49,34 +43,42 @@ export PATH="$HOME/.local/bin:$PATH"
 command -v fnm >/dev/null 2>&1 && eval "$(fnm env --use-on-cd --shell zsh)"
 
 # pnpm global bin
+{{- if eq .chezmoi.os "darwin" }}
 export PNPM_HOME="$HOME/Library/pnpm"
+{{- else }}
+export PNPM_HOME="$HOME/.local/share/pnpm"
+{{- end }}
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 
 # ── Tool Config ──────────────────────────────────────────────────────────────
-eval "$(zoxide init zsh)"
-eval "$(atuin init zsh)"
-eval "$(direnv hook zsh)"
+command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
+command -v atuin  >/dev/null 2>&1 && eval "$(atuin init zsh)"
+command -v direnv >/dev/null 2>&1 && eval "$(direnv hook zsh)"
 
-source <(fzf --zsh)
+command -v fzf >/dev/null 2>&1 && source <(fzf --zsh)
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
 export FZF_DEFAULT_OPTS='--height 40% --reverse --border --preview "bat --style=numbers --color=always --line-range :500 {}"'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
 export BAT_THEME="Dracula"
-alias cat="bat"
-alias less="bat --paging=always"
+if command -v bat >/dev/null 2>&1; then
+  alias cat="bat"
+  alias less="bat --paging=always"
+fi
 
 # ── Aliases ──────────────────────────────────────────────────────────────────
 
 # List files (eza)
-alias ls="eza --icons --group-directories-first"
-alias ll="eza -la --icons --group-directories-first --git"
-alias la="eza -a --icons"
-alias lt="eza --tree --icons --level=2"
-alias ltt="eza --tree --icons --level=3"
+if command -v eza >/dev/null 2>&1; then
+  alias ls="eza --icons --group-directories-first"
+  alias ll="eza -la --icons --group-directories-first --git"
+  alias la="eza -a --icons"
+  alias lt="eza --tree --icons --level=2"
+  alias ltt="eza --tree --icons --level=3"
+fi
 
 # Docker
 alias d="docker"
@@ -90,23 +92,23 @@ alias c="claude"
 
 # Misc
 alias reload="source ~/.zshrc"
+alias myip="curl -s ifconfig.me; echo"
+{{- if eq .chezmoi.os "darwin" }}
 alias zshconfig="subl ~/.zshrc"
 alias hosts="sudo subl /etc/hosts"
-alias myip="curl -s ifconfig.me; echo"
 alias localip="ipconfig getifaddr en0"
 alias flushdns="sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder && echo 'DNS flushed'"
 alias cleanup="find . -name '.DS_Store' -delete"
 alias brewup="brew update && brew upgrade && brew cleanup"
+{{- else }}
+alias zshconfig='$EDITOR ~/.zshrc'
+alias hosts='sudo $EDITOR /etc/hosts'
+alias localip="hostname -I | awk '{print \$1}'"
+alias flushdns="sudo resolvectl flush-caches && echo 'DNS flushed'"
+{{- end }}
 alias ports="sudo lsof -i -P -n | grep LISTEN"
 
 # ── Functions ────────────────────────────────────────────────────────────────
-
-y() {
-  local tmp; tmp=$(mktemp -t "yazi-cwd.XXXXXX")
-  yazi "$@" --cwd-file="$tmp"
-  local cwd; cwd=$(cat -- "$tmp") && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && cd -- "$cwd"
-  rm -f -- "$tmp"
-}
 
 gclone() { git clone "$1" && cd "$(basename "$1" .git)" || return; }
 
@@ -114,7 +116,13 @@ serve() { python3 -m http.server "${1:-8080}"; }
 
 killport() {
   local pids; pids=$(lsof -ti tcp:"$1")
-  [[ -n $pids ]] && kill -9 $pids || echo "No process on port $1"
+  if [[ -n $pids ]]; then
+    # ${(f)…} splits on newlines — zsh doesn't word-split unquoted parameters,
+    # so a bare $pids with multiple PIDs would reach kill as ONE bogus argument.
+    kill -9 ${(f)pids}
+  else
+    echo "No process on port $1"
+  fi
 }
 
 whatsport() { sudo lsof -i :"$1"; }
@@ -133,7 +141,7 @@ extract() {
       *.tgz)     tar xzf "$1"    ;;
       *.zip)     unzip "$1"      ;;
       *.Z)       uncompress "$1" ;;
-      *)         echo "'$1' cannot be extracted (use Keka for .rar/.7z)" ;;
+      *)         echo "'$1' cannot be extracted" ;;
     esac
   else
     echo "'$1' is not a valid file"
@@ -149,7 +157,11 @@ jwt-decode() {
 }
 
 # ── Environment ──────────────────────────────────────────────────────────────
+{{- if eq .chezmoi.os "darwin" }}
 export EDITOR="subl --wait"
+{{- else }}
+export EDITOR="nvim"
+{{- end }}
 export VISUAL="$EDITOR"
 export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"

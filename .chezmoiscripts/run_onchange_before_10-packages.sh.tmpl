@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+{{- if eq .chezmoi.os "darwin" }}
+set -euo pipefail
+
+{{ template "dev-env.sh" . }}
+
+# The Brewfile's hash below is what makes Brewfile edits trigger a re-run.
+# chezmoi diffs the rendered script content; embedding the hash means the
+# script visibly changes whenever the Brewfile changes.
+# Brewfile hash: {{ include "Brewfile" | sha256sum }}
+
+if ! command -v brew &>/dev/null; then
+  echo "✗ brew not found — run chezmoi apply again to retrigger 00-bootstrap" >&2
+  exit 1
+fi
+
+echo "→ brew bundle..."
+brew bundle --file={{ .chezmoi.sourceDir }}/Brewfile
+brew analytics off || true
+{{- else if eq .chezmoi.os "linux" }}
+set -euo pipefail
+mkdir -p "$HOME/.local/bin"
+
+# Fedora ships these in the default repos (and does NOT rename bat/fd like Debian).
+echo "→ dnf CLI tools..."
+sudo dnf install -y \
+  ripgrep fd-find bat fzf zoxide btop tmux direnv neovim \
+  eza git-delta just lazygit gh httpie
+
+# --- Tools not in Fedora's default repos → release binaries into ~/.local/bin ---
+ARCH="$(uname -m)"
+dl_tarbin() {  # $1=binary name  $2=tarball URL  $3=expected sha256 — verify, then extract
+  local name=$1 url=$2 sha=$3 tmp bin
+  command -v "$name" >/dev/null 2>&1 && return 0
+  echo "→ $name"
+  tmp=$(mktemp -d)
+  trap 'rm -rf "$tmp"' RETURN          # clean up even if curl/tar/install fails
+  curl -fsSL "$url" -o "$tmp/archive.tar.gz"
+  echo "$sha  $tmp/archive.tar.gz" | sha256sum -c --quiet - || {
+    echo "✗ $name: checksum mismatch — refusing to install" >&2
+    return 1
+  }
+  tar -xzf "$tmp/archive.tar.gz" -C "$tmp"
+  bin=$(find "$tmp" -type f -name "$name" -print -quit)
+  if [ -z "$bin" ]; then
+    echo "! $name not found in tarball — skipping" >&2
+    return 0
+  fi
+  install -m0755 "$bin" "$HOME/.local/bin/$name"
+}
+# Versions + checksums are pinned (hashes verified against each project's published
+# checksum file). To bump: pick the new tag, download the asset, `sha256sum` it,
+# and update the URL and hash TOGETHER.
+if [ "$ARCH" = "x86_64" ]; then
+  dl_tarbin atuin \
+    "https://github.com/atuinsh/atuin/releases/download/v18.16.1/atuin-x86_64-unknown-linux-gnu.tar.gz" \
+    "5c41e20c0130ac84fa4bfa42c19bb55a07855838506063caad0d2922593b39be"
+else
+  echo "! non-x86_64 ($ARCH): skipping atuin — install manually" >&2
+fi
+
+# --- fnm (Node manager) into ~/.local/bin; Node LTS comes from 30-languages ---
+if ! command -v fnm &>/dev/null && [ ! -x "$HOME/.local/bin/fnm" ]; then
+  echo "→ fnm"
+  curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir "$HOME/.local/bin" --skip-shell
+fi
+
+# --- pnpm (official standalone installer; NOT via npm, per policy) ---
+if ! command -v pnpm &>/dev/null && [ ! -x "$HOME/.local/share/pnpm/pnpm" ]; then
+  echo "→ pnpm"
+  curl -fsSL https://get.pnpm.io/install.sh | env PNPM_HOME="$HOME/.local/share/pnpm" SHELL=bash sh -
+fi
+{{- else }}
+exit 0
+{{- end }}

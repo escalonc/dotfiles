@@ -1,7 +1,12 @@
-#!/usr/bin/env bash
-{{- if eq .chezmoi.os "darwin" }}
-set -uo pipefail
+{{- /*
+  The macOS `defaults write` payload, included by run_onchange_after_60-ui-defaults.sh.tmpl:
 
+      {{ template "macos-defaults.sh" . }}
+
+  Split out so the run script stays a thin OS gate. Editing THIS file still
+  re-triggers that script: chezmoi hashes the RENDERED script content, and the
+  include makes this file part of it.
+*/ -}}
 echo "→ Applying macOS system preferences..."
 
 # Sudo for the login-window security default. If unavailable, skip silently.
@@ -97,6 +102,3 @@ killall SystemUIServer 2>/dev/null || true
 killall WindowManager  2>/dev/null || true
 
 echo "✓ macOS defaults applied"
-{{- else }}
-exit 0
-{{- end }}

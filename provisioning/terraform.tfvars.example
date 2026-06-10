@@ -1,0 +1,16 @@
+# Copy to `terraform.tfvars` (gitignored) and uncomment what you want to override.
+# Defaults live in variables.tf, so you can also leave this empty.
+#
+# SECRETS DO NOT GO HERE. Export the token as an env var instead, so it never
+# touches disk:
+#   export TF_VAR_hcloud_token="$(op read 'op://Private/Hetzner/api-token')"
+
+# server_type = "cpx41"
+# location    = "fsn1"
+
+# Defaults to "main". Override only to provision from a branch before it merges:
+# dotfiles_branch = "server-support"
+
+# REQUIRED: which IPs may reach SSH. Lock it to your home IP (curl -s ifconfig.me).
+# To open SSH to the world (key-only auth still applies), use ["0.0.0.0/0", "::/0"].
+ssh_allowed_ips = ["YOUR.IP.HERE/32"]

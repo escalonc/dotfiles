@@ -1,12 +1,12 @@
 ---
 name: code-review
-description: Code Review — use when the user runs /code-review or asks for a code review. Gates on diff threshold, runs Claude + Codex reviewers in parallel, then validates shell scripts with bash -n / shellcheck.
-version: 1.0.0
+description: Code Review — use when the user runs /code-review or asks for a code review. Gates on diff threshold, runs Claude + Codex reviewers in parallel, then validates shell scripts (rendering chezmoi templates first) and the OpenTofu config.
+version: 2.0.0
 ---
 
 # Code Review Skill (dotfiles)
 
-This pipeline reviews shell-script + Brewfile + dotfile changes in this repo. Two reviewers run in parallel (Claude + Codex when available), then the diff is validated for syntax and (when shellcheck is installed) for lint issues.
+This pipeline reviews changes to a **chezmoi-managed, multi-machine dotfiles repo**: `run_onchange_*.sh.tmpl` provisioning scripts, `dot_*` file templates, the Brewfile, and the `provisioning/` OpenTofu config. Two reviewers run in parallel (Claude + Codex when available), then changed scripts are validated — chezmoi templates are rendered before linting, since raw `.tmpl` files are not valid bash.
 
 ## Step 1: Anti-Loop Gate
 
@@ -28,7 +28,7 @@ Parse the output:
 
 **If fewer than 2 files changed AND fewer than 20 total lines changed → print "No significant changes to review, skipping." and stop immediately.** Do not launch any agents.
 
-(Thresholds are lower than the .NET monorepo's because this repo is small and a 10-line shell change can still introduce real bugs — but trivial README touches don't need the full pipeline.)
+(Thresholds are low because this repo is small and a 10-line shell change can still introduce real bugs — but trivial README touches don't need the full pipeline.)
 
 ## Step 2: Check Available Tools
 
@@ -37,6 +37,8 @@ Run these in parallel:
 ```bash
 command -v codex >/dev/null 2>&1 && echo "CODEX_AVAILABLE" || echo "CODEX_MISSING"
 command -v shellcheck >/dev/null 2>&1 && echo "SHELLCHECK_AVAILABLE" || echo "SHELLCHECK_MISSING"
+command -v chezmoi >/dev/null 2>&1 && echo "CHEZMOI_AVAILABLE" || echo "CHEZMOI_MISSING"
+command -v tofu >/dev/null 2>&1 && echo "TOFU_AVAILABLE" || echo "TOFU_MISSING"
 ```
 
 (Use `command -v` rather than running the binary and piping through `head` — without `pipefail` set, a missing binary can produce a misleading "available" because `head` exits 0 on empty input.)
@@ -53,22 +55,27 @@ In a **single message**, launch all available reviewers using the Agent tool —
 
 Prompt:
 ```
-You are reviewing shell-script changes in /Users/chris/Source/dotfiles. Run `git diff main...HEAD` (fall back to `git diff HEAD` if the range is empty) to get the scope.
+You are reviewing changes in /Users/chris/Source/dotfiles, a chezmoi-managed dotfiles repo targeting TWO machines: a macOS Apple Silicon workstation and a headless Fedora Linux server. Run `git diff main...HEAD` (fall back to `git diff HEAD` if the range is empty) to get the scope.
 
-Read every modified file in full — don't review from the diff alone. The setup flow is:
-  bootstrap.sh → setup.sh → scripts/*.sh (sourced in order) → dotfiles/* (symlinked into $HOME)
+Read every modified file in full — don't review from the diff alone. Architecture facts you must reason with:
+- `chezmoi init --apply` runs numbered `run_onchange_before_*` scripts, applies `dot_*` templates into $HOME, then runs `run_onchange_after_*` scripts.
+- EACH run script is its OWN process — env/PATH set in one script is invisible to the next. Scripts re-establish the environment via the shared prelude `.chezmoitemplates/dev-env.sh` (`{{ template "dev-env.sh" . }}`).
+- `.tmpl` files are Go templates branching on `.chezmoi.os` ("darwin"/"linux") and the `headless` flag (defined in .chezmoi.toml.tmpl; defaults true when no TTY, e.g. under cloud-init).
+- `run_onchange_*` scripts re-run when their RENDERED content changes (the Brewfile hash embedded in 10-packages exists for exactly this) and must be idempotent.
+- `provisioning/` is OpenTofu for the Hetzner box: machine only; software comes from cloud-init.yaml → chezmoi. Changing user_data (cloud-init.yaml) forces destroy+recreate; the server has prevent_destroy = true as a guard.
 
 Reference review criteria at .claude/skills/code-review/review-criteria.md.
 
 Focus on:
-- Bash pitfalls (set -e/-u/pipefail interactions, word splitting, unquoted vars, command substitution failures, sourced vs spawned exit semantics)
-- Idempotency (re-running setup.sh must not be destructive)
-- Cross-file ordering (sourced scripts share PATH/env — does each script's prereq exist when sourced?)
-- Destructive operations on user state (~/.zshrc, ~/.ssh/config, ~/.gitconfig) — every overwrite needs a backup
-- macOS specifics (BSD vs GNU tool flags, system Python/bash versions, defaults write keys)
-- Brewfile / cask / fnm / pnpm / uv quirks
-- Logging correctness (tee/exec/process-substitution gotchas)
-- Trap and signal handling (sudo keepalive, background process cleanup)
+- Bash pitfalls (set -e/-u/pipefail interactions, word splitting, command substitution failures) AND zsh-specific pitfalls in dot_zshrc (zsh does NOT word-split unquoted parameters)
+- Per-process environment assumptions (does a script assume PATH/env from an earlier script? does it include the dev-env prelude when it needs brew/fnm/pnpm/~/.local/bin?)
+- Template branch coverage: does every `{{ if }}` chain handle darwin, linux, AND the else case? Is a feature gated on `headless` vs OS correctly?
+- Fresh-machine behavior: would this work on a pristine Mac (no Homebrew on PATH) and on first boot of the Fedora box (non-interactive, no TTY)?
+- Idempotency of run_onchange scripts (re-runs must not duplicate or destroy state)
+- Supply-chain: release binaries must be version-pinned with sha256 verified; flag any new unpinned `curl | bash` beyond the accepted vendor installers (Homebrew, chezmoi, Oh My Zsh, fnm, pnpm, Claude)
+- macOS specifics (BSD vs GNU flags, `defaults write` keys, TCC-protected domains) and Fedora specifics (dnf package names, packages absent from cloud images)
+- provisioning/: tofu resource semantics (what forces replacement?), cloud-init YAML validity (placeholders, quoting), firewall/secrets handling
+- Trap and signal handling (sudo keepalive, RETURN traps, background process cleanup)
 
 Output structured feedback with severity levels: Critical / Important / Minor / Positive. For each finding cite file:line and a concrete failure scenario.
 ```
@@ -81,7 +88,7 @@ Prompt:
 ```
 Run the following command from /Users/chris/Source/dotfiles and return its full stdout output as your result:
 
-codex exec "Review the recent git changes (git diff main...HEAD, fall back to git diff HEAD if empty) for code quality, potential bugs, security issues, design problems, and shell-script footguns. The repo is a personal macOS dotfiles bootstrap: bootstrap.sh, setup.sh, scripts/*.sh, Brewfile, dotfiles/.zshrc, dotfiles/.ssh/config. Focus on bash pitfalls, idempotency, destructive ops on user state, macOS specifics, and cross-script ordering. Output structured feedback with severity levels: Critical / Important / Minor." --sandbox read-only --skip-git-repo-check
+codex exec "Review the recent git changes (git diff main...HEAD, fall back to git diff HEAD if empty) for code quality, potential bugs, security issues, design problems, and shell-script footguns. The repo is a chezmoi-managed personal dotfiles repo for two machines (macOS Apple Silicon + headless Fedora server): run_onchange_*.sh.tmpl provisioning scripts (Go templates branching on .chezmoi.os and a headless flag; each script runs as its own process), dot_* templates, Brewfile, and provisioning/ (OpenTofu + cloud-init for a Hetzner box). Focus on bash/zsh pitfalls, idempotency of run_onchange scripts, per-process environment assumptions, template branch coverage, fresh-machine behavior, supply-chain pinning, and tofu/cloud-init semantics. Output structured feedback with severity levels: Critical / Important / Minor." --sandbox read-only --skip-git-repo-check
 
 If the command fails or codex is not available, include the stderr output and say "Codex review unavailable: <reason>".
 ```
@@ -106,31 +113,44 @@ After all agents complete, produce a unified report:
 <good implementations worth highlighting>
 ```
 
-When both reviewers flag the same issue, list it once with both citations. When they disagree, surface both views — Claude's strength is cross-file tracing and bash semantics; Codex's strength is alternative idioms and catching things a Claude pass missed.
+When both reviewers flag the same issue, list it once with both citations. When they disagree, surface both views — Claude's strength is cross-file tracing and bash/template semantics; Codex's strength is alternative idioms and catching things a Claude pass missed.
 
-## Step 5: Validate Shell Scripts
+## Step 5: Validate Changed Files
 
-After the review report is presented, validate the changed scripts.
+After the review report is presented, validate the changed files.
 
-1. **List changed shell files**:
+1. **List changed shell files — the pattern MUST include `.sh.tmpl`** (this repo's run scripts are all templates; a plain `\.sh$` filter would silently match nothing):
+
 ```bash
-git diff --name-only main...HEAD | grep -E '\.(sh|zsh|bash)$' || git diff --name-only HEAD | grep -E '\.(sh|zsh|bash)$'
+git diff --name-only main...HEAD | grep -E '\.(sh|zsh|bash)$|\.sh\.tmpl$'
 ```
 
-Also include the unchanged scripts they depend on (transitive sourcing).
+(Use the same fallback scope as Step 1 if the range is empty.) Also include `.chezmoitemplates/dev-env.sh` in the set whenever any script that includes it changed.
 
-2. **Syntax check** — always runs, no install needed:
+2. **Plain `.sh` files** — check directly:
+
 ```bash
-for f in <changed_scripts>; do bash -n "$f" && echo "✓ $f" || echo "✗ $f"; done
+bash -n <file> && shellcheck -x -s bash <file>
 ```
 
-3. **Shellcheck** — only if available:
-```bash
-shellcheck -x -s bash <changed_scripts>
-```
-The `-x` flag follows `source` statements so cross-file issues surface.
+3. **`.sh.tmpl` files** — raw templates are NOT valid bash; render first.
+   - If chezmoi is available, render with this machine's data, then check the result:
+     ```bash
+     chezmoi execute-template < <file> > /tmp/rendered.sh
+     bash -n /tmp/rendered.sh && shellcheck -S warning -s bash /tmp/rendered.sh
+     ```
+     **Caveat:** this renders only the CURRENT machine's branch (e.g. darwin). Note in the summary which OS branch went unvalidated.
+   - If chezmoi is missing, do not skip silently: say so in the summary, and at minimum eyeball-review the non-current-OS branches in the diff.
 
-4. **Handle failures**: If `bash -n` fails, that's a hard error — fix and re-run. Shellcheck warnings are informational; fix Critical/Important findings, leave style ones unless the user asks.
+4. **provisioning/ changes** — if any `*.tf` or `cloud-init.yaml` changed and tofu is available:
+
+```bash
+cd provisioning && tofu init -backend=false -input=false >/dev/null && tofu validate
+```
+
+Also sanity-parse `cloud-init.yaml` as YAML if a parser is available (`ruby -ryaml -e 'YAML.load_file("provisioning/cloud-init.yaml")'`).
+
+5. **Handle failures**: If `bash -n` or `tofu validate` fails, that's a hard error — fix and re-run. Shellcheck warnings are informational; fix Critical/Important findings, leave style ones unless the user asks.
 
 ## Step 6: Final Summary
 
@@ -140,7 +160,9 @@ Append validation results to the review report:
 ### 🧪 Validation
 - bash -n: <pass/fail counts>
 - shellcheck: <pass/fail counts, or "not installed">
-- Scripts checked: <list>
+- templates rendered: <count, and which OS branch>; branches NOT validated: <list or "none">
+- tofu validate: <pass/fail, or "no provisioning changes" / "tofu not installed">
+- Files checked: <list>
 
 ### 📊 Summary
 - Reviewers run: <list>
@@ -149,4 +171,4 @@ Append validation results to the review report:
 - Validation: <pass/fail>
 ```
 
-If a reviewer or validation step was skipped (codex/shellcheck not installed, no shell files in diff), note it under Summary.
+If a reviewer or validation step was skipped (codex/shellcheck/chezmoi/tofu not installed, no matching files in diff), note it explicitly under Summary — never let a skipped check read as a passed check.

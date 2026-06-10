@@ -1,8 +1,15 @@
 #!/usr/bin/env bash
+{{- if (.headless | default false) }}
+# Headless profile (e.g. the Linux server): no GUI editor, so skip VS Code
+# extensions entirely. Gated on the `headless` flag (.chezmoi.toml.tmpl), not the
+# OS — a non-headless Linux desktop falls through to the install path below.
+exit 0
+{{- else }}
 set -euo pipefail
 
-# Add the macOS VS Code app's `code` CLI to PATH if present. On Linux,
-# `code` is a regular binary so this no-ops.
+# VS Code extensions for a GUI workstation — macOS today, a Linux desktop later.
+# Add the macOS VS Code app's `code` CLI to PATH if present; on Linux `code` is
+# already a normal binary, so this no-ops.
 VSCODE_BIN="/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
 [ -d "$VSCODE_BIN" ] && export PATH="$VSCODE_BIN:$PATH"
 
@@ -11,21 +18,19 @@ if ! command -v code &>/dev/null; then
   exit 0
 fi
 
+# No AI extensions on purpose (Claude Code in the terminal is the AI layer; the
+# managed settings.json disables the built-in AI UI). Python/Rust were cut as
+# speculative — not part of the contract-stack rotation.
 EXTENSIONS=(
   esbenp.prettier-vscode
   dbaeumer.vscode-eslint
   eamodio.gitlens
   mhutchie.git-graph
-  github.copilot
-  github.copilot-chat
   bradlc.vscode-tailwindcss
   ms-vscode.vscode-typescript-next
   prisma.prisma
-  ms-python.python
-  charliermarsh.ruff
-  ms-python.mypy-type-checker
-  rust-lang.rust-analyzer
   tamasfe.even-better-toml
+  monokai.theme-monokai-pro-vscode  # theme referenced by the managed settings.json
   ms-vscode-remote.remote-ssh
   ms-vscode-remote.remote-containers
   ms-azuretools.vscode-docker
@@ -47,3 +52,4 @@ for ext in "${EXTENSIONS[@]}"; do
     echo "! skipped: $ext"
   fi
 done
+{{- end }}
