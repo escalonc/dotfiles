@@ -31,7 +31,7 @@ set -euo pipefail
 echo "→ Pre-flight: dnf base packages"
 # util-linux-user provides chsh on Fedora.
 sudo dnf install -y \
-  zsh git git-lfs curl wget unzip tar gcc gcc-c++ make \
+  zsh git curl wget unzip tar gcc gcc-c++ make \
   gnupg2 jq util-linux-user
 
 # Make zsh this user's login shell (no-op if already set).

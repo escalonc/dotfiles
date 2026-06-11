@@ -15,7 +15,7 @@
   since changing this changes their rendered content).
 */ -}}
 # --- shared dev environment (see .chezmoitemplates/dev-env.sh) ---
-# User-local binaries installed outside a package manager (fnm, pnpm, atuin, …).
+# User-local binaries installed outside a package manager (fnm, pnpm, claude, …).
 export PATH="$HOME/.local/bin:$PATH"
 
 # Homebrew (macOS, Apple Silicon). A fresh Mac's PATH lacks /opt/homebrew/bin, and

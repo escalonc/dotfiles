@@ -45,8 +45,8 @@ apply system defaults.
 
 | Area | Details |
 | --- | --- |
-| Packages | macOS: Homebrew formulae, GUI apps, fonts (`Brewfile`). Linux: `dnf` packages + release binaries into `~/.local/bin` |
-| Shell | zsh, Oh My Zsh, Powerlevel10k, fzf, atuin, zoxide — OMZ/p10k/plugins arrive via `.chezmoiexternal.toml` (chezmoi-managed, weekly refresh) |
+| Packages | macOS: Homebrew formulae, GUI apps, fonts (`Brewfile`). Linux: `dnf` packages + fnm/pnpm installers into user dirs |
+| Shell | zsh, Oh My Zsh, Powerlevel10k, fzf, zoxide — OMZ/p10k/plugins arrive via `.chezmoiexternal.toml` (chezmoi-managed, weekly refresh) |
 | Languages | Node via fnm; pnpm globals |
 | Editor | VS Code extensions + managed `settings.json` (built-in AI/Copilot UI disabled, telemetry off — Claude Code is the AI layer). GUI machines only; skipped on a headless box |
 | Git/SSH | Git config, global ignore rules; 1Password SSH agent on macOS (agent-forwarding/HTTPS on the server) |
@@ -64,7 +64,7 @@ apply system defaults.
 ├── .chezmoitemplates/macos-defaults.sh               # the `defaults write` payload, included by 60-ui-defaults
 ├── .chezmoiscripts/
 │   ├── run_onchange_before_00-bootstrap.sh.tmpl      # macOS: Xcode CLT + Homebrew. Linux: dnf base + zsh
-│   ├── run_onchange_before_10-packages.sh.tmpl       # macOS: brew bundle. Linux: dnf + release binaries
+│   ├── run_onchange_before_10-packages.sh.tmpl       # macOS: brew bundle. Linux: dnf + fnm/pnpm installers
 │   ├── run_onchange_before_30-languages.sh.tmpl      # Node (fnm)
 │   ├── run_onchange_before_40-pkg-managers.sh.tmpl   # pnpm globals
 │   ├── run_onchange_before_50-editor.sh.tmpl         # VS Code extensions (skipped if headless)

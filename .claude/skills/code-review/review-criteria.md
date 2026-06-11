@@ -24,7 +24,7 @@ Reference document for what each reviewer focuses on during `/code-review` in th
 - **Secrets**: no tokens/keys in committed files; `TF_VAR_*` env vars only; tfstate/tfvars stay gitignored
 
 ### Important
-- **Supply-chain pinning**: new release-binary downloads must pin version + verify sha256 (see `dl_tarbin` in 10-packages); flag unpinned `latest` URLs
+- **Supply-chain pinning**: any new release-binary download must pin a version + verify sha256 before install (a `dl_tarbin` helper that did this lives in git history if a pattern is needed); flag unpinned `latest` URLs
 - **Brewfile / dnf quirks**: missing entries, formula renames, packages absent from Fedora cloud images; tools referenced by `dot_zshrc` aliases/functions must exist on BOTH machines or be guarded
 - **Sudo handling**: keepalive loops cleaned up via `trap`; `sudo -n` probes before optional sudo work; cloud-init runs with NOPASSWD but interactive Linux may not
 - **Tool-version drift**: alias names that change across versions (fnm `lts-latest`), Hetzner image names going stale (`fedora-NN`)
