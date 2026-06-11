@@ -48,7 +48,6 @@ cask "bruno"
 # Productivity
 cask "raycast"
 cask "slack"
-cask "zoom"
 cask "spotify"
 
 # Utilities
@@ -64,8 +63,3 @@ cask "1password-cli"
 cask "cleanshot"
 
 # ─── Fonts ───────────────────────────────────────────────────────────────────
-cask "font-jetbrains-mono-nerd-font"
-cask "font-fira-code-nerd-font"
-cask "font-hack-nerd-font"
-cask "font-cascadia-code-nerd-font"
-cask "font-meslo-lg-nerd-font"
