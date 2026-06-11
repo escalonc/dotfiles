@@ -17,6 +17,7 @@
 
 [push]
 	default = current
+	autoSetupRemote = true
 
 [pull]
 	rebase = true
@@ -34,10 +35,14 @@
 	enabled = true
 
 [help]
-	autocorrect = 1
+	# "prompt", not a number: numeric values are DECISECONDS before the guessed
+	# command auto-runs (1 = run after 0.1s). prompt asks y/n instead.
+	autocorrect = prompt
 
-[color]
-	ui = auto
+[merge]
+	# Conflict markers include the common-ancestor block, so you can see what
+	# BOTH sides changed instead of guessing. Pairs with rerere; delta renders it.
+	conflictStyle = zdiff3
 
 [interactive]
 	diffFilter = delta --color-only
