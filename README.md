@@ -35,7 +35,8 @@ the above automatically on first boot) is a separate, optional step — see
 ## After Install
 
 These are the macOS workstation steps (the headless server needs none of them).
-Restart the terminal (or `source ~/.zshrc`) and run `p10k configure`. Enable the
+Restart the terminal (or `source ~/.zshrc`) — the prompt is preconfigured
+(`dot_p10k.zsh`; rerun `p10k configure` only to restyle it). Enable the
 1Password SSH agent, add your public key to GitHub / GitLab, then `gh auth login`.
 Launch Claude Code, OrbStack, Raycast, and CleanShot once to finish their setup.
 Finally, set JetBrains Mono Nerd Font in your terminal and restart macOS to
@@ -71,6 +72,7 @@ apply system defaults.
 │   ├── run_onchange_after_60-ui-defaults.sh.tmpl     # macOS Dock/Finder/keyboard (no-op on Linux)
 │   └── run_onchange_after_70-claude.sh.tmpl          # Claude Code install
 ├── dot_zshrc.tmpl                                    # → ~/.zshrc (per-OS aliases/env)
+├── dot_p10k.zsh                                      # → ~/.p10k.zsh (prompt; from `p10k configure`)
 ├── dot_zprofile.tmpl                                 # → ~/.zprofile (login-shell PATH)
 ├── dot_gitconfig.tmpl                                # → ~/.gitconfig
 ├── dot_gitignore_global                              # → ~/.gitignore_global
@@ -104,6 +106,7 @@ which re-establishes that environment. Edit the prelude once in
 | Add global JS tools | `.chezmoiscripts/run_onchange_before_40-pkg-managers.sh.tmpl` |
 | Bump/pin the shell stack (OMZ, p10k, plugins) | `.chezmoiexternal.toml` |
 | Tweak macOS defaults | `.chezmoitemplates/macos-defaults.sh` |
+| Restyle the prompt | rerun `p10k configure`, then copy `~/.p10k.zsh` over `dot_p10k.zsh` |
 | Machine-local shell overrides | `~/.zshrc.local` (untracked) |
 
 After editing, run `chezmoi apply` (or `chezmoi update` to pull first).

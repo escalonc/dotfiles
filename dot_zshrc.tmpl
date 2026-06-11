@@ -33,7 +33,6 @@ source "$ZSH/oh-my-zsh.sh"
 {{- if eq .chezmoi.os "darwin" }}
 [[ -x /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
 export HOMEBREW_NO_ANALYTICS=1
-export HOMEBREW_NO_ENV_HINTS=1
 {{- end }}
 
 export PATH="$HOME/.local/bin:$PATH"
@@ -93,6 +92,7 @@ alias reload="source ~/.zshrc"
 alias myip="curl -s ifconfig.me; echo"
 {{- if eq .chezmoi.os "darwin" }}
 alias zshconfig="subl ~/.zshrc"
+alias ohmyzsh="subl ~/.oh-my-zsh"
 alias hosts="sudo subl /etc/hosts"
 alias localip="ipconfig getifaddr en0"
 alias flushdns="sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder && echo 'DNS flushed'"
@@ -100,6 +100,7 @@ alias cleanup="find . -name '.DS_Store' -delete"
 alias brewup="brew update && brew upgrade && brew cleanup"
 {{- else }}
 alias zshconfig='$EDITOR ~/.zshrc'
+alias ohmyzsh='$EDITOR ~/.oh-my-zsh'
 alias hosts='sudo $EDITOR /etc/hosts'
 alias localip="hostname -I | awk '{print \$1}'"
 alias flushdns="sudo resolvectl flush-caches && echo 'DNS flushed'"
@@ -161,19 +162,14 @@ export EDITOR="subl --wait"
 export EDITOR="nvim"
 {{- end }}
 export VISUAL="$EDITOR"
-export LANG="en_US.UTF-8"
-export LC_ALL="en_US.UTF-8"
 export HISTSIZE=50000
 export SAVEHIST=50000
 export HIST_STAMPS="yyyy-mm-dd"
 
-setopt HIST_IGNORE_DUPS
-setopt HIST_IGNORE_ALL_DUPS
-setopt HIST_FIND_NO_DUPS
-setopt SHARE_HISTORY
-
 # ── Powerlevel10k config ─────────────────────────────────────────────────────
-[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
+# `|| source` (not `&& source`): a missing file must leave $? = 0, or the first
+# prompt of every new shell renders a phantom error-status segment.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # ── Local overrides ──────────────────────────────────────────────────────────
-[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+[[ ! -f ~/.zshrc.local ]] || source ~/.zshrc.local
