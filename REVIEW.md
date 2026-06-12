@@ -45,7 +45,7 @@ only the question **"is this what I actually want?"** Check off as you confirm.
 - [ ] Old Mac: `code --uninstall-extension github.copilot github.copilot-chat`
 
 ### `dot_zshrc.tmpl` (shared + darwin branch)
-- [ ] Plugins (8): `git gh zsh-autosuggestions zsh-completions docker sudo colored-man-pages zsh-syntax-highlighting`
+- [ ] Plugins (6 in array): `git gh zsh-autosuggestions docker sudo colored-man-pages`; zsh-completions via `fpath+=` BEFORE oh-my-zsh (upstream: avoids double compinit/.zcompdump churn); zsh-syntax-highlighting sourced manually as the FILE'S last line (after fzf/zoxide/p10k widgets exist)
 - [x] `BAT_THEME` → "Catppuccin Mocha" (2026-06-12; Mocha is the declared overall theme — see Themes TODO below)
 - [ ] fzf: 40% height, bat preview (500 lines), `fd --hidden --follow` source
 - [ ] Docker aliases incl. `dprune -a` (deletes ALL unused images); docker has no runtime on the server yet
