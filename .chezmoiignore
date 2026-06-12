@@ -2,6 +2,11 @@ README.md
 REVIEW.md
 Brewfile
 
+# TEMP — VS Code settings review deferred (REVIEW.md §A VS Code): while this
+# line exists, chezmoi does NOT touch the machine's settings.json. Delete the
+# line to re-enable management.
+Library/
+
 {{ if ne .chezmoi.os "darwin" -}}
 # ~/Library only exists on macOS (VS Code settings live there). A Linux desktop
 # would need a separate dot_config/Code/ path — add it when that machine exists.

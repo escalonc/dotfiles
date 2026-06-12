@@ -30,13 +30,14 @@ only the question **"is this what I actually want?"** Check off as you confirm.
 - [x] Security: screensaver password immediate (the sudo login-window default was reviewed and REMOVED — script is now fully sudo-free)
 - [x] Reduce Motion is a MANUAL step (TCC-protected) — done on new Mac?
 
-### `Brewfile` (you curated it this week — final skim)
-- [ ] 22 formulae — `tldr` and `hyperfine` are the flagged low-adoption keepers; earning their slots?
-- [ ] ~21 apps + fonts (after your Zoom/fonts trim) — one full read top to bottom
-- [ ] Heads-up: after cutting wireshark (then) and proxyman (now) there's NO network-inspection tool — Bruno covers API calls only; confirm acceptable
-- [ ] Old Mac: `brew bundle cleanup` to list strays, uninstall what you trimmed
+### `Brewfile` (✅ reviewed 2026-06-11)
+- [x] 22 formulae — `tldr` and `hyperfine` are the flagged low-adoption keepers; earning their slots?
+- [x] ~21 apps + fonts (after your Zoom/fonts trim) — one full read top to bottom
+- [x] Heads-up: after cutting wireshark (then) and proxyman (now) there's NO network-inspection tool — Bruno covers API calls only; confirm acceptable
+- [x] Old Mac: `brew bundle cleanup` to list strays, uninstall what you trimmed
 
 ### VS Code — `Library/Application Support/Code/User/settings.json` + `50-editor` extensions
+**(⏸ DEFERRED to end — settings.json is "commented out" via a TEMP `Library/` line in `.chezmoiignore`; delete that line when reviewing this section, then `chezmoi apply`)**
 - [ ] Re-skim the ~37 carried-over settings (they were yours; 2 added: `chat.disableAIFeatures`, telemetry off)
 - [ ] MonoLisa font: paid, installed MANUALLY per machine — done on the new Mac? (fontFamily falls back to Menlo without it)
 - [ ] Settings Sync OFF on BOTH Macs
@@ -45,7 +46,7 @@ only the question **"is this what I actually want?"** Check off as you confirm.
 
 ### `dot_zshrc.tmpl` (shared + darwin branch)
 - [ ] Plugins (8): `git gh zsh-autosuggestions zsh-completions docker sudo colored-man-pages zsh-syntax-highlighting`
-- [ ] `BAT_THEME="Dracula"` vs Monokai Pro editor theme — intentional mismatch?
+- [x] `BAT_THEME` → "Catppuccin Mocha" (2026-06-12; Mocha is the declared overall theme — see Themes TODO below)
 - [ ] fzf: 40% height, bat preview (500 lines), `fd --hidden --follow` source
 - [ ] Docker aliases incl. `dprune -a` (deletes ALL unused images); docker has no runtime on the server yet
 - [ ] Functions: `serve` (8080), `hist` (duplicates fzf Ctrl-R), `weather`, `jwt-decode`, `extract`, `killport`, `gclone`
@@ -117,6 +118,31 @@ only the question **"is this what I actually want?"** Check off as you confirm.
 - [ ] `versions.tf` + `.terraform.lock.hcl`: hcloud `~> 1.48` (1.65 locked, committed) — fine
 - [ ] `provisioning/.gitignore`: state/tfvars/plans ignored, lock tracked — fine
 - [ ] Secret flow: `TF_VAR_hcloud_token` via `op read` only — 1Password item exists?
+
+---
+
+## Themes TODO — Catppuccin Mocha everywhere (declared 2026-06-12)
+
+Done: **bat** (built-in theme, `BAT_THEME` in zshrc — delta inherits it for diff syntax).
+
+Chezmoi-manageable (official ports at github.com/catppuccin/<tool>):
+- [ ] delta UI colors: official `catppuccin.gitconfig` include (syntax already Mocha via BAT_THEME)
+- [ ] fzf: official `--color` string appended to `FZF_DEFAULT_OPTS`
+- [ ] zsh-syntax-highlighting: official colors file sourced before the plugin
+- [ ] btop: theme file → `~/.config/btop/themes` + config line
+- [ ] eza: official `theme.yml` → `~/.config/eza/`
+- [ ] Warp: theme YAML → `~/.warp/themes/` (select once in Warp settings)
+
+GUI apps (manual, one-time each):
+- [ ] VS Code: `catppuccin.catppuccin-vsc` + icons ext — fold into the DEFERRED VS Code review (replaces Monokai Pro ext + 2 settings keys)
+- [ ] Rider/JetBrains: official Catppuccin plugin
+- [ ] Sublime Text: official port via Package Control
+- [ ] Slack: paste official sidebar color string
+- [ ] Brave: Chrome-store Catppuccin theme
+- [ ] Raycast: community Mocha theme
+
+When configured (phase 2 decisions): tmux (`catppuccin/tmux`), neovim (`catppuccin/nvim`).
+Won't theme: p10k (hand-set segment colors), Claude Code, OrbStack, macOS itself.
 
 ---
 
