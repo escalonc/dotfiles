@@ -9,10 +9,6 @@
 */ -}}
 echo "→ Applying macOS system preferences..."
 
-# Sudo for the login-window security default. If unavailable, skip silently.
-SUDO_OK=true
-sudo -n -v 2>/dev/null || SUDO_OK=false
-
 # Dock
 defaults write com.apple.dock autohide               -bool true
 defaults write com.apple.dock autohide-delay         -float 0
@@ -52,6 +48,8 @@ defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
 defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled  -bool false
 defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled   -bool false
 defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled     -bool false
+# 3 = Full Keyboard Access (Tab reaches ALL controls). 2 would be only the lesser
+# "Keyboard navigation" toggle — looks similar, isn't.
 defaults write NSGlobalDomain AppleKeyboardUIMode                  -int 2
 
 # Trackpad
@@ -87,11 +85,6 @@ defaults write NSGlobalDomain AppleMenuBarFontSize           -string "large"
 defaults write NSGlobalDomain SLSMenuBarUseBlurredAppearance -bool true
 
 # Security
-if [ "$SUDO_OK" = true ]; then
-  sudo defaults write /Library/Preferences/com.apple.loginwindow DisableConsoleAccess -bool true
-else
-  echo "! sudo unavailable — skipped login-window security default" >&2
-fi
 defaults write com.apple.screensaver askForPassword      -int 1
 defaults write com.apple.screensaver askForPasswordDelay -int 0
 
