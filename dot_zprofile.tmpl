@@ -9,7 +9,6 @@
   export PATH="/Applications/Sublime Text.app/Contents/SharedSupport/bin:$PATH"
 [[ -d "/Applications/Visual Studio Code.app/Contents/Resources/app/bin" ]] && \
   export PATH="/Applications/Visual Studio Code.app/Contents/Resources/app/bin:$PATH"
-{{- else }}
-# Linux login-shell PATH.
-export PATH="$HOME/.local/bin:$PATH"
 {{- end }}
+# Linux needs nothing here — ~/.local/bin is set in .zshrc so it also reaches
+# non-login shells (tmux panes on the devbox); brew shellenv above is macOS-only.

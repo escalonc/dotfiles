@@ -26,6 +26,11 @@ autoload -U compinit && compinit
 
 source "$ZSH/oh-my-zsh.sh"
 
+# ── PATH ─────────────────────────────────────────────────────────────────────
+# User-local binaries (claude; fnm on Linux). In .zshrc, not .zprofile, so it
+# reaches non-login interactive shells too — notably tmux panes on the devbox.
+export PATH="$HOME/.local/bin:$PATH"
+
 # ── Language Managers ────────────────────────────────────────────────────────
 # Guard each so a missing/uninstalled tool doesn't spam errors on shell startup.
 command -v fnm >/dev/null 2>&1 && eval "$(fnm env --use-on-cd --shell zsh)"
