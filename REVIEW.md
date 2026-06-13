@@ -44,15 +44,15 @@ only the question **"is this what I actually want?"** Check off as you confirm.
 - [ ] Extensions (21): anything missing you reach for / anything never used?
 - [ ] Old Mac: `code --uninstall-extension github.copilot github.copilot-chat`
 
-### `dot_zshrc.tmpl` (shared + darwin branch)
-- [ ] Plugins (6 in array): `git gh zsh-autosuggestions docker sudo colored-man-pages`; zsh-completions via `fpath+=` BEFORE oh-my-zsh (upstream: avoids double compinit/.zcompdump churn); zsh-syntax-highlighting sourced manually as the FILE'S last line (after fzf/zoxide/p10k widgets exist)
+### `dot_zshrc.tmpl` (shared + darwin branch) (✅ reviewed 2026-06-13 — all ratified)
+- [x] Plugins (6 in array): `git gh zsh-autosuggestions docker sudo colored-man-pages`; zsh-completions via `fpath+=` BEFORE oh-my-zsh (upstream: avoids double compinit/.zcompdump churn); zsh-syntax-highlighting sourced manually as the FILE'S last line (after fzf/zoxide/p10k widgets exist)
 - [x] `BAT_THEME` → "Catppuccin Mocha" (2026-06-12; Mocha is the declared overall theme — see Themes TODO below)
-- [ ] fzf: `--style=minimal` (2026-06-13, dropped `--border`), 40% height, bat preview (500 lines), `fd --hidden --follow` source
-- [ ] Docker aliases incl. `dprune -a` (deletes ALL unused images); docker has no runtime on the server yet
-- [ ] Functions: `serve` (8080), `hist` (duplicates fzf Ctrl-R), `weather`, `jwt-decode`, `extract`, `killport`, `gclone`
-- [ ] HISTSIZE/SAVEHIST 50000; `HIST_STAMPS yyyy-mm-dd`
-- [ ] darwin aliases: `zshconfig`/`ohmyzsh`/`hosts` (subl), `cleanup` (rm .DS_Store from CWD down), `brewup`, `flushdns`, `localip`
-- [ ] `EDITOR="subl --wait"` (darwin) — settled, confirm once
+- [x] fzf: `--style=minimal` (2026-06-13, dropped `--border`), 40% height, bat preview (500 lines), `fd --hidden --follow` source
+- [x] Docker aliases incl. `dprune -a` (deletes ALL unused images); docker has no runtime on the server yet
+- [x] Functions: `serve` (8080), `hist` (duplicates fzf Ctrl-R), `weather`, `jwt-decode`, `extract`, `killport`, `gclone`
+- [x] HISTSIZE/SAVEHIST 50000; `HIST_STAMPS yyyy-mm-dd`
+- [x] darwin aliases: `zshconfig`/`ohmyzsh`/`hosts` (subl), `cleanup` (rm .DS_Store from CWD down), `brewup`, `flushdns`, `localip`
+- [x] `EDITOR="subl --wait"` (darwin) — settled, confirm once
 
 ### `dot_zprofile.tmpl`
 - [ ] darwin: guarded brew shellenv + Sublime/VS Code CLI dirs on PATH — both editors still the right PATH additions?
