@@ -54,18 +54,18 @@ only the question **"is this what I actually want?"** Check off as you confirm.
 - [x] darwin aliases: `zshconfig`/`ohmyzsh`/`hosts` (subl), `cleanup` (rm .DS_Store from CWD down), `brewup`, `flushdns`, `localip`
 - [x] `EDITOR="subl --wait"` (darwin) — settled, confirm once
 
-### `dot_zprofile.tmpl`
-- [ ] darwin: guarded brew shellenv + Sublime/VS Code CLI dirs on PATH — both editors still the right PATH additions?
-- [ ] linux branch: just `~/.local/bin` — sufficient?
+### `dot_zprofile.tmpl` (✅ reviewed 2026-06-13 — all ratified)
+- [x] darwin: guarded brew shellenv + Sublime/VS Code CLI dirs on PATH — both editors still the right PATH additions?
+- [x] linux branch: just `~/.local/bin` — sufficient?
 
-### `dot_p10k.zsh`
-- [ ] It's your wizard output (rainbow, nerdfont-v3, 12h, 2-line) — live with it a week, restyle path is in README
+### `dot_p10k.zsh` (✅ reviewed 2026-06-13 — all ratified)
+- [x] It's your wizard output (rainbow, nerdfont-v3, 12h, 2-line) — live with it a week, restyle path is in README
 
-### `dot_gitconfig.tmpl`
-- [ ] `user.email` = personal noreply everywhere — includeIf work split: before devbox makes work commits, or accept
-- [ ] SSH signing via 1Password: stated intent, unwired — wire or drop
-- [ ] `wip` commits tracked files only; `lg` shows `--all` refs
-- [ ] Behavior changes you ratified in chat: pull=rebase, zdiff3 markers, autocorrect prompt — revisit after a week of real use
+### `dot_gitconfig.tmpl` (✅ reviewed 2026-06-13 — all ratified)
+- [x] `user.email` = personal noreply everywhere — includeIf work split: before devbox makes work commits, or accept
+- [x] SSH signing via 1Password: stated intent, unwired — wire or drop
+- [x] `wip` commits tracked files only; `lg` shows `--all` refs
+- [x] Behavior changes you ratified in chat: pull=rebase, zdiff3 markers, autocorrect prompt — revisit after a week of real use
 
 ### `dot_gitignore_global` (never reviewed — affects EVERY repo incl. work)
 - [ ] `.envrc` ignored, but direnv is removed — keep or drop?
