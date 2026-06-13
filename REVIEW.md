@@ -15,15 +15,15 @@ only the question **"is this what I actually want?"** Check off as you confirm.
 
 ## A. macOS + chezmoi config
 
-### `.chezmoitemplates/macos-defaults.sh` (✅ reviewed 2026-06-11 — all ratified)
+### `.chezmoitemplates/macos-defaults.sh` (✅ reviewed 2026-06-11 — ratified, EXCEPT two settings changed 2026-06-13, see ⚠️ below)
 - [x] Dock: autohide ON, delay 0, animation 0.15s, magnification OFF, recents OFF, minimize-to-app ON, "scale" effect
 - [x] `mru-spaces = false` — Spaces do NOT reorder by recent use
 - [x] Natural scrolling OFF (`swipescrolldirection = false`) — deliberate?
 - [x] Tap-to-click ON, three-finger drag ON
 - [x] KeyRepeat 2 / InitialKeyRepeat 15 (very fast); press-and-hold accents OFF
 - [x] ALL autocorrect / smart quotes / smart dashes / auto-capitalize OFF
-- [x] `AppleKeyboardUIMode 3` — Full Keyboard Access (was 2 = lesser "keyboard navigation" toggle; caught during phase-1 review)
-- [x] Finder: list view, search current folder, folders first, all extensions, no rename warning
+- [ ] ⚠️ `AppleKeyboardUIMode` REVERTED to `2` (2026-06-13) — back to the lesser "keyboard navigation" toggle that phase-1 review had deliberately fixed to `3` (Full Keyboard Access). Re-confirm: intended, or a regression to undo?
+- [x] Finder: list view, search current folder, folders first, no rename warning (⚠️ `AppleShowAllExtensions` dropped 2026-06-13 — file extensions no longer force-shown)
 - [x] Screenshots → `~/Pictures/Screenshots`, png, no shadow
 - [x] Dark mode forced; large menu-bar font; double-click title bar = nothing
 - [x] Native window tiling fully OFF (Rectangle owns snapping)
@@ -31,7 +31,7 @@ only the question **"is this what I actually want?"** Check off as you confirm.
 - [x] Reduce Motion is a MANUAL step (TCC-protected) — done on new Mac?
 
 ### `Brewfile` (✅ reviewed 2026-06-11)
-- [x] 22 formulae — `tldr` and `hyperfine` are the flagged low-adoption keepers; earning their slots?
+- [x] 21 formulae (pnpm removed 2026-06-13) — `tldr` and `hyperfine` are the flagged low-adoption keepers; earning their slots?
 - [x] ~21 apps + fonts (after your Zoom/fonts trim) — one full read top to bottom
 - [x] Heads-up: after cutting wireshark (then) and proxyman (now) there's NO network-inspection tool — Bruno covers API calls only; confirm acceptable
 - [x] Old Mac: `brew bundle cleanup` to list strays, uninstall what you trimmed
@@ -47,7 +47,7 @@ only the question **"is this what I actually want?"** Check off as you confirm.
 ### `dot_zshrc.tmpl` (shared + darwin branch)
 - [ ] Plugins (6 in array): `git gh zsh-autosuggestions docker sudo colored-man-pages`; zsh-completions via `fpath+=` BEFORE oh-my-zsh (upstream: avoids double compinit/.zcompdump churn); zsh-syntax-highlighting sourced manually as the FILE'S last line (after fzf/zoxide/p10k widgets exist)
 - [x] `BAT_THEME` → "Catppuccin Mocha" (2026-06-12; Mocha is the declared overall theme — see Themes TODO below)
-- [ ] fzf: 40% height, bat preview (500 lines), `fd --hidden --follow` source
+- [ ] fzf: `--style=minimal` (2026-06-13, dropped `--border`), 40% height, bat preview (500 lines), `fd --hidden --follow` source
 - [ ] Docker aliases incl. `dprune -a` (deletes ALL unused images); docker has no runtime on the server yet
 - [ ] Functions: `serve` (8080), `hist` (duplicates fzf Ctrl-R), `weather`, `jwt-decode`, `extract`, `killport`, `gclone`
 - [ ] HISTSIZE/SAVEHIST 50000; `HIST_STAMPS yyyy-mm-dd`
@@ -86,19 +86,18 @@ only the question **"is this what I actually want?"** Check off as you confirm.
 - [ ] `.gitignore` (repo): only `.DS_Store` — enough?
 
 ### macOS-relevant run scripts — `.chezmoiscripts/`
-- [ ] `00-bootstrap` darwin: Homebrew via official installer w/ sudo keepalive — comfortable with the curl|bash trust list (brew, chezmoi, OMZ-via-chezmoi, fnm, pnpm, claude)?
+- [ ] `00-bootstrap` darwin: Homebrew via official installer w/ sudo keepalive — comfortable with the curl|bash trust list (brew, chezmoi, OMZ-via-chezmoi, fnm, claude)?
 - [ ] `10-packages` darwin: `brew bundle` + `brew analytics off`
 - [ ] `30-languages`: Node = "latest LTS at install time", default alias; per-project `.node-version` + `--use-on-cd` covers projects
-- [ ] `40-pkg-managers`: pnpm globals = `typescript tsx` only — both still wanted as globals?
 - [ ] `60-ui-defaults`: thin gate (payload reviewed above)
-- [ ] `70-claude`: native installer → pnpm → npm fallback chain; installs `anthropic.claude-code` VS Code extension
+- [ ] `70-claude`: native installer → npm fallback (pnpm branch removed 2026-06-13); installs `anthropic.claude-code` VS Code extension
 
 ---
 
 ## B. Linux (devbox software — test in local VM)
 
 - [ ] `00-bootstrap` linux: dnf base = `zsh git curl wget unzip tar gcc gcc-c++ make gnupg2 jq util-linux-user`; chsh to zsh — is the gcc toolchain needed for your workload?
-- [ ] `10-packages` linux: dnf = `ripgrep fd-find bat fzf zoxide btop tmux neovim eza git-delta gh httpie`; fnm + pnpm via vendor installers (unpinned — accepted)
+- [ ] `10-packages` linux: dnf = `ripgrep fd-find bat fzf zoxide btop tmux neovim eza git-delta gh httpie`; fnm via vendor installer (unpinned — accepted); pnpm removed 2026-06-13
 - [ ] zshrc linux branch: `EDITOR=nvim`, `zshconfig`/`hosts` use $EDITOR, `localip` (hostname -I), `flushdns` (resolvectl)
 - [ ] `50-editor`: headless gate ⇒ VS Code skipped on the server — correct
 - [ ] Locale exports removed: watch for `setlocale` warnings over ssh/tmux (fix: `glibc-langpack-en` or re-add LANG)
@@ -127,7 +126,7 @@ Done: **bat** (built-in theme, `BAT_THEME` in zshrc — delta inherits it for di
 
 Chezmoi-manageable (official ports at github.com/catppuccin/<tool>):
 - [ ] delta UI colors: official `catppuccin.gitconfig` include (syntax already Mocha via BAT_THEME)
-- [ ] fzf: official `--color` string appended to `FZF_DEFAULT_OPTS`
+- [ ] fzf: official `--color` string appended to `FZF_DEFAULT_OPTS` (`--style=minimal` already set)
 - [ ] zsh-syntax-highlighting: official colors file sourced before the plugin
 - [ ] btop: theme file → `~/.config/btop/themes` + config line
 - [ ] eza: official `theme.yml` → `~/.config/eza/`
@@ -156,6 +155,7 @@ Won't theme: p10k (hand-set segment colors), Claude Code, OrbStack, macOS itself
   - [ ] **neovim config** — nvim is `$EDITOR` on the server with zero config (no clipboard, default everything)
   - [ ] **Sublime Text settings** — permanent tier-3 editor, settings unmanaged (`~/Library/Application Support/Sublime Text/Packages/User/`)
   - [ ] Warp (has account sync — probably fine unmanaged), Raycast (manual export), Claude Code `~/.claude/` settings — accept as unmanaged?
+- [ ] **pnpm + JS globals** — removed 2026-06-13, to be set up later; restore the `typescript`/`tsx` globals (was `40-pkg-managers`, now deleted) alongside it, and decide whether `70-claude` should regain pnpm ahead of the npm fallback
 - [ ] Test harness (offered, parked): `just test` render+lint + Fedora-container e2e — decide after phase 2, when the manual VM loop gets old
 - [ ] Parked as separate projects (not repo review): Tailscale instead of IP allowlist, restic+B2 backups + Healthchecks, Packer golden image, ntfy notifications for devbox runs
 - [ ] Delete this file when done (or keep as a living audit log)
