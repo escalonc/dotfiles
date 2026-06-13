@@ -75,7 +75,7 @@ only the question **"is this what I actually want?"** Check off as you confirm.
 
 ### `private_dot_ssh/private_config.tmpl`
 - [ ] `Host *` → 1Password IdentityAgent; agent enabled in 1Password on the NEW Mac?
-- [ ] `Host devbox`: `User chris`, `ForwardAgent yes`; IP goes in `~/.ssh/config.local` post-provision
+- [x] `Host devbox` block REMOVED 2026-06-13 (premature pre-provision) — re-add deferred to phase C below
 - [ ] Other frequent hosts → add blocks (or config.local)
 
 ### chezmoi core files
@@ -117,6 +117,7 @@ only the question **"is this what I actually want?"** Check off as you confirm.
 - [ ] `versions.tf` + `.terraform.lock.hcl`: hcloud `~> 1.48` (1.65 locked, committed) — fine
 - [ ] `provisioning/.gitignore`: state/tfvars/plans ignored, lock tracked — fine
 - [ ] Secret flow: `TF_VAR_hcloud_token` via `op read` only — 1Password item exists?
+- [ ] Re-add the SSH `Host devbox` block to `private_dot_ssh/private_config.tmpl` (removed 2026-06-13): `User chris`, `ForwardAgent yes`, agent-forwarded 1Password (no keys on box); put the `tofu` output IP in `~/.ssh/config.local`
 
 ---
 
