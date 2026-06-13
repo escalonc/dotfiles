@@ -67,11 +67,12 @@ only the question **"is this what I actually want?"** Check off as you confirm.
 - [x] `wip` commits tracked files only; `lg` shows `--all` refs
 - [x] Behavior changes you ratified in chat: pull=rebase, zdiff3 markers, autocorrect prompt — revisit after a week of real use
 
-### `dot_gitignore_global` (never reviewed — affects EVERY repo incl. work)
-- [ ] `.envrc` ignored, but direnv is removed — keep or drop?
-- [ ] `.vscode/settings.json` ignored, but you now MANAGE VS Code settings — teams sharing .vscode/ become invisible to you
-- [ ] `.idea/`, `dist/ build/ .next/ .nuxt/ .cache/ coverage/ node_modules/` — broad; fine?
-- [ ] secrets section (`.env*`, `*.pem`, `*.key`, `.secrets`) — complete for your stacks?
+### `dot_gitignore_global` (✅ reviewed 2026-06-13 — trimmed 50→24 lines)
+- [x] `.envrc` dropped (direnv removed)
+- [x] `.vscode/settings.json` dropped — VS Code settings are now managed; global ignore would hide teams' shared `.vscode/`
+- [x] Project artifacts (`node_modules/ dist/ build/ .next/ .nuxt/ .cache/ coverage/`, npm/pnpm logs) dropped — those belong in each repo's committed `.gitignore`, not a global ignore that masks missing entries
+- [x] macOS block trimmed to the handful that actually occur; Windows entries (`Thumbs.db`, `ehthumbs.db`) removed
+- [x] secrets backstop kept (`.env*`, `*.pem`, `*.key`, `.secrets`) — projects should also ignore these; this is defense-in-depth
 
 ### `private_dot_ssh/private_config.tmpl` — DELETED 2026-06-13 (whole template removed)
 - [ ] Decide whether to manage SSH config at all. The removed template only set the
