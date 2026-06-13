@@ -4,13 +4,10 @@ set -euo pipefail
 
 echo "→ Pre-flight: Homebrew"
 
-# Homebrew. chezmoi does not install it; we do. The installer also installs the
-# Xcode Command Line Tools, and NONINTERACTIVE=1 does it headlessly (no GUI prompt).
+# Homebrew (its installer also brings the Xcode CLT; NONINTERACTIVE keeps it headless).
 if ! command -v brew &>/dev/null; then
-  # NONINTERACTIVE never prompts for a password — it expects sudo to be authorized
-  # already, otherwise it aborts with "Need sudo access ... needs to be an
-  # Administrator" even for admins. Authorize once, then keep the timestamp warm so
-  # the slow CLT + brew install can't hit the 5-minute sudo timeout mid-run.
+  # NONINTERACTIVE aborts unless sudo is pre-authorized; keep the timestamp warm
+  # so the slow CLT+brew install can't hit the 5-min sudo timeout mid-run.
   echo "  Authorizing sudo (you'll be prompted for your password once)..."
   sudo -v
   while true; do sudo -n true; sleep 60; kill -0 "$$" 2>/dev/null || exit; done 2>/dev/null &
@@ -21,10 +18,8 @@ if ! command -v brew &>/dev/null; then
   NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 
-# NOTE: nothing exported here survives this script — each chezmoi run script is
-# its own process. Later scripts (10-packages etc.) put brew on their own PATH via
-# the dev-env.sh prelude; future login shells get it from the chezmoi-managed
-# ~/.zprofile (dot_zprofile.tmpl).
+# Nothing exported here survives — each run script is its own process. Later
+# scripts get brew via the dev-env.sh prelude; login shells via ~/.zprofile.
 {{- else if eq .chezmoi.os "linux" }}
 set -euo pipefail
 
@@ -34,7 +29,6 @@ sudo dnf install -y \
   zsh git curl wget unzip tar gcc gcc-c++ make \
   gnupg2 jq util-linux-user
 
-# Make zsh this user's login shell (no-op if already set).
 ZSH_BIN="$(command -v zsh)"
 if [ "$(getent passwd "$USER" | cut -d: -f7)" != "$ZSH_BIN" ]; then
   sudo chsh -s "$ZSH_BIN" "$USER" || echo "! could not chsh to zsh; set it manually" >&2

@@ -7,13 +7,9 @@ fi
 export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
-# Never nag about updates: the self-updater is fully off — OMZ (and p10k + plugins)
-# are refreshed weekly by chezmoi instead (.chezmoiexternal.toml), with no interaction.
+# OMZ + plugins are refreshed by chezmoi (.chezmoiexternal.toml); never self-update.
 zstyle ':omz:update' mode disabled
 
-# Trimmed (2026-06-10) to plugins that do passive work — completions and key
-# widgets — plus the `git` alias pack, kept deliberately. A cut plugin is one
-# line to restore.
 plugins=(
   git
   gh
@@ -22,24 +18,13 @@ plugins=(
   sudo
   colored-man-pages
 )
-# NOTE: zsh-syntax-highlighting is deliberately NOT in this array — it's sourced
-# manually as the LAST line of this file, per upstream's recommendation.
 
-# zsh-completions: NOT in the plugins array (upstream: loading it as a plugin
-# adds its functions after compinit already ran → redundant .zcompdump rebuilds).
-# On fpath BEFORE oh-my-zsh.sh, whose own compinit then picks everything up once.
-# No compinit call here for the same reason — oh-my-zsh runs it.
-fpath+="$ZSH/custom/plugins/zsh-completions/src"
+# zsh-completions: on fpath BEFORE oh-my-zsh so its compinit sees it; as a plugin
+# it would load after compinit and force redundant .zcompdump rebuilds.
+fpath+=$ZSH_CUSTOM/plugins/zsh-completions/src
+autoload -U compinit && compinit
 
 source "$ZSH/oh-my-zsh.sh"
-
-# ── PATH ─────────────────────────────────────────────────────────────────────
-{{- if eq .chezmoi.os "darwin" }}
-[[ -x /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
-export HOMEBREW_NO_ANALYTICS=1
-{{- end }}
-
-export PATH="$HOME/.local/bin:$PATH"
 
 # ── Language Managers ────────────────────────────────────────────────────────
 # Guard each so a missing/uninstalled tool doesn't spam errors on shell startup.
@@ -64,7 +49,7 @@ export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
 export FZF_DEFAULT_OPTS='--height 40% --reverse --border --preview "bat --style=numbers --color=always --line-range :500 {}"'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
-# Ships with bat — also picked up by delta (it falls back to BAT_THEME for syntax).
+# Built into bat; delta inherits it for diff syntax.
 export BAT_THEME="Catppuccin Mocha"
 if command -v bat >/dev/null 2>&1; then
   alias cat="bat"
@@ -121,8 +106,7 @@ serve() { python3 -m http.server "${1:-8080}"; }
 killport() {
   local pids; pids=$(lsof -ti tcp:"$1")
   if [[ -n $pids ]]; then
-    # ${(f)…} splits on newlines — zsh doesn't word-split unquoted parameters,
-    # so a bare $pids with multiple PIDs would reach kill as ONE bogus argument.
+    # ${(f)…}: zsh doesn't word-split unquoted params — split PIDs on newlines.
     kill -9 ${(f)pids}
   else
     echo "No process on port $1"
@@ -172,18 +156,12 @@ export SAVEHIST=50000
 export HIST_STAMPS="yyyy-mm-dd"
 
 # ── Powerlevel10k config ─────────────────────────────────────────────────────
-# `|| source` (not `&& source`): a missing file must leave $? = 0, or the first
-# prompt of every new shell renders a phantom error-status segment.
+# ||-form keeps $? = 0 when the file is missing (else first prompt shows an error).
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-# ── Local overrides ──────────────────────────────────────────────────────────
-[[ ! -f ~/.zshrc.local ]] || source ~/.zshrc.local
-
 # ── Syntax highlighting — MUST stay the last thing sourced ───────────────────
-# It wraps every ZLE widget that exists at source time; anything loaded after it
-# (fzf, zoxide, p10k, local overrides) wouldn't be highlighted. That's also why
-# it's sourced manually here instead of via the OMZ plugins array, which runs
-# mid-file — exactly what upstream's "manual install, last sourced" advice means.
+# Wraps only ZLE widgets that already exist (fzf/zoxide/p10k load above) — hence
+# manual and last, not in the plugins array, which runs mid-file.
 ZSYH="${ZSH_CUSTOM:-$ZSH/custom}/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 [[ ! -f $ZSYH ]] || source "$ZSYH"
 unset ZSYH

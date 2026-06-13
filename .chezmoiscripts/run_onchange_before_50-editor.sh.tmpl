@@ -1,15 +1,12 @@
 #!/usr/bin/env bash
 {{- if (.headless | default false) }}
-# Headless profile (e.g. the Linux server): no GUI editor, so skip VS Code
-# extensions entirely. Gated on the `headless` flag (.chezmoi.toml.tmpl), not the
-# OS — a non-headless Linux desktop falls through to the install path below.
+# Headless (server): no GUI editor. Gated on the flag, not the OS, so a Linux
+# desktop still installs.
 exit 0
 {{- else }}
 set -euo pipefail
 
-# VS Code extensions for a GUI workstation — macOS today, a Linux desktop later.
-# Add the macOS VS Code app's `code` CLI to PATH if present; on Linux `code` is
-# already a normal binary, so this no-ops.
+# The macOS app's `code` CLI isn't on PATH by default; on Linux it's a normal binary.
 VSCODE_BIN="/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
 [ -d "$VSCODE_BIN" ] && export PATH="$VSCODE_BIN:$PATH"
 
@@ -18,9 +15,8 @@ if ! command -v code &>/dev/null; then
   exit 0
 fi
 
-# No AI extensions on purpose (Claude Code in the terminal is the AI layer; the
-# managed settings.json disables the built-in AI UI). Python/Rust were cut as
-# speculative — not part of the contract-stack rotation.
+# No AI extensions on purpose — Claude Code is the AI layer (the managed
+# settings.json disables the built-in AI UI too).
 EXTENSIONS=(
   esbenp.prettier-vscode
   dbaeumer.vscode-eslint

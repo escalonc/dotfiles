@@ -3,8 +3,6 @@ set -uo pipefail
 
 {{ template "dev-env.sh" . }}
 
-# The prelude activates fnm's Node so the pnpm/npm fallbacks below have a runtime,
-# and puts ~/.local/bin (where the native installer drops `claude`) on PATH.
 have_claude() {
   hash -r 2>/dev/null
   command -v claude &>/dev/null || [ -x "$HOME/.local/bin/claude" ]

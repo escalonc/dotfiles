@@ -1,11 +1,7 @@
 {{- /*
-  The macOS `defaults write` payload, included by run_onchange_after_60-ui-defaults.sh.tmpl:
-
-      {{ template "macos-defaults.sh" . }}
-
-  Split out so the run script stays a thin OS gate. Editing THIS file still
-  re-triggers that script: chezmoi hashes the RENDERED script content, and the
-  include makes this file part of it.
+  macOS `defaults write` payload for 60-ui-defaults (included via
+  {{ template "macos-defaults.sh" . }}). Editing this still re-triggers the
+  script — chezmoi hashes the rendered content.
 */ -}}
 echo "→ Applying macOS system preferences..."
 
@@ -36,7 +32,6 @@ defaults write com.apple.finder _FXSortFoldersFirst         -bool true
 defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
 defaults write com.apple.finder ShowHardDrivesOnDesktop     -bool false
 defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool true
-defaults write NSGlobalDomain AppleShowAllExtensions        -bool true
 defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
 defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
 
@@ -48,8 +43,7 @@ defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
 defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled  -bool false
 defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled   -bool false
 defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled     -bool false
-# 3 = Full Keyboard Access (Tab reaches ALL controls). 2 would be only the lesser
-# "Keyboard navigation" toggle — looks similar, isn't.
+# 2 = "Keyboard navigation" toggle; 3 = Full Keyboard Access (Tab reaches ALL controls).
 defaults write NSGlobalDomain AppleKeyboardUIMode                  -int 2
 
 # Trackpad
@@ -73,12 +67,9 @@ defaults write NSGlobalDomain AppleActionOnDoubleClick  -string "None"
 defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
 defaults write NSGlobalDomain PMPrintingExpandedStateForPrint    -bool true
 
-# Reduce Motion — replaces the slow desktop-switch slide with an instant
-# crossfade (removes the "debounce" when switching Spaces back and forth).
-# NOTE: com.apple.universalaccess is a TCC-protected domain; `defaults write`
-# is blocked (even with sudo). Enable manually once per machine:
+# Reduce Motion (instant Space-switch crossfade) can't be scripted — the domain
+# is TCC-protected. Manual, once per machine:
 #   System Settings → Accessibility → Display → Reduce Motion
-# (or deploy a configuration profile via MDM).
 
 # Menu bar
 defaults write NSGlobalDomain AppleMenuBarFontSize           -string "large"
@@ -88,7 +79,6 @@ defaults write NSGlobalDomain SLSMenuBarUseBlurredAppearance -bool true
 defaults write com.apple.screensaver askForPassword      -int 1
 defaults write com.apple.screensaver askForPasswordDelay -int 0
 
-# Apply.
 killall Dock           2>/dev/null || true
 killall Finder         2>/dev/null || true
 killall SystemUIServer 2>/dev/null || true

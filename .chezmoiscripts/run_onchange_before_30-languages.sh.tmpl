@@ -3,9 +3,8 @@ set -euo pipefail
 
 {{ template "dev-env.sh" . }}
 
-# Node via fnm (the prelude already put ~/.local/bin on PATH and ran `fnm env`).
 if command -v fnm &>/dev/null; then
-  # fnm aliases a freshly-installed LTS as `lts-latest`; check for a default alias.
+  # fnm aliases a fresh LTS install as `lts-latest`; skip if a default exists.
   if ! NO_COLOR=1 fnm alias 2>/dev/null | grep -q 'default'; then
     echo "→ Installing Node.js LTS via fnm..."
     fnm install --lts

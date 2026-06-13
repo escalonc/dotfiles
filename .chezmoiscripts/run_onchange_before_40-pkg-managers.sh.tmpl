@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# pnpm globals. The pnpm binary comes from the Brewfile (macOS) or the standalone
-# installer into PNPM_HOME (Linux, 10-packages). Set PNPM_HOME FIRST so
-# `command -v pnpm` finds a freshly-installed pnpm that isn't on PATH yet.
+# PNPM_HOME goes on PATH first so a freshly-installed pnpm (not in the login
+# PATH yet) is found.
 case "$(uname -s)" in
   Darwin) export PNPM_HOME="${PNPM_HOME:-$HOME/Library/pnpm}" ;;
   *)      export PNPM_HOME="${PNPM_HOME:-$HOME/.local/share/pnpm}" ;;
@@ -13,8 +12,6 @@ export PATH="$PNPM_HOME:$PATH"
 
 {{ template "dev-env.sh" . }}
 
-# The prelude put ~/.local/bin on PATH and activated fnm's Node, which `pnpm add -g`
-# needs as a runtime.
 if command -v pnpm &>/dev/null; then
   for pkg in typescript tsx; do
     echo "→ pnpm global: $pkg"

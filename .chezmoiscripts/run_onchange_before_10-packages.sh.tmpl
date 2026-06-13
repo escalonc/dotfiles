@@ -4,9 +4,7 @@ set -euo pipefail
 
 {{ template "dev-env.sh" . }}
 
-# The Brewfile's hash below is what makes Brewfile edits trigger a re-run.
-# chezmoi diffs the rendered script content; embedding the hash means the
-# script visibly changes whenever the Brewfile changes.
+# Embedding the Brewfile's hash makes Brewfile edits re-trigger this script.
 # Brewfile hash: {{ include "Brewfile" | sha256sum }}
 
 if ! command -v brew &>/dev/null; then
@@ -21,7 +19,6 @@ brew analytics off || true
 set -euo pipefail
 mkdir -p "$HOME/.local/bin"
 
-# Fedora ships these in the default repos (and does NOT rename bat/fd like Debian).
 echo "→ dnf CLI tools..."
 sudo dnf install -y \
   ripgrep fd-find bat fzf zoxide btop tmux neovim \
