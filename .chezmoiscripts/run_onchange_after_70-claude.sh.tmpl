@@ -14,8 +14,6 @@ else
   echo "→ Installing Claude Code (native installer)..."
   if curl -fsSL https://claude.ai/install.sh | bash && have_claude; then
     echo "✓ Claude Code installed (native)"
-  elif command -v pnpm &>/dev/null && pnpm add -g @anthropic-ai/claude-code && have_claude; then
-    echo "✓ Claude Code installed (pnpm)"
   elif command -v npm &>/dev/null && npm install -g @anthropic-ai/claude-code && have_claude; then
     echo "✓ Claude Code installed (npm)"
   else

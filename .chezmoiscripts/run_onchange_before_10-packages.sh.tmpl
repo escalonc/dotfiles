@@ -29,12 +29,6 @@ if ! command -v fnm &>/dev/null && [ ! -x "$HOME/.local/bin/fnm" ]; then
   echo "→ fnm"
   curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir "$HOME/.local/bin" --skip-shell
 fi
-
-# --- pnpm (official standalone installer; NOT via npm, per policy) ---
-if ! command -v pnpm &>/dev/null && [ ! -x "$HOME/.local/share/pnpm/pnpm" ]; then
-  echo "→ pnpm"
-  curl -fsSL https://get.pnpm.io/install.sh | env PNPM_HOME="$HOME/.local/share/pnpm" SHELL=bash sh -
-fi
 {{- else }}
 exit 0
 {{- end }}

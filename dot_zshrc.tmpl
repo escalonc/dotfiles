@@ -30,17 +30,6 @@ source "$ZSH/oh-my-zsh.sh"
 # Guard each so a missing/uninstalled tool doesn't spam errors on shell startup.
 command -v fnm >/dev/null 2>&1 && eval "$(fnm env --use-on-cd --shell zsh)"
 
-# pnpm global bin
-{{- if eq .chezmoi.os "darwin" }}
-export PNPM_HOME="$HOME/Library/pnpm"
-{{- else }}
-export PNPM_HOME="$HOME/.local/share/pnpm"
-{{- end }}
-case ":$PATH:" in
-  *":$PNPM_HOME:"*) ;;
-  *) export PATH="$PNPM_HOME:$PATH" ;;
-esac
-
 # ── Tool Config ──────────────────────────────────────────────────────────────
 command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
 
