@@ -73,10 +73,23 @@ only the question **"is this what I actually want?"** Check off as you confirm.
 - [ ] `.idea/`, `dist/ build/ .next/ .nuxt/ .cache/ coverage/ node_modules/` — broad; fine?
 - [ ] secrets section (`.env*`, `*.pem`, `*.key`, `.secrets`) — complete for your stacks?
 
-### `private_dot_ssh/private_config.tmpl`
-- [ ] `Host *` → 1Password IdentityAgent; agent enabled in 1Password on the NEW Mac?
-- [x] `Host devbox` block REMOVED 2026-06-13 (premature pre-provision) — re-add deferred to phase C below
-- [ ] Other frequent hosts → add blocks (or config.local)
+### `private_dot_ssh/private_config.tmpl` — DELETED 2026-06-13 (whole template removed)
+- [ ] Decide whether to manage SSH config at all. The removed template only set the
+  macOS 1Password agent + a (since-removed) devbox host. Re-create when needed —
+  the `2BUA8C4S2C.com.1password` path is a fixed AgileBits team ID, identical on every Mac.
+  Content to restore (was `private_dot_ssh/private_config.tmpl`):
+  ```
+  {{- if eq .chezmoi.os "darwin" }}
+  # Machine-local, untracked additions (like ~/.zshrc.local); ssh ignores a missing Include.
+  Include ~/.ssh/config.local
+
+  Host *
+    IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+
+  # Hetzner devbox (re-add at phase C): User chris, ForwardAgent yes; IP in ~/.ssh/config.local
+  {{- end }}
+  ```
+- [ ] Other frequent hosts → add blocks (or config.local) when SSH config returns
 
 ### chezmoi core files
 - [ ] `.chezmoi.toml.tmpl`: Linux-only `headless` prompt; no-TTY ⇒ headless=true (cloud-init path) — logic still right for a future Linux desktop?
