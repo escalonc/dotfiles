@@ -61,7 +61,6 @@ restart macOS to apply system defaults.
 ├── Brewfile                                          # Homebrew formulae, casks, fonts (macOS)
 ├── .chezmoi.toml.tmpl                                # per-machine config; asks `headless` on Linux
 ├── .chezmoiexternal.toml                             # Oh My Zsh + p10k + zsh plugins, fetched/refreshed by chezmoi
-├── .chezmoitemplates/dev-env.sh                      # shared PATH/brew/fnm prelude, included by run scripts
 ├── .chezmoitemplates/macos-defaults.sh               # the `defaults write` payload, included by 60-ui-defaults
 ├── .chezmoiscripts/
 │   ├── run_onchange_before_10-system.sh.tmpl         # bootstrap + packages + Node: macOS (Homebrew) / Linux (dnf + fnm)
@@ -82,10 +81,9 @@ files are Go templates that branch per OS via `{{ if eq .chezmoi.os "darwin" }}`
 (macOS) / `{{ else if eq .chezmoi.os "linux" }}` (Fedora).
 
 Each `run_*` script runs as its own process, so environment set by one is **not**
-visible to the next. Scripts that need user-local tools (fnm's Node,
-`~/.local/bin`) include the shared prelude — `{{ template "dev-env.sh" . }}` —
-which re-establishes that environment. Edit the prelude once in
-`.chezmoitemplates/dev-env.sh` rather than per script.
+visible to the next (and `run_before_*` runs before your dotfiles even exist).
+So `10-system` re-establishes what it needs inline before using it — `brew` on
+macOS, `~/.local/bin` on Linux — rather than relying on your shell config.
 
 ## Customize
 

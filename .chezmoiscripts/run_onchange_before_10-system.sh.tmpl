@@ -17,7 +17,9 @@ if ! command -v brew &>/dev/null; then
   NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 
-{{ template "dev-env.sh" . }}
+# Put brew on THIS script's PATH — it's its own process and doesn't inherit the
+# install above. brew is guaranteed present by the step above (set -e aborts otherwise).
+eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # ── Packages: Brewfile (the embedded hash makes Brewfile edits re-trigger this script) ──
 # Brewfile hash: {{ include "Brewfile" | sha256sum }}
@@ -51,7 +53,8 @@ if ! command -v fnm &>/dev/null && [ ! -x "$HOME/.local/bin/fnm" ]; then
   curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir "$HOME/.local/bin" --skip-shell
 fi
 
-{{ template "dev-env.sh" . }}
+# Put ~/.local/bin (where fnm just landed) on THIS script's PATH.
+export PATH="$HOME/.local/bin:$PATH"
 {{- else }}
 exit 0
 {{- end }}

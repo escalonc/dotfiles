@@ -90,7 +90,7 @@ only the question **"is this what I actually want?"** Check off as you confirm.
 ### chezmoi core files
 - [ ] `.chezmoi.toml.tmpl`: Linux-only `headless` prompt; no-TTY ⇒ headless=true (cloud-init path) — logic still right for a future Linux desktop?
 - [ ] `.chezmoiexternal.toml`: OMZ/p10k/plugins track `master`, 168h refresh, `exact=true` (your manual edits inside ~/.oh-my-zsh get pruned) — rolling ok, or pin tags?
-- [ ] `.chezmoitemplates/dev-env.sh`: the env contract (~/.local/bin, brew, fnm) — anything else every script should see?
+- [x] `.chezmoitemplates/dev-env.sh` REMOVED 2026-06-16 — only `10-system` consumed it after the merge; the per-branch PATH setup (brew on macOS, `~/.local/bin` on Linux) is now inline there
 - [ ] `.chezmoiignore`: README/REVIEW/Brewfile/.gitignore/.github/.claude/LICENSE/provisioning + non-darwin `Library/` gate — `LICENSE` entry is a ghost (no such file); keep or drop
 - [ ] `.gitignore` (repo): only `.DS_Store` — enough?
 
