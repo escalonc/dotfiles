@@ -32,17 +32,12 @@ only the question **"is this what I actually want?"** Check off as you confirm.
 
 ### `Brewfile` (✅ reviewed 2026-06-11)
 - [x] 21 formulae (pnpm removed 2026-06-13) — `tldr` and `hyperfine` are the flagged low-adoption keepers; earning their slots?
-- [x] ~21 apps + fonts (after your Zoom/fonts trim) — one full read top to bottom
+- [x] ~20 apps + fonts (Zoom/fonts trim; VS Code cask removed 2026-06-15) — one full read top to bottom
 - [x] Heads-up: after cutting wireshark (then) and proxyman (now) there's NO network-inspection tool — Bruno covers API calls only; confirm acceptable
 - [x] Old Mac: `brew bundle cleanup` to list strays, uninstall what you trimmed
 
-### VS Code — `Library/Application Support/Code/User/settings.json` + `50-editor` extensions
-**(⏸ DEFERRED to end — settings.json is "commented out" via a TEMP `Library/` line in `.chezmoiignore`; delete that line when reviewing this section, then `chezmoi apply`)**
-- [ ] Re-skim the ~37 carried-over settings (they were yours; 2 added: `chat.disableAIFeatures`, telemetry off)
-- [ ] MonoLisa font: paid, installed MANUALLY per machine — done on the new Mac? (fontFamily falls back to Menlo without it)
-- [ ] Settings Sync OFF on BOTH Macs
-- [ ] Extensions (21): anything missing you reach for / anything never used?
-- [ ] Old Mac: `code --uninstall-extension github.copilot github.copilot-chat`
+### VS Code — REMOVED 2026-06-15 (no longer managed by this repo)
+- [x] Dropped entirely: `visual-studio-code` cask, the `50-editor` extensions script, the managed `settings.json`, the `.chezmoiignore` `Library/` gate, and the VS Code CLI on PATH (zprofile). Sublime + JetBrains remain the editors.
 
 ### `dot_zshrc.tmpl` (shared + darwin branch) (✅ reviewed 2026-06-13 — all ratified)
 - [x] Plugins (6 in array): `git gh zsh-autosuggestions docker sudo colored-man-pages`; zsh-completions via `fpath+=` BEFORE oh-my-zsh (upstream: avoids double compinit/.zcompdump churn); zsh-syntax-highlighting sourced manually as the FILE'S last line (after fzf/zoxide/p10k widgets exist)
@@ -55,7 +50,7 @@ only the question **"is this what I actually want?"** Check off as you confirm.
 - [x] `EDITOR="subl --wait"` (darwin) — settled, confirm once
 
 ### `dot_zprofile.tmpl` (✅ reviewed 2026-06-13 — all ratified)
-- [x] darwin: guarded brew shellenv + Sublime/VS Code CLI dirs on PATH — both editors still the right PATH additions?
+- [x] darwin: guarded brew shellenv + Sublime CLI dir on PATH (VS Code CLI removed 2026-06-15)
 - [x] linux branch: just `~/.local/bin` — sufficient?
 
 ### `dot_p10k.zsh` (✅ reviewed 2026-06-13 — all ratified)
@@ -100,20 +95,16 @@ only the question **"is this what I actually want?"** Check off as you confirm.
 - [ ] `.gitignore` (repo): only `.DS_Store` — enough?
 
 ### macOS-relevant run scripts — `.chezmoiscripts/`
-- [ ] `00-bootstrap` darwin: Homebrew via official installer w/ sudo keepalive — comfortable with the curl|bash trust list (brew, chezmoi, OMZ-via-chezmoi, fnm, claude)?
-- [ ] `10-packages` darwin: `brew bundle` + `brew analytics off`
-- [ ] `30-languages`: Node = "latest LTS at install time", default alias; per-project `.node-version` + `--use-on-cd` covers projects
+- [ ] `10-system` darwin (merged 00+10+30, 2026-06-15): Homebrew install w/ sudo keepalive → `brew bundle` + `brew analytics off` → Node LTS via fnm. Comfortable with the curl|bash trust list (brew, chezmoi, OMZ-via-chezmoi, fnm)?
 - [ ] `60-ui-defaults`: thin gate (payload reviewed above)
-- [ ] `70-claude`: native installer → npm fallback (pnpm branch removed 2026-06-13); installs `anthropic.claude-code` VS Code extension
+- [ ] (`50-editor` + `70-claude` removed 2026-06-15 — VS Code unmanaged; Claude Code self-updates, install no longer scripted)
 
 ---
 
 ## B. Linux (devbox software — test in local VM)
 
-- [ ] `00-bootstrap` linux: dnf base = `zsh git curl wget unzip tar gcc gcc-c++ make gnupg2 jq util-linux-user`; chsh to zsh — is the gcc toolchain needed for your workload?
-- [ ] `10-packages` linux: dnf = `ripgrep fd-find bat fzf zoxide btop tmux neovim eza git-delta gh httpie`; fnm via vendor installer (unpinned — accepted); pnpm removed 2026-06-13
+- [ ] `10-system` linux (merged, 2026-06-15): dnf base (`zsh git curl wget unzip tar gcc gcc-c++ make gnupg2 jq util-linux-user`) + chsh to zsh → dnf CLI (`ripgrep fd-find bat fzf zoxide btop tmux neovim eza git-delta gh httpie`) + fnm vendor installer → Node LTS via fnm. gcc toolchain needed for your workload? fnm unpinned (accepted); pnpm removed 2026-06-13
 - [ ] zshrc linux branch: `EDITOR=nvim`, `zshconfig`/`hosts` use $EDITOR, `localip` (hostname -I), `flushdns` (resolvectl)
-- [ ] `50-editor`: headless gate ⇒ VS Code skipped on the server — correct
 - [ ] Locale exports removed: watch for `setlocale` warnings over ssh/tmux (fix: `glibc-langpack-en` or re-add LANG)
 - [ ] OMZ git plugin aliases + p10k prompt over ssh: needs Nerd Font on the CLIENT (Blink/phone, Warp)
 - [ ] docker aliases exist but NO container runtime installed — defer or add when needed
@@ -148,7 +139,6 @@ Chezmoi-manageable (official ports at github.com/catppuccin/<tool>):
 - [ ] Warp: theme YAML → `~/.warp/themes/` (select once in Warp settings)
 
 GUI apps (manual, one-time each):
-- [ ] VS Code: `catppuccin.catppuccin-vsc` + icons ext — fold into the DEFERRED VS Code review (replaces Monokai Pro ext + 2 settings keys)
 - [ ] Rider/JetBrains: official Catppuccin plugin
 - [ ] Sublime Text: official port via Package Control
 - [ ] Slack: paste official sidebar color string
@@ -170,7 +160,7 @@ Won't theme: p10k (hand-set segment colors), Claude Code, OrbStack, macOS itself
   - [ ] **neovim config** — nvim is `$EDITOR` on the server with zero config (no clipboard, default everything)
   - [ ] **Sublime Text settings** — permanent tier-3 editor, settings unmanaged (`~/Library/Application Support/Sublime Text/Packages/User/`)
   - [ ] Warp (has account sync — probably fine unmanaged), Raycast (manual export), Claude Code `~/.claude/` settings — accept as unmanaged?
-- [ ] **pnpm + JS globals** — removed 2026-06-13, to be set up later; restore the `typescript`/`tsx` globals (was `40-pkg-managers`, now deleted) alongside it, and decide whether `70-claude` should regain pnpm ahead of the npm fallback
+- [ ] **pnpm + JS globals** — removed 2026-06-13, to be set up later; restore the `typescript`/`tsx` globals (was `40-pkg-managers`, now deleted) alongside it
 - [ ] Test harness (offered, parked): `just test` render+lint + Fedora-container e2e — decide after phase 2, when the manual VM loop gets old
 - [ ] Parked as separate projects (not repo review): Tailscale instead of IP allowlist, restic+B2 backups + Healthchecks, Packer golden image, ntfy notifications for devbox runs
 - [ ] Delete this file when done (or keep as a living audit log)

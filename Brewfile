@@ -33,7 +33,6 @@ brew "fnm"
 cask "brave-browser"
 
 # IDEs & Editors
-cask "visual-studio-code"
 cask "sublime-text"
 cask "sublime-merge"
 cask "jetbrains-toolbox"
