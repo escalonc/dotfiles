@@ -70,6 +70,7 @@ restart macOS to apply system defaults.
 ├── dot_zprofile.tmpl                                 # → ~/.zprofile (login-shell PATH)
 ├── dot_gitconfig.tmpl                                # → ~/.gitconfig
 ├── dot_gitignore_global                              # → ~/.gitignore_global
+├── private_dot_ssh/private_config.tmpl               # → ~/.ssh/config (0600); 1Password agent on macOS, Include config.local on both
 └── provisioning/                                     # OpenTofu: create the Hetzner Linux box (see its README)
 ```
 

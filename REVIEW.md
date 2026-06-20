@@ -69,23 +69,10 @@ only the question **"is this what I actually want?"** Check off as you confirm.
 - [x] macOS block trimmed to the handful that actually occur; Windows entries (`Thumbs.db`, `ehthumbs.db`) removed
 - [x] secrets backstop kept (`.env*`, `*.pem`, `*.key`, `.secrets`) — projects should also ignore these; this is defense-in-depth
 
-### `private_dot_ssh/private_config.tmpl` — DELETED 2026-06-13 (whole template removed)
-- [ ] Decide whether to manage SSH config at all. The removed template only set the
-  macOS 1Password agent + a (since-removed) devbox host. Re-create when needed —
-  the `2BUA8C4S2C.com.1password` path is a fixed AgileBits team ID, identical on every Mac.
-  Content to restore (was `private_dot_ssh/private_config.tmpl`):
-  ```
-  {{- if eq .chezmoi.os "darwin" }}
-  # Machine-local, untracked additions (like ~/.zshrc.local); ssh ignores a missing Include.
-  Include ~/.ssh/config.local
-
-  Host *
-    IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
-
-  # Hetzner devbox (re-add at phase C): User chris, ForwardAgent yes; IP in ~/.ssh/config.local
-  {{- end }}
-  ```
-- [ ] Other frequent hosts → add blocks (or config.local) when SSH config returns
+### `private_dot_ssh/private_config.tmpl` — RESTORED 2026-06-19 (→ `~/.ssh/config`, 0600)
+- [ ] Shared `Include ~/.ssh/config.local` on both OSes (machine-local untracked hosts; ssh ignores it if missing)
+- [ ] macOS only: `Host * → IdentityAgent` = 1Password agent socket (`2BUA8C4S2C` is a fixed AgileBits team ID, same on every Mac). Gated OFF on Linux — that group-container path doesn't exist there, and a bad `Host *` IdentityAgent would break all key auth
+- [ ] Linux relies on a **forwarded** agent from the Mac (configured client-side under `Host devbox`), so the box itself needs no local IdentityAgent — confirm that's still the plan
 
 ### chezmoi core files
 - [ ] `.chezmoi.toml.tmpl`: Linux-only `headless` prompt; no-TTY ⇒ headless=true (cloud-init path) — logic still right for a future Linux desktop?
@@ -124,7 +111,7 @@ only the question **"is this what I actually want?"** Check off as you confirm.
 - [ ] `provisioning/README.md`: one read — does it match the current `tofu apply` flow (post-merge clone of `main`, fail-closed IP allowlist, `prevent_destroy` flip)?
 - [ ] `provisioning/terraform.tfvars.example`: the TRACKED template a fresh checkout copies from (the live `terraform.tfvars` above is gitignored) — confirm it documents `ssh_allowed_ips` + `hcloud_token` flow correctly
 - [ ] Secret flow: `TF_VAR_hcloud_token` via `op read` only — 1Password item exists?
-- [ ] Re-add the SSH `Host devbox` block to `private_dot_ssh/private_config.tmpl` (removed 2026-06-13): `User chris`, `ForwardAgent yes`, agent-forwarded 1Password (no keys on box); put the `tofu` output IP in `~/.ssh/config.local`
+- When the box is up: re-add the SSH `Host devbox` block (`User chris`, `ForwardAgent yes`, agent-forwarded 1Password, IP in `~/.ssh/config.local`). Tracked in §E; restore content in §A.
 
 ---
 
@@ -152,18 +139,43 @@ Won't theme: p10k (hand-set segment colors), Claude Code, OrbStack, macOS itself
 
 ---
 
+## E. Deferred backlog — "pushed for later" (source of truth)
+
+The single home for everything intentionally left behind. The per-file sections
+(§A–§C) answer "is this file what I want?"; this answers "what's still owed."
+Catppuccin theming has its own **Themes TODO** section below (not repeated here).
+
+### Removed, intent to restore
+- [x] **SSH config** restored 2026-06-19 as `private_dot_ssh/private_config.tmpl` (macOS 1Password agent + shared `Include config.local`, see §A). Still owed: the `Host devbox` block (`User chris`, `ForwardAgent yes`) goes in `~/.ssh/config.local` at phase C — tracked in §C.
+- [ ] **pnpm + JS globals** (removed 2026-06-13) — restore with `typescript`/`tsx` globals (old `40-pkg-managers`, deleted)
+
+### Unwired / dangling decisions
+- [ ] **SSH commit signing via 1Password** in `dot_gitconfig.tmpl` — wire or drop
+- [ ] **Work-email `includeIf` split** in gitconfig — decide before devbox makes work commits, or accept personal noreply everywhere
+
+### Devbox prerequisites (gates phase-3 "Claude Code in tmux")
+- [ ] **tmux config** — no `dot_tmux.conf`; fix vanilla defaults (prefix, mouse, history)
+- [ ] **neovim config** — `$EDITOR` on server with zero config (clipboard, sensible defaults)
+- [ ] `Host devbox` block in `~/.ssh/config.local` once the box is up (base config now managed — see §A/§C)
+
+### Not managed — accept or fill?
+- [ ] **Sublime Text settings** (`~/Library/Application Support/Sublime Text/Packages/User/`), **Warp** (has account sync — probably fine), **Raycast** (manual export), **Claude Code `~/.claude/`** settings
+
+### Parked as separate projects (not repo review)
+- [ ] Test harness: `just test` render+lint + Fedora-container e2e — revisit after phase 2, when the manual VM loop gets old
+- [ ] Tailscale instead of the IP allowlist
+- [ ] restic + B2 backups + Healthchecks
+- [ ] Packer golden image
+- [ ] ntfy notifications for devbox runs
+
+---
+
 ## D. Housekeeping / meta
 
 - [ ] README: one full top-to-bottom read (edited piecemeal ~15× this week; check for stale claims)
 - [ ] `.claude/skills/code-review/`: skim the rewritten SKILL.md once — it reviews YOUR future changes
 - [ ] `.claude/skills/code-review/review-criteria.md`: the actual rule set SKILL.md pulls in — read it, not just SKILL.md
 - [ ] `bash-version` branch: archive or delete
-- [ ] Things the repo does NOT manage (decide: deliberate or gap?):
-  - [ ] **tmux config** — no `dot_tmux.conf`, but the devbox plan IS "Claude Code in tmux"; vanilla tmux has awkward defaults (prefix, mouse off, small history)
-  - [ ] **neovim config** — nvim is `$EDITOR` on the server with zero config (no clipboard, default everything)
-  - [ ] **Sublime Text settings** — permanent tier-3 editor, settings unmanaged (`~/Library/Application Support/Sublime Text/Packages/User/`)
-  - [ ] Warp (has account sync — probably fine unmanaged), Raycast (manual export), Claude Code `~/.claude/` settings — accept as unmanaged?
-- [ ] **pnpm + JS globals** — removed 2026-06-13, to be set up later; restore the `typescript`/`tsx` globals (was `40-pkg-managers`, now deleted) alongside it
-- [ ] Test harness (offered, parked): `just test` render+lint + Fedora-container e2e — decide after phase 2, when the manual VM loop gets old
-- [ ] Parked as separate projects (not repo review): Tailscale instead of IP allowlist, restic+B2 backups + Healthchecks, Packer golden image, ntfy notifications for devbox runs
 - [ ] Delete this file when done (or keep as a living audit log)
+
+(Deferred / parked work — unmanaged tools, pnpm, test harness, Tailscale/backups/Packer/ntfy — lives in §E. Theming lives in Themes TODO.)
