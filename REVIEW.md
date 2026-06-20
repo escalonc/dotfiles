@@ -90,20 +90,20 @@ only the question **"is this what I actually want?"** Check off as you confirm.
 ### chezmoi core files
 - [ ] `.chezmoi.toml.tmpl`: Linux-only `headless` prompt; no-TTY ⇒ headless=true (cloud-init path) — logic still right for a future Linux desktop?
 - [ ] `.chezmoiexternal.toml`: OMZ/p10k/plugins track `master`, 168h refresh, `exact=true` (your manual edits inside ~/.oh-my-zsh get pruned) — rolling ok, or pin tags?
-- [x] `.chezmoitemplates/dev-env.sh` REMOVED 2026-06-16 — only `10-system` consumed it after the merge; the per-branch PATH setup (brew on macOS, `~/.local/bin` on Linux) is now inline there
+- [x] `.chezmoitemplates/dev-env.sh` REMOVED 2026-06-16 — only the `system` script consumed it after the merge; the per-branch PATH setup (brew on macOS, `~/.local/bin` on Linux) is now inline there
 - [ ] `.chezmoiignore`: README/REVIEW/Brewfile/.gitignore/.github/.claude/LICENSE/provisioning + non-darwin `Library/` gate — `LICENSE` entry is a ghost (no such file); keep or drop
 - [ ] `.gitignore` (repo): only `.DS_Store` — enough?
 
 ### macOS-relevant run scripts — `.chezmoiscripts/`
-- [ ] `10-system` darwin (merged 00+10+30, 2026-06-15): Homebrew install w/ sudo keepalive → `brew bundle` + `brew analytics off` → Node LTS via fnm. Comfortable with the curl|bash trust list (brew, chezmoi, OMZ-via-chezmoi, fnm)?
-- [ ] `60-ui-defaults`: thin gate (payload reviewed above)
+- [ ] `run_onchange_before_system` darwin (merged 00+10+30, 2026-06-15; renamed off numeric prefix 2026-06-19): Homebrew install w/ sudo keepalive → `brew bundle` + `brew analytics off` → Node LTS via fnm. Comfortable with the curl|bash trust list (brew, chezmoi, OMZ-via-chezmoi, fnm)?
+- [ ] `run_onchange_after_ui-defaults`: thin gate (payload reviewed above)
 - [ ] (`50-editor` + `70-claude` removed 2026-06-15 — VS Code unmanaged; Claude Code self-updates, install no longer scripted)
 
 ---
 
 ## B. Linux (devbox software — test in local VM)
 
-- [ ] `10-system` linux (merged, 2026-06-15): dnf base (`zsh git curl wget unzip tar gcc gcc-c++ make gnupg2 jq util-linux-user`) + chsh to zsh → dnf CLI (`ripgrep fd-find bat fzf zoxide btop tmux neovim eza git-delta gh httpie`) + fnm vendor installer → Node LTS via fnm. gcc toolchain needed for your workload? fnm unpinned (accepted); pnpm removed 2026-06-13
+- [ ] `run_onchange_before_system` linux (merged, 2026-06-15): dnf base (`zsh git curl wget unzip tar gcc gcc-c++ make gnupg2 jq util-linux-user`) + chsh to zsh → dnf CLI (`ripgrep fd-find bat fzf zoxide btop tmux neovim eza git-delta gh httpie`) + fnm vendor installer → Node LTS via fnm. gcc toolchain needed for your workload? fnm unpinned (accepted); pnpm removed 2026-06-13
 - [ ] zshrc linux branch: `EDITOR=nvim`, `zshconfig`/`hosts` use $EDITOR, `localip` (hostname -I), `flushdns` (resolvectl)
 - [ ] Locale exports removed: watch for `setlocale` warnings over ssh/tmux (fix: `glibc-langpack-en` or re-add LANG)
 - [ ] OMZ git plugin aliases + p10k prompt over ssh: needs Nerd Font on the CLIENT (Blink/phone, Warp)
@@ -121,6 +121,8 @@ only the question **"is this what I actually want?"** Check off as you confirm.
 - [ ] `outputs.tf`: prints IP + `ssh chris@<ip>`
 - [ ] `versions.tf` + `.terraform.lock.hcl`: hcloud `~> 1.48` (1.65 locked, committed) — fine
 - [ ] `provisioning/.gitignore`: state/tfvars/plans ignored, lock tracked — fine
+- [ ] `provisioning/README.md`: one read — does it match the current `tofu apply` flow (post-merge clone of `main`, fail-closed IP allowlist, `prevent_destroy` flip)?
+- [ ] `provisioning/terraform.tfvars.example`: the TRACKED template a fresh checkout copies from (the live `terraform.tfvars` above is gitignored) — confirm it documents `ssh_allowed_ips` + `hcloud_token` flow correctly
 - [ ] Secret flow: `TF_VAR_hcloud_token` via `op read` only — 1Password item exists?
 - [ ] Re-add the SSH `Host devbox` block to `private_dot_ssh/private_config.tmpl` (removed 2026-06-13): `User chris`, `ForwardAgent yes`, agent-forwarded 1Password (no keys on box); put the `tofu` output IP in `~/.ssh/config.local`
 
@@ -154,6 +156,7 @@ Won't theme: p10k (hand-set segment colors), Claude Code, OrbStack, macOS itself
 
 - [ ] README: one full top-to-bottom read (edited piecemeal ~15× this week; check for stale claims)
 - [ ] `.claude/skills/code-review/`: skim the rewritten SKILL.md once — it reviews YOUR future changes
+- [ ] `.claude/skills/code-review/review-criteria.md`: the actual rule set SKILL.md pulls in — read it, not just SKILL.md
 - [ ] `bash-version` branch: archive or delete
 - [ ] Things the repo does NOT manage (decide: deliberate or gap?):
   - [ ] **tmux config** — no `dot_tmux.conf`, but the devbox plan IS "Claude Code in tmux"; vanilla tmux has awkward defaults (prefix, mouse off, small history)

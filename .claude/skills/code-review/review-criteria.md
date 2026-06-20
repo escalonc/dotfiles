@@ -5,10 +5,10 @@ Reference document for what each reviewer focuses on during `/code-review` in th
 ## Repo Context
 
 - Personal dotfiles repo; not a library, not a team project
-- Managed by chezmoi: `chezmoi init --apply` runs numbered `run_onchange_before_*` scripts, applies `dot_*` templates into `$HOME`, then runs `run_onchange_after_*` scripts
+- Managed by chezmoi: `chezmoi init --apply` runs `run_onchange_before_*` scripts, applies `dot_*` templates into `$HOME`, then runs `run_onchange_after_*` scripts
 - **Two target machines**: macOS Apple Silicon workstation (`/opt/homebrew`) and a headless Fedora Linux server (Hetzner, created by `provisioning/` OpenTofu + cloud-init). Templates branch on `.chezmoi.os` and the `headless` flag — never on hostnames
-- **Each run script is its own process** — env/PATH does not carry between scripts. The shared prelude `.chezmoitemplates/dev-env.sh` re-establishes `~/.local/bin`, Homebrew, and fnm; scripts that need those tools must include it
-- `run_onchange_*` scripts re-run whenever their rendered content changes (the Brewfile hash embedded in 10-packages exists for this) and must be idempotent
+- **Each run script is its own process** — env/PATH does not carry between scripts. Each script re-establishes inline what it needs (Homebrew on macOS, `~/.local/bin`/fnm on Linux)
+- `run_onchange_*` scripts re-run whenever their rendered content changes (the Brewfile hash embedded in the `system` script exists for this) and must be idempotent
 - Brewfile is declarative for macOS; Fedora uses an inline `dnf` list plus pinned, checksum-verified release binaries into `~/.local/bin`
 - User explicitly distrusts npm globals → pnpm is the default; npm is fallback only
 - Accepted supply-chain tradeoff: vendor `curl | bash` installers (Homebrew, chezmoi, Oh My Zsh, fnm, pnpm, Claude Code) are allowed; **anything else must be version-pinned with a sha256 recorded in the repo**

@@ -19,7 +19,7 @@ fi
 
 # Put brew on THIS script's PATH — it's its own process and doesn't inherit the
 # install above. brew is guaranteed present by the step above (set -e aborts otherwise).
-eval "$(/opt/homebrew/bin/brew shellenv)"
+eval "$(/opt/homebrew/bin/brew shellenv zsh)"
 
 # ── Packages: Brewfile (the embedded hash makes Brewfile edits re-trigger this script) ──
 # Brewfile hash: {{ include "Brewfile" | sha256sum }}

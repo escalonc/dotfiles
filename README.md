@@ -61,10 +61,10 @@ restart macOS to apply system defaults.
 ├── Brewfile                                          # Homebrew formulae, casks, fonts (macOS)
 ├── .chezmoi.toml.tmpl                                # per-machine config; asks `headless` on Linux
 ├── .chezmoiexternal.toml                             # Oh My Zsh + p10k + zsh plugins, fetched/refreshed by chezmoi
-├── .chezmoitemplates/macos-defaults.sh               # the `defaults write` payload, included by 60-ui-defaults
+├── .chezmoitemplates/macos-defaults.sh               # the `defaults write` payload, included by the ui-defaults script
 ├── .chezmoiscripts/
-│   ├── run_onchange_before_10-system.sh.tmpl         # bootstrap + packages + Node: macOS (Homebrew) / Linux (dnf + fnm)
-│   └── run_onchange_after_60-ui-defaults.sh.tmpl     # macOS Dock/Finder/keyboard (no-op on Linux)
+│   ├── run_onchange_before_system.sh.tmpl            # bootstrap + packages + Node: macOS (Homebrew) / Linux (dnf + fnm)
+│   └── run_onchange_after_ui-defaults.sh.tmpl        # macOS Dock/Finder/keyboard (no-op on Linux)
 ├── dot_zshrc.tmpl                                    # → ~/.zshrc (per-OS aliases/env)
 ├── dot_p10k.zsh                                      # → ~/.p10k.zsh (prompt; from `p10k configure`)
 ├── dot_zprofile.tmpl                                 # → ~/.zprofile (login-shell PATH)
@@ -82,7 +82,7 @@ files are Go templates that branch per OS via `{{ if eq .chezmoi.os "darwin" }}`
 
 Each `run_*` script runs as its own process, so environment set by one is **not**
 visible to the next (and `run_before_*` runs before your dotfiles even exist).
-So `10-system` re-establishes what it needs inline before using it — `brew` on
+So the `system` script re-establishes what it needs inline before using it — `brew` on
 macOS, `~/.local/bin` on Linux — rather than relying on your shell config.
 
 ## Customize

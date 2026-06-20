@@ -59,9 +59,9 @@ You are reviewing changes in /Users/chris/Source/dotfiles, a chezmoi-managed dot
 
 Read every modified file in full — don't review from the diff alone. Architecture facts you must reason with:
 - `chezmoi init --apply` runs numbered `run_onchange_before_*` scripts, applies `dot_*` templates into $HOME, then runs `run_onchange_after_*` scripts.
-- EACH run script is its OWN process — env/PATH set in one script is invisible to the next. Scripts re-establish the environment via the shared prelude `.chezmoitemplates/dev-env.sh` (`{{ template "dev-env.sh" . }}`).
+- EACH run script is its OWN process — env/PATH set in one script is invisible to the next. Each script re-establishes the environment inline (brew on macOS, `~/.local/bin` on Linux).
 - `.tmpl` files are Go templates branching on `.chezmoi.os` ("darwin"/"linux") and the `headless` flag (defined in .chezmoi.toml.tmpl; defaults true when no TTY, e.g. under cloud-init).
-- `run_onchange_*` scripts re-run when their RENDERED content changes (the Brewfile hash embedded in 10-packages exists for exactly this) and must be idempotent.
+- `run_onchange_*` scripts re-run when their RENDERED content changes (the Brewfile hash embedded in the `system` script exists for exactly this) and must be idempotent.
 - `provisioning/` is OpenTofu for the Hetzner box: machine only; software comes from cloud-init.yaml → chezmoi. Changing user_data (cloud-init.yaml) forces destroy+recreate; the server has prevent_destroy = true as a guard.
 
 Reference review criteria at .claude/skills/code-review/review-criteria.md.
@@ -125,7 +125,7 @@ After the review report is presented, validate the changed files.
 git diff --name-only main...HEAD | grep -E '\.(sh|zsh|bash)$|\.sh\.tmpl$'
 ```
 
-(Use the same fallback scope as Step 1 if the range is empty.) Also include `.chezmoitemplates/dev-env.sh` in the set whenever any script that includes it changed.
+(Use the same fallback scope as Step 1 if the range is empty.) Also include any `.chezmoitemplates/*` file in the set whenever a script that includes it (via `{{ template ... }}`) changed.
 
 2. **Plain `.sh` files** — check directly:
 
