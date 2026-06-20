@@ -21,7 +21,7 @@ plugins=(
 
 # zsh-completions: on fpath BEFORE oh-my-zsh so its compinit sees it; as a plugin
 # it would load after compinit and force redundant .zcompdump rebuilds.
-fpath+=$ZSH_CUSTOM/plugins/zsh-completions/src
+fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
 autoload -U compinit && compinit
 
 source "$ZSH/oh-my-zsh.sh"

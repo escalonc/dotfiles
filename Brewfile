@@ -61,3 +61,4 @@ cask "1password-cli"
 cask "cleanshot"
 
 # ─── Fonts ───────────────────────────────────────────────────────────────────
+cask "font-meslo-lg-nerd-font"
