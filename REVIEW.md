@@ -8,7 +8,7 @@ only the question **"is this what I actually want?"** Check off as you confirm.
 | Phase | Sections | Done when |
 |---|---|---|
 | 1. Mac | A (+ Sublime item in D) | `chezmoi diff` empty on the new Mac, and a normal week of daily use surfaces nothing |
-| 2. Linux | B (+ tmux/neovim items in D) | full apply in a local Fedora VM: exits 0, `zsh -i -c exit` silent, second apply idempotent |
+| 2. Linux | B (+ tmux/neovim items in D) | full apply in a local Linux VM matching the target devbox: exits 0, `zsh -i -c exit` silent, second apply idempotent |
 | 3. Provisioning | C | real Hetzner box up via `tofu apply`, `ssh devbox` works, Claude Code runs in tmux |
 
 ---
@@ -54,7 +54,7 @@ only the question **"is this what I actually want?"** Check off as you confirm.
 - [x] linux branch: just `~/.local/bin` — sufficient?
 
 ### `dot_p10k.zsh` (✅ reviewed 2026-06-13 — all ratified)
-- [x] It's your wizard output (rainbow, nerdfont-v3, 12h, 2-line) — live with it a week, restyle path is in README
+- [x] It's your wizard output (rainbow, nerdfont-v3, 12h, 2-line) — live with it a week; rerun `p10k configure` if you want to restyle
 
 ### `dot_gitconfig.tmpl` (✅ reviewed 2026-06-13 — all ratified)
 - [x] `user.email` = personal noreply everywhere — includeIf work split: before devbox makes work commits, or accept
@@ -95,20 +95,19 @@ only the question **"is this what I actually want?"** Check off as you confirm.
 - [ ] Locale exports removed: watch for `setlocale` warnings over ssh/tmux (fix: `glibc-langpack-en` or re-add LANG)
 - [ ] OMZ git plugin aliases + p10k prompt over ssh: needs Nerd Font on the CLIENT (Blink/phone, Warp)
 - [ ] docker aliases exist but NO container runtime installed — defer or add when needed
-- [ ] VM test loop: `orb create fedora:42` → chezmoi one-liner → `zsh -i -c exit` silent → apply twice (idempotent) → delete
+- [ ] VM test loop: create a local Linux VM matching the target devbox → chezmoi one-liner → `zsh -i -c exit` silent → apply twice (idempotent) → delete
 
 ---
 
 ## C. Provisioning (before first `tofu apply`)
 
-- [ ] `variables.tf`: `cpx41` (8c/16G ~€30/mo), `fsn1`, `image=fedora-42` (CONFIRM still exists: `hcloud image list | grep -i fedora`), `ssh_public_key_path=~/.ssh/id_ed25519.pub` (exists on the applying machine?)
+- [ ] `variables.tf`: `cpx41` (8c/16G ~€30/mo), `fsn1`, `image=<chosen cloud image>`, `ssh_public_key_path=~/.ssh/id_ed25519.pub` (exists on the applying machine?)
 - [ ] `terraform.tfvars`: `ssh_allowed_ips` = your IP/32 (required, fail-closed) — home IP stable enough, or revisit Tailscale idea?
-- [ ] `main.tf`: firewall SSH-only (no ICMP — ping won't answer); `prevent_destroy=true` (flip procedure in README); cloud-init edit ⇒ box rebuild
+- [ ] `main.tf`: firewall SSH-only (no ICMP — ping won't answer); `prevent_destroy=true`; cloud-init edit ⇒ box rebuild
 - [ ] `cloud-init.yaml`: user `chris` + NOPASSWD sudo, key-only auth, root keeps laptop key fallback; clones `main` (correct since merge)
 - [ ] `outputs.tf`: prints IP + `ssh chris@<ip>`
 - [ ] `versions.tf` + `.terraform.lock.hcl`: hcloud `~> 1.48` (1.65 locked, committed) — fine
 - [ ] `provisioning/.gitignore`: state/tfvars/plans ignored, lock tracked — fine
-- [ ] `provisioning/README.md`: one read — does it match the current `tofu apply` flow (post-merge clone of `main`, fail-closed IP allowlist, `prevent_destroy` flip)?
 - [ ] `provisioning/terraform.tfvars.example`: the TRACKED template a fresh checkout copies from (the live `terraform.tfvars` above is gitignored) — confirm it documents `ssh_allowed_ips` + `hcloud_token` flow correctly
 - [ ] Secret flow: `TF_VAR_hcloud_token` via `op read` only — 1Password item exists?
 - When the box is up: re-add the SSH `Host devbox` block (`User chris`, `ForwardAgent yes`, agent-forwarded 1Password, IP in `~/.ssh/config.local`). Tracked in §E; restore content in §A.
@@ -162,7 +161,7 @@ Catppuccin theming has its own **Themes TODO** section below (not repeated here)
 - [ ] **Sublime Text settings** (`~/Library/Application Support/Sublime Text/Packages/User/`), **Warp** (has account sync — probably fine), **Raycast** (manual export), **Claude Code `~/.claude/`** settings
 
 ### Parked as separate projects (not repo review)
-- [ ] Test harness: `just test` render+lint + Fedora-container e2e — revisit after phase 2, when the manual VM loop gets old
+- [ ] Test harness: `just test` render+lint + Linux-container/VM e2e — revisit after phase 2, when the manual VM loop gets old
 - [ ] Tailscale instead of the IP allowlist
 - [ ] restic + B2 backups + Healthchecks
 - [ ] Packer golden image
@@ -172,7 +171,6 @@ Catppuccin theming has its own **Themes TODO** section below (not repeated here)
 
 ## D. Housekeeping / meta
 
-- [ ] README: one full top-to-bottom read (edited piecemeal ~15× this week; check for stale claims)
 - [ ] `.claude/skills/code-review/`: skim the rewritten SKILL.md once — it reviews YOUR future changes
 - [ ] `.claude/skills/code-review/review-criteria.md`: the actual rule set SKILL.md pulls in — read it, not just SKILL.md
 - [ ] `bash-version` branch: archive or delete
