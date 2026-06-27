@@ -18,18 +18,36 @@
 [push]
 	default = current
 	autoSetupRemote = true
+	# Push annotated tags that point at commits being pushed (no separate --tags).
+	followTags = true
 
 [pull]
 	rebase = true
 
 [rebase]
 	autoStash = true
+	# Keep stacked-branch refs pointing at the right commits when rebasing a stack.
+	updateRefs = true
 
 [fetch]
 	prune = true
 
+[branch]
+	# List branches most-recently-committed first instead of alphabetically.
+	sort = -committerdate
+
+[tag]
+	# Companion to branch.sort: order tags by version, newest first.
+	sort = -version:refname
+
+[column]
+	# Multi-column output (branch/tag/status) when writing to a terminal, like ls.
+	ui = auto
+
 [diff]
 	colorMoved = default
+	# Cleaner, better-aligned hunks than the default myers, esp. on moved code.
+	algorithm = histogram
 
 [rerere]
 	enabled = true

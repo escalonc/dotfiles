@@ -42,3 +42,44 @@
     exact = true
     stripComponents = 1
     refreshPeriod = "168h"
+
+# tmux plugins, fetched the same hands-off way as the shell stack above. TPM is
+# present so `~/.tmux.conf` can source plugins, but the plugins themselves are
+# pre-placed here — so a fresh machine needs NO `prefix + I` bootstrap. Each is
+# the repo's main branch as an archive (no .git, so nothing to update by hand).
+# Theming is hand-rolled in ~/.tmux.conf (synced with p10k), so no theme plugin.
+
+[".tmux/plugins/tpm"]
+    type = "archive"
+    url = "https://github.com/tmux-plugins/tpm/archive/master.tar.gz"
+    exact = true
+    stripComponents = 1
+    refreshPeriod = "168h"
+
+[".tmux/plugins/tmux-sensible"]
+    type = "archive"
+    url = "https://github.com/tmux-plugins/tmux-sensible/archive/master.tar.gz"
+    exact = true
+    stripComponents = 1
+    refreshPeriod = "168h"
+
+[".tmux/plugins/tmux-resurrect"]
+    type = "archive"
+    url = "https://github.com/tmux-plugins/tmux-resurrect/archive/master.tar.gz"
+    exact = true
+    stripComponents = 1
+    refreshPeriod = "168h"
+
+[".tmux/plugins/tmux-continuum"]
+    type = "archive"
+    url = "https://github.com/tmux-plugins/tmux-continuum/archive/master.tar.gz"
+    exact = true
+    stripComponents = 1
+    refreshPeriod = "168h"
+
+[".tmux/plugins/tmux-yank"]
+    type = "archive"
+    url = "https://github.com/tmux-plugins/tmux-yank/archive/master.tar.gz"
+    exact = true
+    stripComponents = 1
+    refreshPeriod = "168h"
