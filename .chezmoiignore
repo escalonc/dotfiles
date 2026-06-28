@@ -1,6 +1,7 @@
 README.md
 REVIEW.md
 Brewfile
+install.sh
 
 .gitignore
 .github/

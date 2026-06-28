@@ -1,74 +1,15 @@
 #!/usr/bin/env bash
-{{- if eq .chezmoi.os "darwin" }}
+
 set -euo pipefail
 
-# ── Bootstrap: Homebrew (its installer also brings the Xcode CLT; NONINTERACTIVE keeps it headless) ──
-echo "→ Pre-flight: Homebrew"
-if ! command -v brew &>/dev/null; then
-  # NONINTERACTIVE aborts unless sudo is pre-authorized; keep the timestamp warm
-  # so the slow CLT+brew install can't hit the 5-min sudo timeout mid-run.
-  echo "  Authorizing sudo (you'll be prompted for your password once)..."
-  sudo -v
-  while true; do sudo -n true; sleep 60; kill -0 "$$" 2>/dev/null || exit; done 2>/dev/null &
-  keepalive_pid=$!
-  trap 'kill "$keepalive_pid" 2>/dev/null || true' EXIT
+{{- if eq .chezmoi.os "darwin" }}
 
-  echo "  Installing Homebrew (installs Xcode CLT headlessly)..."
-  NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-fi
-
-# Put brew on THIS script's PATH — it's its own process and doesn't inherit the
-# install above. brew is guaranteed present by the step above (set -e aborts otherwise).
 eval "$(/opt/homebrew/bin/brew shellenv zsh)"
 
-# ── Packages: Brewfile (the embedded hash makes Brewfile edits re-trigger this script) ──
-# Brewfile hash: {{ include "Brewfile" | sha256sum }}
 echo "→ brew bundle..."
 brew bundle --file={{ .chezmoi.sourceDir }}/Brewfile
 brew analytics off || true
-{{- else if eq .chezmoi.os "linux" }}
-set -euo pipefail
 
-# ── Bootstrap: dnf base packages + zsh login shell (util-linux-user provides chsh) ──
-echo "→ Pre-flight: dnf base packages"
-sudo dnf install -y \
-  zsh git curl wget unzip tar gcc gcc-c++ make \
-  gnupg2 jq util-linux-user
-
-ZSH_BIN="$(command -v zsh)"
-if [ "$(getent passwd "$USER" | cut -d: -f7)" != "$ZSH_BIN" ]; then
-  sudo chsh -s "$ZSH_BIN" "$USER" || echo "! could not chsh to zsh; set it manually" >&2
-fi
-
-mkdir -p "$HOME/.local/bin"
-
-# ── Packages: dnf CLI tools + fnm (Node LTS installed below) ──
-echo "→ dnf CLI tools..."
-sudo dnf install -y \
-  ripgrep fd-find bat fzf zoxide btop tmux neovim \
-  eza git-delta gh httpie
-
-if ! command -v fnm &>/dev/null && [ ! -x "$HOME/.local/bin/fnm" ]; then
-  echo "→ fnm"
-  curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir "$HOME/.local/bin" --skip-shell
-fi
-
-# Put ~/.local/bin (where fnm just landed) on THIS script's PATH.
-export PATH="$HOME/.local/bin:$PATH"
 {{- else }}
 exit 0
-{{- end }}
-
-{{- if or (eq .chezmoi.os "darwin") (eq .chezmoi.os "linux") }}
-
-# ── Languages: Node.js LTS via fnm (both OSes; fnm is on PATH by now) ──
-if command -v fnm &>/dev/null; then
-  # fnm aliases a fresh LTS install as `lts-latest`; skip if a default already exists.
-  if ! NO_COLOR=1 fnm alias 2>/dev/null | grep -q 'default'; then
-    echo "→ Installing Node.js LTS via fnm..."
-    fnm install --lts
-    fnm default lts-latest
-    echo "✓ Node.js LTS — set as default"
-  fi
-fi
 {{- end }}
