@@ -5,8 +5,8 @@
 {{-   if stdinIsATTY -}}
 {{-     $headless = promptBoolOnce . "headless" "Headless machine, no GUI apps (yes for a server)" -}}
 {{-   else -}}
-{{-     /* No terminal (e.g. cloud-init `chezmoi init --apply` on the server):
-           can't prompt, so assume headless. A Linux desktop is set up interactively. */ -}}
+{{- /* No terminal (e.g. cloud-init `chezmoi init --apply` on the server):
+   can't prompt, so assume headless. A Linux desktop is set up interactively. */ -}}
 {{-     $headless = true -}}
 {{-   end -}}
 {{- end -}}
