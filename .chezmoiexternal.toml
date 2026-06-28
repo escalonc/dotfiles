@@ -1,12 +1,4 @@
-# Shell stack fetched and refreshed BY CHEZMOI (replaces the old 20-shell clone
-# script). On `apply`, anything older than refreshPeriod is re-downloaded — so the
-# stack stays current with ZERO interaction: no `omz update` nag, ever (the
-# self-updater is `mode disabled` in dot_zshrc; with no .git in the extracted
-# archive it couldn't run anyway).
-#
-# `exact = true` makes chezmoi prune files that aren't in the archive (upstream
-# deletions propagate; OMZ's regenerable cache/ churn is harmless). GitHub
-# tarballs wrap everything in a `<repo>-master/` dir — stripComponents drops it.
+# Shell stack auto-refreshed by chezmoi; exact=true prunes deleted files; stripComponents drops wrapper dir.
 
 [".oh-my-zsh"]
     type = "archive"
@@ -43,11 +35,7 @@
     stripComponents = 1
     refreshPeriod = "168h"
 
-# tmux plugins, fetched the same hands-off way as the shell stack above. TPM is
-# present so `~/.tmux.conf` can source plugins, but the plugins themselves are
-# pre-placed here — so a fresh machine needs NO `prefix + I` bootstrap. Each is
-# the repo's main branch as an archive (no .git, so nothing to update by hand).
-# Theming is hand-rolled in ~/.tmux.conf (synced with p10k), so no theme plugin.
+# tmux plugins pre-placed (no `prefix + I`); main-branch archives, no .git; theme in ~/.tmux.conf.
 
 [".tmux/plugins/tpm"]
     type = "archive"

@@ -1,8 +1,4 @@
-{{- /*
-  macOS `defaults write` payload for 60-ui-defaults (included via
-  {{ template "macos-defaults.sh" . }}). Editing this still re-triggers the
-  script — chezmoi hashes the rendered content.
-*/ -}}
+{{- /* defaults payload for 60-ui-defaults; editing re-triggers it (chezmoi hashes the content). */ -}}
 echo "→ Applying macOS system preferences..."
 
 # Dock
@@ -58,10 +54,7 @@ defaults write com.apple.screencapture type     "png"
 defaults write com.apple.screencapture disable-shadow -bool true
 
 # UI
-# Dark mode is read at login, so it takes effect on the next restart/login (which
-# a fresh setup does anyway) — no osascript live-toggle, which trips the Automation
-# permission prompt. Disable auto light/dark switching first so it can't override
-# the fixed Dark style.
+# Dark mode applies on next login; disable auto light/dark switching first so fixed Dark isn't overridden.
 defaults delete NSGlobalDomain AppleInterfaceStyleSwitchesAutomatically 2>/dev/null || true
 defaults write NSGlobalDomain AppleInterfaceStyle       -string "Dark"
 defaults write NSGlobalDomain AppleIconAppearanceTheme  -string "RegularDark"
@@ -72,9 +65,7 @@ defaults write NSGlobalDomain AppleActionOnDoubleClick  -string "None"
 defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
 defaults write NSGlobalDomain PMPrintingExpandedStateForPrint    -bool true
 
-# Reduce Motion (instant Space-switch crossfade) can't be scripted — the domain
-# is TCC-protected. Manual, once per machine:
-#   System Settings → Accessibility → Display → Reduce Motion
+# Reduce Motion can't be scripted (TCC) — set in System Settings → Accessibility → Display.
 
 # Menu bar
 defaults write NSGlobalDomain AppleMenuBarFontSize           -string "large"

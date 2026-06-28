@@ -19,16 +19,14 @@ plugins=(
   colored-man-pages
 )
 
-# zsh-completions: on fpath BEFORE oh-my-zsh so its compinit sees it; as a plugin
-# it would load after compinit and force redundant .zcompdump rebuilds.
+# zsh-completions on fpath BEFORE oh-my-zsh so compinit sees it (as a plugin it loads too late).
 fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
 autoload -U compinit && compinit
 
 source "$ZSH/oh-my-zsh.sh"
 
 # ── PATH ─────────────────────────────────────────────────────────────────────
-# User-local binaries (claude; fnm on Linux). In .zshrc, not .zprofile, so it
-# reaches non-login interactive shells too — notably tmux panes on the devbox.
+# User-local binaries (claude; fnm on Linux); in .zshrc not .zprofile so tmux panes get it too.
 export PATH="$HOME/.local/bin:$PATH"
 
 # ── Language Managers ────────────────────────────────────────────────────────
@@ -154,8 +152,7 @@ export HIST_STAMPS="yyyy-mm-dd"
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # ── Syntax highlighting — MUST stay the last thing sourced ───────────────────
-# Wraps only ZLE widgets that already exist (fzf/zoxide/p10k load above) — hence
-# manual and last, not in the plugins array, which runs mid-file.
+# Wraps existing ZLE widgets (fzf/zoxide/p10k above), so must be manual and last — not in the plugins array.
 ZSYH="${ZSH_CUSTOM:-$ZSH/custom}/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 [[ ! -f $ZSYH ]] || source "$ZSYH"
 unset ZSYH
