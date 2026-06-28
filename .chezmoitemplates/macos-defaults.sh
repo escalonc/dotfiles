@@ -58,6 +58,11 @@ defaults write com.apple.screencapture type     "png"
 defaults write com.apple.screencapture disable-shadow -bool true
 
 # UI
+# Dark mode is read at login, so it takes effect on the next restart/login (which
+# a fresh setup does anyway) — no osascript live-toggle, which trips the Automation
+# permission prompt. Disable auto light/dark switching first so it can't override
+# the fixed Dark style.
+defaults delete NSGlobalDomain AppleInterfaceStyleSwitchesAutomatically 2>/dev/null || true
 defaults write NSGlobalDomain AppleInterfaceStyle       -string "Dark"
 defaults write NSGlobalDomain AppleIconAppearanceTheme  -string "RegularDark"
 defaults write NSGlobalDomain AppleReduceDesktopTinting -int 1

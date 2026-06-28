@@ -10,6 +10,24 @@
 #   sh -c "$(curl -fsSL https://raw.githubusercontent.com/escalonc/dotfiles/main/install.sh)"
 set -eu
 
+# ── Banner (blue → cyan gradient, echoing the p10k prompt fade) ───────────────
+printf '\n\033[1;38;5;33m'
+cat <<'EOF'
+██████╗  ██████╗ ████████╗███████╗██╗██╗     ███████╗███████╗
+██╔══██╗██╔═══██╗╚══██╔══╝██╔════╝██║██║     ██╔════╝██╔════╝
+EOF
+printf '\033[1;38;5;39m'
+cat <<'EOF'
+██║  ██║██║   ██║   ██║   █████╗  ██║██║     █████╗  ███████╗
+██║  ██║██║   ██║   ██║   ██╔══╝  ██║██║     ██╔══╝  ╚════██║
+EOF
+printf '\033[1;38;5;45m'
+cat <<'EOF'
+██████╔╝╚██████╔╝   ██║   ██║     ██║███████╗███████╗███████║
+╚═════╝  ╚═════╝    ╚═╝   ╚═╝     ╚═╝╚══════╝╚══════╝╚══════╝
+EOF
+printf '\033[0m\033[2m        escalonc · zero → a fully-provisioned machine\033[0m\n\n'
+
 case "$(uname -s)" in
   Darwin)
     if ! command -v brew >/dev/null 2>&1; then
