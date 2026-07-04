@@ -38,7 +38,7 @@ cask "sublime-merge"
 cask "jetbrains-toolbox"
 
 # Terminals
-cask "warp"
+cask "ghostty"
 
 # API & Network
 cask "bruno"
