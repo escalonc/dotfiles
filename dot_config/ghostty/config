@@ -1,0 +1,47 @@
+# Ghostty configuration
+# Docs: https://ghostty.org/docs/config
+# Reload in-app with cmd+shift+, — list all options with `ghostty +show-config --default --docs`
+
+# ─── Font ──────────────────────────────────────────────────────────────────
+alpha-blending = linear
+adjust-cell-height = 8%
+font-family = MonoLisa
+font-style = Medium
+font-style-bold = Bold
+font-style-italic = Medium Italic
+font-style-bold-italic = Bold Italic
+font-synthetic-style = false
+font-size = 16
+font-thicken = true
+
+# ─── Theme ───────────────────────────────────────────────────────────────────
+theme = Monokai Pro Spectrum
+background-opacity = 0.95
+background-blur = 20
+
+# ─── Cursor ──────────────────────────────────────────────────────────────────
+adjust-cursor-thickness = 2
+cursor-style = bar
+
+# ─── Window ──────────────────────────────────────────────────────────────────
+window-padding-x = 10
+window-padding-y = 8
+window-padding-balance = true
+macos-titlebar-style = tabs
+window-save-state = never
+
+# ─── Mouse / scrolling ─────────────────────────────────────────────────────
+copy-on-select = clipboard
+
+# ─── Shell integration ─────────────────────────────────────────────────────
+shell-integration = zsh
+shell-integration-features = sudo
+
+# ─── Quick terminal ──────────────────────────────────────────────────────────
+quick-terminal-animation-duration = 0.15
+
+# ─── macOS niceties ──────────────────────────────────────────────────────────
+macos-option-as-alt = true
+
+# ─── Keybindings ─────────────────────────────────────────────────────────────
+keybind = global:cmd+backquote=toggle_quick_terminal
