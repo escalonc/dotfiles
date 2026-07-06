@@ -44,6 +44,8 @@ defaults write NSGlobalDomain AppleKeyboardUIMode                  -int 2
 
 # Trackpad
 defaults write com.apple.AppleMultitouchTrackpad Clicking -bool true
+defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
+defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
 defaults write NSGlobalDomain com.apple.swipescrolldirection -bool false
 defaults write com.apple.AppleMultitouchTrackpad Dragging -bool true
 

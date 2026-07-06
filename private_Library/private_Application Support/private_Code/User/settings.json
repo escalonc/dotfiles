@@ -1,0 +1,110 @@
+{
+    // ─── Editor ───
+    "editor.fontSize": 16,
+    "editor.fontFamily": "MonoLisaCode, Menlo, Monaco, 'Courier New', monospace",
+    "editor.fontLigatures": true,
+    "editor.tabSize": 2,
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit"
+    },
+    "editor.autoClosingBrackets": "always",
+    "editor.autoClosingComments": "always",
+    "editor.autoClosingDelete": "always",
+    "editor.autoClosingOvertype": "always",
+    "editor.autoClosingQuotes": "always",
+    "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
+    "editor.columnSelection": true,
+    "editor.defaultColorDecorators": "always",
+    "editor.dragAndDrop": false,
+    "editor.folding": false,
+    "editor.foldingHighlight": false,
+    "editor.guides.bracketPairs": "active",
+    "editor.guides.indentation": false,
+    "editor.linkedEditing": true,
+    "editor.renderLineHighlight": "all",
+    "editor.smoothScrolling": true,
+    "editor.tabCompletion": "onlySnippets",
+    "editor.stickyTabStops": true,
+    "editor.trimWhitespaceOnDelete": true,
+    "editor.cursorBlinking": "expand",
+    "editor.cursorSmoothCaretAnimation": "on",
+    "editor.cursorSurroundingLines": 8,
+    "editor.minimap.enabled": false,
+    "editor.stickyScroll.enabled": true,
+    "editor.renderWhitespace": "trailing",
+    "editor.accessibilitySupport": "off",
+    "editor.suggest.preview": true,
+    "editor.hover.delay": 500,
+
+    // ─── Files ───
+    "files.exclude": {
+        "**/node_modules": true
+    },
+    "files.watcherExclude": {
+        "**/node_modules/**": true,
+        "**/.git/objects/**": true
+    },
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
+    "files.trimTrailingWhitespace": true,
+
+    // ─── Per-language ───
+    // Two trailing spaces are Markdown's hard-line-break syntax; don't trim them.
+    "[markdown]": {
+        "files.trimTrailingWhitespace": false,
+        "editor.wordWrap": "on"
+    },
+
+    // ─── Search & explorer ───
+    "search.smartCase": true,
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/dist": true,
+        "**/*.lock": true,
+        "**/package-lock.json": true
+    },
+    "explorer.confirmDelete": false,
+    "explorer.confirmDragAndDrop": false,
+    "explorer.compactFolders": false,
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.patterns": {
+        "package.json": "package-lock.json, pnpm-lock.yaml, yarn.lock, .npmrc, .nvmrc",
+        "tsconfig.json": "tsconfig.*.json",
+        "*.ts": "${capture}.test.ts, ${capture}.spec.ts",
+        ".env": ".env.*"
+    },
+
+    // ─── Git ───
+    "git.autofetch": true,
+    "git.confirmSync": false,
+    "diffEditor.ignoreTrimWhitespace": false,
+    "diffEditor.experimental.showMoves": true,
+
+    // ─── Terminal ───
+    "terminal.integrated.fontFamily": "MesloLGS Nerd Font Mono",
+    "terminal.integrated.scrollback": 10000,
+    "terminal.integrated.cursorBlinking": true,
+
+    // ─── TypeScript / JavaScript ───
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "javascript.updateImportsOnFileMove.enabled": "always",
+
+    // ─── Workbench & window ───
+    "workbench.colorTheme": "Monokai Pro (Filter Spectrum)",
+    "workbench.iconTheme": "Monokai Pro (Filter Spectrum) Icons",
+    "workbench.editor.highlightModifiedTabs": true,
+    "workbench.editor.enablePreview": false,
+    "workbench.startupEditor": "none",
+    "workbench.list.smoothScrolling": true,
+    "window.commandCenter": false,
+    "workbench.layoutControl.enabled": false,
+    "breadcrumbs.enabled": false,
+
+    // ─── Privacy ───
+    "chat.disableAIFeatures": true,
+    "telemetry.telemetryLevel": "off",
+    "workbench.enableExperiments": false,
+    "workbench.settings.enableNaturalLanguageSearch": false
+}

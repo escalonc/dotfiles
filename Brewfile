@@ -4,6 +4,7 @@
 
 # ─── CLI Tools ───────────────────────────────────────────────────────────────
 brew "zsh"
+brew "chezmoi"
 brew "git"
 brew "gh"
 brew "curl"
@@ -36,6 +37,7 @@ cask "brave-browser"
 cask "sublime-text"
 cask "sublime-merge"
 cask "jetbrains-toolbox"
+cask "visual-studio-code"
 
 # Terminals
 cask "ghostty"
@@ -55,10 +57,17 @@ cask "appcleaner"
 cask "alt-tab"
 cask "rectangle-pro"
 cask "utm"
-cask "orbstack"
+cask "docker-desktop"
 cask "1password"
 cask "1password-cli"
 cask "cleanshot"
 
 # ─── Fonts ───────────────────────────────────────────────────────────────────
 cask "font-meslo-lg-nerd-font"
+
+# ─── VSCode Extensions ───────────────────────────────────────────────────────
+vscode "monokai.theme-monokai-pro-vscode"
+vscode "esbenp.prettier-vscode"
+vscode "dbaeumer.vscode-eslint"
+vscode "usernamehw.errorlens"
+vscode "eamodio.gitlens"
