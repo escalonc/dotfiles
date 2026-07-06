@@ -5,7 +5,6 @@
     "editor.fontLigatures": true,
     "editor.tabSize": 2,
     "editor.formatOnSave": true,
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": "explicit"
     },
@@ -15,11 +14,8 @@
     "editor.autoClosingOvertype": "always",
     "editor.autoClosingQuotes": "always",
     "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
-    "editor.columnSelection": true,
     "editor.defaultColorDecorators": "always",
     "editor.dragAndDrop": false,
-    "editor.folding": false,
-    "editor.foldingHighlight": false,
     "editor.guides.bracketPairs": "active",
     "editor.guides.indentation": false,
     "editor.linkedEditing": true,
@@ -36,6 +32,7 @@
     "editor.renderWhitespace": "trailing",
     "editor.accessibilitySupport": "off",
     "editor.suggest.preview": true,
+    "editor.acceptSuggestionOnCommitCharacter": false,
     "editor.hover.delay": 500,
 
     // ─── Files ───
@@ -51,8 +48,12 @@
     "files.trimTrailingWhitespace": true,
 
     // ─── Per-language ───
+    "[javascript][javascriptreact][typescript][typescriptreact][json][jsonc][css][scss][yaml]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
     // Two trailing spaces are Markdown's hard-line-break syntax; don't trim them.
     "[markdown]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
         "files.trimTrailingWhitespace": false,
         "editor.wordWrap": "on"
     },
@@ -62,6 +63,7 @@
     "search.exclude": {
         "**/node_modules": true,
         "**/dist": true,
+        "**/build": true,
         "**/*.lock": true,
         "**/package-lock.json": true
     },
@@ -79,6 +81,7 @@
     // ─── Git ───
     "git.autofetch": true,
     "git.confirmSync": false,
+    "git.openRepositoryInParentFolders": "always",
     "diffEditor.ignoreTrimWhitespace": false,
     "diffEditor.experimental.showMoves": true,
 
@@ -101,6 +104,7 @@
     "window.commandCenter": false,
     "workbench.layoutControl.enabled": false,
     "breadcrumbs.enabled": false,
+    "update.mode": "manual",
 
     // ─── Privacy ───
     "chat.disableAIFeatures": true,
