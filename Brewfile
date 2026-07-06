@@ -49,6 +49,7 @@ cask "bruno"
 cask "raycast"
 cask "slack"
 cask "spotify"
+cask "whatsapp"
 
 # Utilities
 cask "jordanbaird-ice"

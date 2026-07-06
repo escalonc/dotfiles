@@ -1,116 +1,124 @@
 {
-    // ─── Editor ───
-    "editor.fontSize": 16,
-    "editor.lineHeight": 1.5,
-    "editor.fontFamily": "MonoLisaCode, Menlo, Monaco, 'Courier New', monospace",
-    "editor.fontLigatures": true,
-    "editor.tabSize": 2,
-    "editor.formatOnSave": true,
-    "editor.codeActionsOnSave": {
-        "source.fixAll.eslint": "explicit"
-    },
-    "editor.autoClosingBrackets": "always",
-    "editor.autoClosingComments": "always",
-    "editor.autoClosingDelete": "always",
-    "editor.autoClosingOvertype": "always",
-    "editor.autoClosingQuotes": "always",
-    "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
-    "editor.defaultColorDecorators": "always",
-    "editor.dragAndDrop": false,
-    "editor.guides.bracketPairs": "active",
-    "editor.guides.indentation": false,
-    "editor.linkedEditing": true,
-    "editor.renderLineHighlight": "all",
-    "editor.smoothScrolling": true,
-    "editor.tabCompletion": "onlySnippets",
-    "editor.stickyTabStops": true,
-    "editor.trimWhitespaceOnDelete": true,
-    "editor.cursorBlinking": "expand",
-    "editor.cursorSmoothCaretAnimation": "on",
-    "editor.cursorSurroundingLines": 8,
-    "editor.minimap.enabled": false,
-    "editor.stickyScroll.enabled": true,
-    "editor.renderWhitespace": "trailing",
-    "editor.accessibilitySupport": "off",
-    "editor.suggest.preview": true,
-    "editor.acceptSuggestionOnCommitCharacter": false,
-    "editor.hover.delay": 500,
+  // ─── Editor ───
+  "editor.fontSize": 16,
+  "editor.lineHeight": 1.5,
+  "editor.fontFamily": "MonoLisaCode, Menlo, Monaco, 'Courier New', monospace",
+  "editor.fontLigatures": true,
+  "editor.tabSize": 2,
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+  },
+  "editor.autoClosingBrackets": "always",
+  "editor.autoClosingComments": "always",
+  "editor.autoClosingDelete": "always",
+  "editor.autoClosingOvertype": "always",
+  "editor.autoClosingQuotes": "always",
+  "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
+  "editor.defaultColorDecorators": "always",
+  "editor.dragAndDrop": false,
+  "editor.guides.bracketPairs": "active",
+  "editor.guides.indentation": false,
+  "editor.linkedEditing": true,
+  "editor.renderLineHighlight": "all",
+  "editor.smoothScrolling": true,
+  "editor.tabCompletion": "onlySnippets",
+  "editor.stickyTabStops": true,
+  "editor.trimWhitespaceOnDelete": true,
+  "editor.cursorBlinking": "expand",
+  "editor.cursorSmoothCaretAnimation": "on",
+  "editor.cursorSurroundingLines": 8,
+  "editor.minimap.enabled": false,
+  "editor.stickyScroll.enabled": true,
+  "editor.renderWhitespace": "trailing",
+  "editor.accessibilitySupport": "off",
+  "editor.suggest.preview": true,
+  "editor.acceptSuggestionOnCommitCharacter": false,
+  "editor.hover.delay": 500,
 
-    // ─── Files ───
-    "files.exclude": {
-        "**/node_modules": true
-    },
-    "files.watcherExclude": {
-        "**/node_modules/**": true,
-        "**/.git/objects/**": true
-    },
-    "files.insertFinalNewline": true,
-    "files.trimFinalNewlines": true,
-    "files.trimTrailingWhitespace": true,
+  // ─── Files ───
+  "files.exclude": {
+    "**/node_modules": true,
+  },
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/.git/objects/**": true,
+    "**/dist/**": true,
+    "**/build/**": true,
+  },
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "files.trimTrailingWhitespace": true,
 
-    // ─── Per-language ───
-    "[javascript][javascriptreact][typescript][typescriptreact][json][jsonc][css][scss][html][yaml]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
-    // Two trailing spaces are Markdown's hard-line-break syntax; don't trim them.
-    "[markdown]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "files.trimTrailingWhitespace": false,
-        "editor.wordWrap": "on"
-    },
+  // ─── Per-language ───
+  "[javascript][javascriptreact][typescript][typescriptreact][json][jsonc][css][scss][html][yaml]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+  },
+  // Two trailing spaces are Markdown's hard-line-break syntax; don't trim them.
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "files.trimTrailingWhitespace": false,
+    "editor.wordWrap": "on",
+  },
 
-    // ─── Search & explorer ───
-    "search.smartCase": true,
-    "search.exclude": {
-        "**/node_modules": true,
-        "**/dist": true,
-        "**/build": true,
-        "**/*.lock": true,
-        "**/package-lock.json": true
-    },
-    "explorer.confirmDelete": false,
-    "explorer.confirmDragAndDrop": false,
-    "explorer.compactFolders": false,
-    "explorer.fileNesting.enabled": true,
-    "explorer.fileNesting.patterns": {
-        "package.json": "package-lock.json, pnpm-lock.yaml, yarn.lock, .npmrc, .nvmrc",
-        "tsconfig.json": "tsconfig.*.json",
-        "*.ts": "${capture}.test.ts, ${capture}.spec.ts",
-        ".env": ".env.*"
-    },
+  // ─── Search & explorer ───
+  "search.smartCase": true,
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/*.lock": true,
+    "**/package-lock.json": true,
+    "**/coverage": true,
+  },
+  "explorer.confirmDelete": false,
+  "explorer.confirmDragAndDrop": false,
+  "explorer.compactFolders": false,
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "package.json": "package-lock.json, pnpm-lock.yaml, yarn.lock, .npmrc, .nvmrc",
+    "tsconfig.json": "tsconfig.*.json",
+    "*.ts": "${capture}.test.ts, ${capture}.spec.ts",
+    ".env": ".env.*",
+  },
 
-    // ─── Git ───
-    "git.autofetch": true,
-    "git.confirmSync": false,
-    "git.openRepositoryInParentFolders": "always",
-    "diffEditor.ignoreTrimWhitespace": false,
-    "diffEditor.experimental.showMoves": true,
+  // ─── Git ───
+  "git.autofetch": true,
+  "git.confirmSync": false,
+  "git.openRepositoryInParentFolders": "always",
+  "git.pruneOnFetch": true,
+  "diffEditor.ignoreTrimWhitespace": false,
+  "diffEditor.experimental.showMoves": true,
+  // Keep GitLens's hover blame and history views, drop the always-on noise.
+  "gitlens.currentLine.enabled": false,
+  "gitlens.codeLens.enabled": false,
 
-    // ─── Terminal ───
-    "terminal.integrated.fontFamily": "MesloLGS Nerd Font Mono",
-    "terminal.integrated.scrollback": 10000,
-    "terminal.integrated.cursorBlinking": true,
-    "terminal.integrated.smoothScrolling": true,
+  // ─── Terminal ───
+  "terminal.integrated.fontFamily": "MesloLGS Nerd Font Mono",
+  "terminal.integrated.scrollback": 10000,
+  "terminal.integrated.cursorBlinking": true,
+  "terminal.integrated.smoothScrolling": true,
+  "terminal.integrated.copyOnSelection": true,
 
-    // ─── TypeScript / JavaScript ───
-    "typescript.updateImportsOnFileMove.enabled": "always",
-    "javascript.updateImportsOnFileMove.enabled": "always",
+  // ─── TypeScript / JavaScript ───
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "javascript.updateImportsOnFileMove.enabled": "always",
 
-    // ─── Workbench & window ───
-    "workbench.colorTheme": "Monokai Pro (Filter Spectrum)",
-    "workbench.iconTheme": "Monokai Pro (Filter Spectrum) Icons",
-    "workbench.editor.highlightModifiedTabs": true,
-    "workbench.editor.enablePreview": false,
-    "workbench.startupEditor": "none",
-    "workbench.list.smoothScrolling": true,
-    "window.commandCenter": false,
-    "workbench.layoutControl.enabled": false,
-    "breadcrumbs.enabled": false,
-    "update.mode": "manual",
+  // ─── Workbench & window ───
+  "workbench.colorTheme": "Monokai Pro (Filter Spectrum)",
+  "workbench.iconTheme": "Monokai Pro (Filter Spectrum) Icons",
+  "workbench.editor.highlightModifiedTabs": true,
+  "workbench.editor.enablePreview": false,
+  "workbench.startupEditor": "none",
+  "workbench.list.smoothScrolling": true,
+  "window.commandCenter": false,
+  "workbench.layoutControl.enabled": false,
+  "breadcrumbs.enabled": false,
+  "update.mode": "manual",
 
-    // ─── Privacy ───
-    "chat.disableAIFeatures": true,
-    "telemetry.telemetryLevel": "off",
-    "workbench.enableExperiments": false,
-    "workbench.settings.enableNaturalLanguageSearch": false
+  // ─── Privacy ───
+  "chat.disableAIFeatures": true,
+  "telemetry.telemetryLevel": "off",
+  "workbench.enableExperiments": false,
+  "workbench.settings.enableNaturalLanguageSearch": false,
 }
