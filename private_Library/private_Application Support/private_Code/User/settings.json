@@ -1,6 +1,7 @@
 {
     // ─── Editor ───
     "editor.fontSize": 16,
+    "editor.lineHeight": 1.5,
     "editor.fontFamily": "MonoLisaCode, Menlo, Monaco, 'Courier New', monospace",
     "editor.fontLigatures": true,
     "editor.tabSize": 2,
@@ -48,7 +49,7 @@
     "files.trimTrailingWhitespace": true,
 
     // ─── Per-language ───
-    "[javascript][javascriptreact][typescript][typescriptreact][json][jsonc][css][scss][yaml]": {
+    "[javascript][javascriptreact][typescript][typescriptreact][json][jsonc][css][scss][html][yaml]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     // Two trailing spaces are Markdown's hard-line-break syntax; don't trim them.
@@ -89,6 +90,7 @@
     "terminal.integrated.fontFamily": "MesloLGS Nerd Font Mono",
     "terminal.integrated.scrollback": 10000,
     "terminal.integrated.cursorBlinking": true,
+    "terminal.integrated.smoothScrolling": true,
 
     // ─── TypeScript / JavaScript ───
     "typescript.updateImportsOnFileMove.enabled": "always",
