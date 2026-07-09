@@ -11,5 +11,9 @@
 # itself if missing, so keep it managed here to avoid apply conflicts.
 [[ -d "$HOME/Library/Application Support/JetBrains/Toolbox/scripts" ]] && \
   export PATH="$PATH:$HOME/Library/Application Support/JetBrains/Toolbox/scripts"
+
+# VS Code CLI (code) on PATH (only if the app is installed).
+[[ -d "/Applications/Visual Studio Code.app/Contents/Resources/app/bin" ]] && \
+  export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
 {{- end }}
 # Linux needs nothing here — ~/.local/bin is set in .zshrc (reaches tmux panes too); brew above is macOS-only.
