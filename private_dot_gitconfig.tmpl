@@ -1,12 +1,15 @@
 [user]
 	name = Christopher Escalon
 	email = escalonc@users.noreply.github.com
+{{- if eq .chezmoi.os "darwin" }}
+	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOVhkuty5mPaG9oq071nCjRM3/SCJfHckcD2owYeuuU7
+{{- end }}
 
 [core]
 {{- if eq .chezmoi.os "darwin" }}
 	editor = subl --wait
 {{- else }}
-	editor = nvim
+	editor = vi
 {{- end }}
 	autocrlf = input
 	excludesfile = ~/.gitignore_global
@@ -64,6 +67,8 @@
 	diffFilter = delta --color-only
 
 [delta]
+	# Custom theme from dot_config/bat/themes (needs `bat cache --build` once).
+	syntax-theme = Monokai Pro Spectrum
 	navigate = true
 	light = false
 	side-by-side = true
@@ -77,3 +82,11 @@
 	undo = reset HEAD~1 --mixed
 	wip = commit -am 'WIP'
 	oops = commit --amend --no-edit
+{{- if eq .chezmoi.os "darwin" }}
+[gpg]
+	format = ssh
+[gpg "ssh"]
+	program = /Applications/1Password.app/Contents/MacOS/op-ssh-sign
+[commit]
+	gpgsign = true
+{{- end }}

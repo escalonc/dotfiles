@@ -36,14 +36,6 @@ command -v fnm >/dev/null 2>&1 && eval "$(fnm env --use-on-cd --shell zsh)"
 # ── Tool Config ──────────────────────────────────────────────────────────────
 command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
 
-command -v fzf >/dev/null 2>&1 && source <(fzf --zsh)
-export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
-export FZF_DEFAULT_OPTS='--style=minimal --height 40% --reverse --preview "bat --style=numbers --color=always --line-range :500 {}"'
-export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-
-# Custom theme from dot_config/bat/themes (needs `bat cache --build` once);
-# delta inherits it for diff syntax. Overrides bat's config file — keep in sync.
-export BAT_THEME="Monokai Pro Spectrum"
 if command -v bat >/dev/null 2>&1; then
   alias cat="bat"
   alias less="bat --paging=always"
@@ -54,8 +46,8 @@ fi
 # List files (eza)
 if command -v eza >/dev/null 2>&1; then
   alias ls="eza --icons --group-directories-first"
-  alias ll="eza -la --icons --group-directories-first --git"
-  alias la="eza -a --icons"
+  alias ll="eza -l --icons --group-directories-first"
+  alias la="eza -la --icons --group-directories-first --git"
   alias lt="eza --tree --icons --level=2"
   alias ltt="eza --tree --icons --level=3"
 fi
@@ -141,7 +133,7 @@ jwt-decode() {
 {{- if eq .chezmoi.os "darwin" }}
 export EDITOR="subl --wait"
 {{- else }}
-export EDITOR="nvim"
+export EDITOR="vi"
 {{- end }}
 export VISUAL="$EDITOR"
 export HISTSIZE=50000
@@ -153,7 +145,7 @@ export HIST_STAMPS="yyyy-mm-dd"
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # ── Syntax highlighting — MUST stay the last thing sourced ───────────────────
-# Wraps existing ZLE widgets (fzf/zoxide/p10k above), so must be manual and last — not in the plugins array.
+# Wraps existing ZLE widgets (zoxide/p10k above), so must be manual and last — not in the plugins array.
 ZSYH="${ZSH_CUSTOM:-$ZSH/custom}/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 [[ ! -f $ZSYH ]] || source "$ZSYH"
 unset ZSYH

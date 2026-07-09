@@ -1,0 +1,101 @@
+# eza theme — Monokai Pro (Filter Spectrum)
+# Palette from the official Monokai Pro VS Code theme:
+#   background #222222  foreground #f7f1ff
+#   pink #fc618d  green #7bd88f  yellow #fce566
+#   orange #fd9353  purple #948ae3  cyan #5ad4e6
+#   dimmed #69676c  mid-gray #8b888f  light-gray #bab6c0
+
+colourful: true
+
+filekinds:
+  normal: {foreground: "#f7f1ff"}
+  directory: {foreground: "#5ad4e6", is_bold: true}
+  symlink: {foreground: "#948ae3"}
+  pipe: {foreground: "#69676c"}
+  block_device: {foreground: "#fd9353", is_bold: true}
+  char_device: {foreground: "#fd9353"}
+  socket: {foreground: "#69676c", is_bold: true}
+  special: {foreground: "#948ae3", is_bold: true}
+  executable: {foreground: "#7bd88f", is_bold: true}
+  mount_point: {foreground: "#5ad4e6", is_bold: true, is_underline: true}
+
+perms:
+  user_read: {foreground: "#fce566"}
+  user_write: {foreground: "#fc618d"}
+  user_execute_file: {foreground: "#7bd88f", is_bold: true}
+  user_execute_other: {foreground: "#7bd88f"}
+  group_read: {foreground: "#fce566"}
+  group_write: {foreground: "#fc618d"}
+  group_execute: {foreground: "#7bd88f"}
+  other_read: {foreground: "#fce566"}
+  other_write: {foreground: "#fc618d"}
+  other_execute: {foreground: "#7bd88f"}
+  special_user_file: {foreground: "#948ae3"}
+  special_other: {foreground: "#948ae3"}
+  attribute: {foreground: "#8b888f"}
+
+size:
+  major: {foreground: "#bab6c0"}
+  minor: {foreground: "#5ad4e6"}
+  number_byte: {foreground: "#bab6c0"}
+  number_kilo: {foreground: "#f7f1ff"}
+  number_mega: {foreground: "#5ad4e6"}
+  number_giga: {foreground: "#948ae3"}
+  number_huge: {foreground: "#fc618d"}
+  unit_byte: {foreground: "#69676c"}
+  unit_kilo: {foreground: "#8b888f"}
+  unit_mega: {foreground: "#5ad4e6"}
+  unit_giga: {foreground: "#948ae3"}
+  unit_huge: {foreground: "#fc618d"}
+
+users:
+  user_you: {foreground: "#fce566", is_bold: true}
+  user_root: {foreground: "#fc618d", is_bold: true}
+  user_other: {foreground: "#bab6c0"}
+  group_yours: {foreground: "#fce566"}
+  group_root: {foreground: "#fc618d"}
+  group_other: {foreground: "#8b888f"}
+
+links:
+  normal: {foreground: "#948ae3"}
+  multi_link_file: {foreground: "#948ae3", is_bold: true}
+
+git:
+  new: {foreground: "#7bd88f"}
+  modified: {foreground: "#fce566"}
+  deleted: {foreground: "#fc618d"}
+  renamed: {foreground: "#5ad4e6"}
+  typechange: {foreground: "#948ae3"}
+  ignored: {foreground: "#69676c"}
+  conflicted: {foreground: "#fd9353", is_bold: true}
+
+git_repo:
+  branch_main: {foreground: "#7bd88f"}
+  branch_other: {foreground: "#948ae3"}
+  git_clean: {foreground: "#7bd88f"}
+  git_dirty: {foreground: "#fc618d"}
+
+file_type:
+  image: {foreground: "#948ae3"}
+  video: {foreground: "#fc618d"}
+  music: {foreground: "#7bd88f"}
+  lossless: {foreground: "#5ad4e6"}
+  crypto: {foreground: "#8b888f"}
+  document: {foreground: "#f7f1ff"}
+  compressed: {foreground: "#fd9353"}
+  temp: {foreground: "#69676c"}
+  compiled: {foreground: "#fd9353"}
+  build: {foreground: "#fce566", is_underline: true}
+  source: {foreground: "#5ad4e6"}
+
+punctuation: {foreground: "#69676c"}
+date: {foreground: "#948ae3"}
+inode: {foreground: "#8b888f"}
+blocks: {foreground: "#8b888f"}
+octal: {foreground: "#5ad4e6"}
+header: {foreground: "#f7f1ff", is_underline: true}
+
+symlink_path: {foreground: "#5ad4e6"}
+control_char: {foreground: "#fc618d"}
+broken_symlink: {foreground: "#fc618d", is_bold: true}
+broken_path_overlay: {foreground: "#69676c", is_underline: true}

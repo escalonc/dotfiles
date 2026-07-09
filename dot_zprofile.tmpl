@@ -6,5 +6,10 @@
 # Editor CLI on PATH (only if the app is installed).
 [[ -d "/Applications/Sublime Text.app/Contents/SharedSupport/bin" ]] && \
   export PATH="/Applications/Sublime Text.app/Contents/SharedSupport/bin:$PATH"
+
+# JetBrains Toolbox CLI launchers (idea, webstorm, ...); Toolbox appends this
+# itself if missing, so keep it managed here to avoid apply conflicts.
+[[ -d "$HOME/Library/Application Support/JetBrains/Toolbox/scripts" ]] && \
+  export PATH="$PATH:$HOME/Library/Application Support/JetBrains/Toolbox/scripts"
 {{- end }}
 # Linux needs nothing here — ~/.local/bin is set in .zshrc (reaches tmux panes too); brew above is macOS-only.

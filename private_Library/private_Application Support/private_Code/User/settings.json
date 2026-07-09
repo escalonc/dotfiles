@@ -49,6 +49,15 @@
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,
   "files.trimTrailingWhitespace": true,
+  // Chezmoi templates: highlight as the underlying file type.
+  "files.associations": {
+    "*.sh.tmpl": "shellscript",
+    "dot_zshrc.tmpl": "shellscript",
+    "dot_zprofile.tmpl": "shellscript",
+    "*.toml.tmpl": "toml",
+    "*gitconfig.tmpl": "properties",
+    "**/private_dot_ssh/*.tmpl": "properties",
+  },
 
   // ─── Per-language ───
   "[javascript][javascriptreact][typescript][typescriptreact][json][jsonc][css][scss][html][yaml]": {

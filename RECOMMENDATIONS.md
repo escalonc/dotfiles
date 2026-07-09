@@ -4,7 +4,7 @@ Notes from a review of this repo (2026-07-05): what's already covered, and what 
 next for a fully terminal-centric workflow. Roughly ordered by impact within each section.
 
 **Shortlist for maximum return on effort:** 1Password SSH/signing, lazygit + tmux popup
-binding, fzf-tab, sesh, and a real Neovim config.
+binding, fzf-tab, and sesh.
 
 ## Already solid — don't churn
 
@@ -76,11 +76,8 @@ Auto-loads per-project env vars from `.envrc` on cd. One line in zshrc:
 
 ### 1. Neovim config (biggest remaining piece)
 
-`neovim` is in the Brewfile and is `$EDITOR` on Linux, but the repo manages zero nvim
-config — it runs stock everywhere. Either commit to it (start from
-[kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim) as an owned
-`dot_config/nvim/`, or LazyVim for a full distro) or drop it from the Brewfile.
-Without this, editing still round-trips through Sublime.
+Resolved 2026-07-06: dropped `neovim` from the Brewfile — editing goes through
+Sublime on macOS, and Linux falls back to `vi` for `$EDITOR`/git.
 
 ### 2. Secrets via chezmoi's 1Password integration
 
