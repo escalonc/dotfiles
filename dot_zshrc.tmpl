@@ -44,6 +44,9 @@ fi
 # ── Aliases ──────────────────────────────────────────────────────────────────
 
 # List files (eza)
+# Without this, eza looks for theme.yml in ~/Library/Application Support on
+# macOS; pin the XDG path (where chezmoi puts it) on both OSes.
+export EZA_CONFIG_DIR="$HOME/.config/eza"
 if command -v eza >/dev/null 2>&1; then
   alias ls="eza --icons --group-directories-first"
   alias ll="eza -l --icons --group-directories-first"
