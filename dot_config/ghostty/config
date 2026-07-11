@@ -34,7 +34,7 @@ window-save-state = never
 copy-on-select = clipboard
 
 # ─── Shell integration ─────────────────────────────────────────────────────
-shell-integration = zsh
+# shell-integration is left at its default (detect), per the docs.
 shell-integration-features = sudo
 
 # ─── Quick terminal ──────────────────────────────────────────────────────────

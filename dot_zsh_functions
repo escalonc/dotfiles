@@ -1,0 +1,46 @@
+# Functions, sourced from ~/.zshrc. zsh-specific (killport uses ${(f)...}).
+
+gclone() { git clone "$1" && cd "$(basename "$1" .git)" || return; }
+
+serve() { python3 -m http.server "${1:-8080}"; }
+
+killport() {
+  local pids; pids=$(lsof -ti tcp:"$1")
+  if [[ -n $pids ]]; then
+    # ${(f)…}: zsh doesn't word-split unquoted params — split PIDs on newlines.
+    kill -9 ${(f)pids}
+  else
+    echo "No process on port $1"
+  fi
+}
+
+whatsport() { sudo lsof -i :"$1"; }
+
+extract() {
+  if [ -f "$1" ]; then
+    case $1 in
+      *.tar.bz2) tar xjf "$1"    ;;
+      *.tar.gz)  tar xzf "$1"    ;;
+      *.tar.xz)  tar xJf "$1"    ;;
+      *.bz2)     bunzip2 "$1"    ;;
+      *.gz)      gunzip "$1"     ;;
+      *.xz)      unxz "$1"       ;;
+      *.tar)     tar xf "$1"     ;;
+      *.tbz2)    tar xjf "$1"    ;;
+      *.tgz)     tar xzf "$1"    ;;
+      *.zip)     unzip "$1"      ;;
+      *.Z)       uncompress "$1" ;;
+      *)         echo "'$1' cannot be extracted" ;;
+    esac
+  else
+    echo "'$1' is not a valid file"
+  fi
+}
+
+hist() { history | grep "$1"; }
+
+weather() { curl "wttr.in/${1:-}"; }
+
+jwt-decode() {
+  jq -R 'split(".") | .[0],.[1] | @base64d | fromjson' <<< "$1"
+}

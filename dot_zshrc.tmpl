@@ -23,6 +23,9 @@ plugins=(
 fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
 autoload -U compinit && compinit
 
+# OMZ reads this at source time (lib/history.zsh builds the `history` alias from it).
+HIST_STAMPS="yyyy-mm-dd"
+
 source "$ZSH/oh-my-zsh.sh"
 
 # ── PATH ─────────────────────────────────────────────────────────────────────
@@ -34,103 +37,15 @@ export PATH="$HOME/.local/bin:$PATH"
 command -v fnm >/dev/null 2>&1 && eval "$(fnm env --use-on-cd --shell zsh)"
 
 # ── Tool Config ──────────────────────────────────────────────────────────────
-command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
-
-if command -v bat >/dev/null 2>&1; then
-  alias cat="bat"
-  alias less="bat --paging=always"
-fi
-
-# ── Aliases ──────────────────────────────────────────────────────────────────
-
-# List files (eza)
 # Without this, eza looks for theme.yml in ~/Library/Application Support on
 # macOS; pin the XDG path (where chezmoi puts it) on both OSes.
 export EZA_CONFIG_DIR="$HOME/.config/eza"
-if command -v eza >/dev/null 2>&1; then
-  alias ls="eza --icons --group-directories-first"
-  alias ll="eza -l --icons --group-directories-first"
-  alias la="eza -la --icons --group-directories-first --git"
-  alias lt="eza --tree --icons --level=2"
-  alias ltt="eza --tree --icons --level=3"
-fi
 
-# Docker
-alias d="docker"
-alias dc="docker compose"
-alias dex="docker exec -it"
-alias drmi="docker rmi"
-alias dprune="docker system prune -a"
-
-# Claude Code
-alias c="claude"
-
-# Misc
-alias reload="source ~/.zshrc"
-alias myip="curl -s ifconfig.me; echo"
-{{- if eq .chezmoi.os "darwin" }}
-alias zshconfig="subl ~/.zshrc"
-alias ohmyzsh="subl ~/.oh-my-zsh"
-alias hosts="sudo subl /etc/hosts"
-alias localip="ipconfig getifaddr en0"
-alias flushdns="sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder && echo 'DNS flushed'"
-alias cleanup="find . -name '.DS_Store' -delete"
-alias brewup="brew update && brew upgrade && brew cleanup"
-{{- else }}
-alias zshconfig='$EDITOR ~/.zshrc'
-alias ohmyzsh='$EDITOR ~/.oh-my-zsh'
-alias hosts='sudo $EDITOR /etc/hosts'
-alias localip="hostname -I | awk '{print \$1}'"
-alias flushdns="sudo resolvectl flush-caches && echo 'DNS flushed'"
-{{- end }}
-alias ports="sudo lsof -i -P -n | grep LISTEN"
+# ── Aliases ──────────────────────────────────────────────────────────────────
+[[ ! -f ~/.zsh_aliases ]] || source ~/.zsh_aliases
 
 # ── Functions ────────────────────────────────────────────────────────────────
-
-gclone() { git clone "$1" && cd "$(basename "$1" .git)" || return; }
-
-serve() { python3 -m http.server "${1:-8080}"; }
-
-killport() {
-  local pids; pids=$(lsof -ti tcp:"$1")
-  if [[ -n $pids ]]; then
-    # ${(f)…}: zsh doesn't word-split unquoted params — split PIDs on newlines.
-    kill -9 ${(f)pids}
-  else
-    echo "No process on port $1"
-  fi
-}
-
-whatsport() { sudo lsof -i :"$1"; }
-
-extract() {
-  if [ -f "$1" ]; then
-    case $1 in
-      *.tar.bz2) tar xjf "$1"    ;;
-      *.tar.gz)  tar xzf "$1"    ;;
-      *.tar.xz)  tar xJf "$1"    ;;
-      *.bz2)     bunzip2 "$1"    ;;
-      *.gz)      gunzip "$1"     ;;
-      *.xz)      unxz "$1"       ;;
-      *.tar)     tar xf "$1"     ;;
-      *.tbz2)    tar xjf "$1"    ;;
-      *.tgz)     tar xzf "$1"    ;;
-      *.zip)     unzip "$1"      ;;
-      *.Z)       uncompress "$1" ;;
-      *)         echo "'$1' cannot be extracted" ;;
-    esac
-  else
-    echo "'$1' is not a valid file"
-  fi
-}
-
-hist() { history | grep "$1"; }
-
-weather() { curl "wttr.in/${1:-}"; }
-
-jwt-decode() {
-  jq -R 'split(".") | .[0],.[1] | @base64d | fromjson' <<< "$1"
-}
+[[ ! -f ~/.zsh_functions ]] || source ~/.zsh_functions
 
 # ── Environment ──────────────────────────────────────────────────────────────
 {{- if eq .chezmoi.os "darwin" }}
@@ -141,11 +56,14 @@ export EDITOR="vi"
 export VISUAL="$EDITOR"
 export HISTSIZE=50000
 export SAVEHIST=50000
-export HIST_STAMPS="yyyy-mm-dd"
 
 # ── Powerlevel10k config ─────────────────────────────────────────────────────
 # ||-form keeps $? = 0 when the file is missing (else first prompt shows an error).
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# zoxide docs: init at the end of .zshrc (must run after compinit; only
+# syntax-highlighting may follow, since it wraps existing widgets).
+command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
 
 # ── Syntax highlighting — MUST stay the last thing sourced ───────────────────
 # Wraps existing ZLE widgets (zoxide/p10k above), so must be manual and last — not in the plugins array.

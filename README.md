@@ -17,6 +17,14 @@ Bootstraps the essentials (Homebrew on macOS, git on Linux), then runs
 `chezmoi init --apply` on this repo. On Linux you're asked once whether the
 machine is headless (yes for a server).
 
+### Manual steps (once per machine)
+
+- **macOS:** enable the 1Password SSH agent — 1Password → Settings → Developer
+  → *Use the SSH Agent*. Until then, SSH and `git commit` fail (commits are
+  signed via 1Password, `commit.gpgsign = true`).
+- Commit signing is macOS-only by design: the Linux box is headless, has no
+  1Password app, and makes unsigned commits.
+
 ## Usage
 
 ```bash
