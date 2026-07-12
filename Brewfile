@@ -63,6 +63,7 @@ cask "cleanshot"
 
 # ─── Fonts ───────────────────────────────────────────────────────────────────
 cask "font-meslo-lg-nerd-font"
+cask "font-jetbrains-mono-nerd-font"
 
 # ─── VSCode Extensions ───────────────────────────────────────────────────────
 vscode "monokai.theme-monokai-pro-vscode"

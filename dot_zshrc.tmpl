@@ -60,6 +60,8 @@ export SAVEHIST=50000
 # ── Powerlevel10k config ─────────────────────────────────────────────────────
 # ||-form keeps $? = 0 when the file is missing (else first prompt shows an error).
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+# Ink overrides — must come after ~/.p10k.zsh so its styles win.
+[[ ! -f ~/.config/zsh/p10k-ink.zsh ]] || source ~/.config/zsh/p10k-ink.zsh
 
 # zoxide docs: init at the end of .zshrc (must run after compinit; only
 # syntax-highlighting may follow, since it wraps existing widgets).
