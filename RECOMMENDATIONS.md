@@ -8,12 +8,13 @@ binding, fzf-tab, and sesh.
 
 ## Already solid — don't churn
 
-- Ghostty, tmux (resurrect/continuum), Oh My Zsh + Powerlevel10k
+- Ghostty, tmux (resurrect/continuum), Oh My Zsh + Starship
 - Modern CLI kit: fzf, zoxide, eza, bat, delta, ripgrep, fd, btop, hyperfine
 - Git config already better than most: histogram diff, zdiff3 conflicts, rerere,
   `rebase.updateRefs`, branch sort, delta side-by-side
 - macOS defaults script is more thorough than most published ones
-- Keep p10k (no starship), keep fnm (no mise)
+- Keep fnm (no mise). (2026-07-12: migrated p10k → starship after all — p10k is
+  in maintenance mode and its config was hard to maintain; see tag `pre-starship`.)
 
 ## Round 1 — wiring together what's already installed
 

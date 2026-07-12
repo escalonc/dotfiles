@@ -1,11 +1,6 @@
-# ── Powerlevel10k instant prompt (must stay near the top) ────────────────────
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
 # ── Oh My Zsh ────────────────────────────────────────────────────────────────
 export ZSH="$HOME/.oh-my-zsh"
-ZSH_THEME="powerlevel10k/powerlevel10k"
+ZSH_THEME=""   # prompt comes from starship (init at the bottom of this file)
 
 # OMZ + plugins are refreshed by chezmoi (.chezmoiexternal.toml); never self-update.
 zstyle ':omz:update' mode disabled
@@ -57,15 +52,12 @@ export VISUAL="$EDITOR"
 export HISTSIZE=50000
 export SAVEHIST=50000
 
-# ── Powerlevel10k config ─────────────────────────────────────────────────────
-# ||-form keeps $? = 0 when the file is missing (else first prompt shows an error).
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-# Ink overrides — must come after ~/.p10k.zsh so its styles win.
-[[ ! -f ~/.config/zsh/p10k-ink.zsh ]] || source ~/.config/zsh/p10k-ink.zsh
-
 # zoxide docs: init at the end of .zshrc (must run after compinit; only
 # syntax-highlighting may follow, since it wraps existing widgets).
 command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
+
+# ── Prompt: starship (config in ~/.config/starship.toml) ─────────────────────
+command -v starship >/dev/null 2>&1 && eval "$(starship init zsh)"
 
 # ── Syntax highlighting — MUST stay the last thing sourced ───────────────────
 # Wraps existing ZLE widgets (zoxide/p10k above), so must be manual and last — not in the plugins array.

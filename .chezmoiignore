@@ -18,5 +18,5 @@ provisioning/
 .oh-my-zsh/log
 .oh-my-zsh/log/**
 
-# Compiled zsh bytecode p10k writes into its own tree at runtime.
+# Compiled zsh bytecode written into the tree at runtime.
 .oh-my-zsh/**/*.zwc

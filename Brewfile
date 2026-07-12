@@ -20,6 +20,7 @@ brew "tldr"
 brew "hyperfine"
 brew "tmux"
 brew "zoxide"
+brew "starship"
 brew "httpie"
 brew "opentofu"
 
