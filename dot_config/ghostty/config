@@ -16,12 +16,12 @@ font-thicken = true
 
 # ─── Theme ───────────────────────────────────────────────────────────────────
 theme = Monokai Pro Spectrum
-background-opacity = 0.95
-background-blur = 20
+
 
 # ─── Cursor ──────────────────────────────────────────────────────────────────
 adjust-cursor-thickness = 2
 cursor-style = bar
+cursor-color = #f7f1ff
 
 # ─── Window ──────────────────────────────────────────────────────────────────
 window-padding-x = 10
@@ -34,8 +34,7 @@ window-save-state = never
 copy-on-select = clipboard
 
 # ─── Shell integration ─────────────────────────────────────────────────────
-# shell-integration is left at its default (detect), per the docs.
-shell-integration-features = sudo
+shell-integration-features = true
 
 # ─── Quick terminal ──────────────────────────────────────────────────────────
 quick-terminal-animation-duration = 0.15
