@@ -1,6 +1,6 @@
 # ── Oh My Zsh ────────────────────────────────────────────────────────────────
 export ZSH="$HOME/.oh-my-zsh"
-ZSH_THEME=""   # prompt comes from starship (init at the bottom of this file)
+ZSH_THEME="refined"   # two-line minimal prompt (Pure-style), ANSI colors only
 
 # OMZ + plugins are refreshed by chezmoi (.chezmoiexternal.toml); never self-update.
 zstyle ':omz:update' mode disabled
@@ -56,15 +56,8 @@ export SAVEHIST=50000
 # syntax-highlighting may follow, since it wraps existing widgets).
 command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
 
-# ── Prompt: starship (config in ~/.config/starship.toml) ─────────────────────
-command -v starship >/dev/null 2>&1 && eval "$(starship init zsh)"
-
-# Ink right-side ✔/✗ status hook — must stay below the starship init, since
-# its precmd has to register after starship's (see the file's header comment).
-[[ ! -f ~/.config/zsh/ink-status.zsh ]] || source ~/.config/zsh/ink-status.zsh
-
 # ── Syntax highlighting — MUST stay the last thing sourced ───────────────────
-# Wraps existing ZLE widgets (zoxide/p10k above), so must be manual and last — not in the plugins array.
+# Wraps existing ZLE widgets (zoxide above), so must be manual and last — not in the plugins array.
 ZSYH="${ZSH_CUSTOM:-$ZSH/custom}/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 [[ ! -f $ZSYH ]] || source "$ZSYH"
 unset ZSYH

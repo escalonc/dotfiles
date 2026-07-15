@@ -8,13 +8,15 @@ binding, fzf-tab, and sesh.
 
 ## Already solid — don't churn
 
-- Ghostty, tmux (resurrect/continuum), Oh My Zsh + Starship
+- Ghostty, tmux (resurrect/continuum), Oh My Zsh (theme: refined)
 - Modern CLI kit: fzf, zoxide, eza, bat, delta, ripgrep, fd, btop, hyperfine
 - Git config already better than most: histogram diff, zdiff3 conflicts, rerere,
   `rebase.updateRefs`, branch sort, delta side-by-side
 - macOS defaults script is more thorough than most published ones
 - Keep fnm (no mise). (2026-07-12: migrated p10k → starship after all — p10k is
   in maintenance mode and its config was hard to maintain; see tag `pre-starship`.)
+  (2026-07-13: dropped starship too — the custom "Ink" config was still bespoke
+  upkeep; now OMZ's `refined` theme, zero config to own. Ink lives at `5a510eb`.)
 
 ## Round 1 — wiring together what's already installed
 

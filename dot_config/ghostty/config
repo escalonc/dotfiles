@@ -19,9 +19,10 @@ theme = Monokai Pro Spectrum
 
 
 # ─── Cursor ──────────────────────────────────────────────────────────────────
+# No cursor-color override: each theme supplies its own, so switching themes
+# never needs a config tweak here.
 adjust-cursor-thickness = 2
 cursor-style = bar
-cursor-color = #f7f1ff
 
 # ─── Window ──────────────────────────────────────────────────────────────────
 window-padding-x = 10
