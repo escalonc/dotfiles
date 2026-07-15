@@ -1,0 +1,6 @@
+# Render diffs through delta, matching the git pager config in .gitconfig.
+# Found via $LG_CONFIG_FILE (set in .zshrc) so the XDG path works on macOS too.
+git:
+  paging:
+    colorArg: always
+    pager: delta --dark --paging=never

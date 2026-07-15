@@ -1,0 +1,135 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# "Ink" — Starship × Monokai Pro Spectrum
+# Pure typography: no pills, no backgrounds. Hierarchy from weight + dimming.
+#   place = orange · ok/clean = green · error/conflict = red · dirty git = yellow
+#   duration & vi command mode = purple · detail/meta = grays
+#
+# Port of the former p10k-ink theme (git history: tag pre-starship).
+# The right-side ✔/✗ status comes from the INK_OK / INK_ERR env vars, set by
+# the _ink_status precmd in .zshrc — starship's own [status] module can't show
+# ✔ on success without also printing the raw exit code.
+# ═══════════════════════════════════════════════════════════════════════════
+
+# Blank line between prompts; dir + git on top, prompt char below
+add_newline = true
+format = '${custom.path_parent}$directory${custom.git_branch_clean}${custom.git_branch_dirty}${custom.git_branch_conflict}$git_status$line_break$character'
+right_format = '${env_var.INK_OK}${env_var.INK_ERR}$cmd_duration$jobs$username$hostname$time'
+
+palette = 'ink'
+
+[palettes.ink]
+muted = '#8b888f'    # secondary text
+faint = '#69676c'    # timestamps, meta
+orange = '#fd9353'   # place (dir anchor)
+red = '#fc618d'      # error / conflict
+green = '#7bd88f'    # ok / clean
+yellow = '#fce566'   # dirty git
+purple = '#948ae3'   # duration, vi command mode
+
+# ── Directory: muted parent path, bold orange last element ──────────────────
+# Starship can't style path elements individually, so this is two modules:
+# custom.path_parent prints everything up to the leaf in muted gray, and the
+# directory module (truncated to 1 element) prints the leaf in bold orange.
+[custom.path_parent]
+when = true
+command = '''p=$PWD; case $p in "$HOME") p='~';; "$HOME"/*) p="~${p#$HOME}";; esac; case $p in '~'|'/') ;; *) printf '%s/' "${p%/*}";; esac'''
+style = 'muted'
+format = '[$output]($style)'
+
+[directory]
+style = 'bold orange'
+truncate_to_repo = false
+truncation_length = 1      # leaf only; custom.path_parent shows the rest
+truncation_symbol = ''
+read_only = ''       # no Nerd Font padlock
+format = '[$path]($style)  '
+
+# ── Git: branch takes the state color — green clean, yellow dirty, red conflict
+# git_branch can't restyle itself by repo state, so the branch is three custom
+# modules with mutually exclusive `when` guards (each ~1 git call per prompt);
+# git_status appends the counts. Detached HEAD falls back to the short SHA.
+[custom.git_branch_clean]
+require_repo = true
+when = 'test -z "$(git status --porcelain 2>/dev/null)"'
+command = 'b=$(git branch --show-current 2>/dev/null); [ -n "$b" ] || b=$(git rev-parse --short HEAD 2>/dev/null); printf "%.32s" "$b"'
+style = 'green'
+format = '[⎇ $output]($style) '
+
+[custom.git_branch_dirty]
+require_repo = true
+when = 'test -n "$(git status --porcelain 2>/dev/null)" && test -z "$(git ls-files --unmerged 2>/dev/null)"'
+command = 'b=$(git branch --show-current 2>/dev/null); [ -n "$b" ] || b=$(git rev-parse --short HEAD 2>/dev/null); printf "%.32s" "$b"'
+style = 'yellow'
+format = '[⎇ $output]($style) '
+
+[custom.git_branch_conflict]
+require_repo = true
+when = 'test -n "$(git ls-files --unmerged 2>/dev/null)"'
+command = 'b=$(git branch --show-current 2>/dev/null); [ -n "$b" ] || b=$(git rev-parse --short HEAD 2>/dev/null); printf "%.32s" "$b"'
+style = 'red'
+format = '[⎇ $output]($style) '
+
+[git_status]
+format = '([$ahead_behind$stashed$conflicted$staged$modified$renamed$deleted$untracked]($style))'
+style = ''
+ahead = '[⇡$count](green) '
+behind = '[⇣$count](green) '
+diverged = '[⇡$ahead_count⇣$behind_count](green) '
+stashed = '[*$count](green) '
+conflicted = '[~$count](bold red) '
+staged = '[+$count](bold yellow) '
+modified = '[!$count](bold yellow) '
+renamed = '[»$count](bold yellow) '
+deleted = '[✘$count](bold yellow) '
+untracked = '[?$count](bold yellow) '
+
+# ── Prompt char: ❯ inherits last exit code; ❮ purple in vi command mode ─────
+[character]
+success_symbol = '[❯](green)'
+error_symbol = '[❯](red)'
+vimcmd_symbol = '[❮](purple)'
+vimcmd_replace_symbol = '[❮](purple)'
+vimcmd_replace_one_symbol = '[❮](purple)'
+vimcmd_visual_symbol = '[❮](purple)'
+
+# ── Right side: green ✔ / red ✗ status, purple duration, dim timestamp ──────
+# INK_OK='✔' on success; INK_ERR='1' / 'INT' / '1|0' on failure (exit code,
+# signal name, or per-command pipe codes) — both exported by the _ink_status
+# precmd in .zshrc. The (…) groups vanish when the variable is unset.
+[env_var.INK_OK]
+variable = 'INK_OK'
+format = '([$env_value](green)  )'
+
+[env_var.INK_ERR]
+variable = 'INK_ERR'
+format = '([✗ $env_value](bold red)  )'
+
+# Duration of the last command, shown once it finishes (only if it took >3s)
+[cmd_duration]
+min_time = 3000
+format = '[took ](faint)[$duration](bold purple)  '
+
+# Background jobs: yellow &N
+[jobs]
+symbol = '&'
+symbol_threshold = 1
+number_threshold = 1
+format = '[$symbol$number](yellow)  '
+
+# user@host: hidden locally, muted over ssh, red when root
+[username]
+show_always = false
+style_user = 'muted'
+style_root = 'bold red'
+format = '[$user]($style)[@](muted)'
+
+[hostname]
+ssh_only = true
+style = 'muted'
+format = '[$hostname]($style)  '
+
+[time]
+disabled = false
+time_format = '%T'
+style = 'faint'
+format = '[$time]($style)'

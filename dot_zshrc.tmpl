@@ -1,63 +1,123 @@
-# ── Oh My Zsh ────────────────────────────────────────────────────────────────
-export ZSH="$HOME/.oh-my-zsh"
-ZSH_THEME="refined"   # two-line minimal prompt (Pure-style), ANSI colors only
+# ── zinit (plugin manager) ────────────────────────────────────────────────────
+# zinit.git itself is cloned/refreshed weekly by chezmoi (.chezmoiexternal.toml);
+# never run `zinit self-update`. Plugins/snippets below are cloned by zinit on
+# the first shell start (needs network once per machine); `zinit update --all`.
+ZINIT_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/zinit/zinit.git"
+[[ ! -r "$ZINIT_HOME/zinit.zsh" ]] || source "$ZINIT_HOME/zinit.zsh"
 
-# OMZ + plugins are refreshed by chezmoi (.chezmoiexternal.toml); never self-update.
-zstyle ':omz:update' mode disabled
+# ── Shell options (replaces the OMZ lib defaults we relied on) ────────────────
+setopt AUTO_CD INTERACTIVE_COMMENTS
+# Emacs keymap explicitly: EDITOR=vi on Linux would otherwise flip ZLE to viins.
+bindkey -e
 
-plugins=(
-  git
-  gh
-  zsh-autosuggestions
-  docker
-  sudo
-  colored-man-pages
-)
+# ── History (replaces OMZ lib/history.zsh) ────────────────────────────────────
+# HISTFILE must be set here — nothing else sets it, and without it zsh silently
+# stops persisting history (atuin below would mask the loss).
+HISTFILE="$HOME/.zsh_history"
+HISTSIZE=50000
+SAVEHIST=50000
+setopt EXTENDED_HISTORY SHARE_HISTORY HIST_EXPIRE_DUPS_FIRST HIST_IGNORE_DUPS \
+       HIST_IGNORE_SPACE HIST_VERIFY
+# Timestamped output (replaces OMZ's HIST_STAMPS alias). Must be defined before
+# ~/.zsh_functions is sourced so hist() bakes it in at parse time.
+alias history='fc -il 1'
 
-# zsh-completions on fpath BEFORE oh-my-zsh so compinit sees it (as a plugin it loads too late).
-fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
-autoload -U compinit && compinit
+# Arrow keys prefix-search history; Home/End/Delete (subset of OMZ key-bindings).
+autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+bindkey '^[[A' up-line-or-beginning-search
+bindkey '^[[B' down-line-or-beginning-search
+bindkey '^[[H' beginning-of-line
+bindkey '^[[F' end-of-line
+bindkey '^[[3~' delete-char
 
-# OMZ reads this at source time (lib/history.zsh builds the `history` alias from it).
-HIST_STAMPS="yyyy-mm-dd"
+# ── Completion styling (compinit itself runs in the fzf-tab turbo slot below) ─
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z-_}={A-Za-z_-}' 'r:|=*' 'l:|=* r:|=*'
+zstyle ':completion:*' menu no                     # required: fzf-tab replaces the menu
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*:descriptions' format '[%d]'  # group headers fzf-tab shows
+zstyle ':completion:*' use-cache yes
+zstyle ':completion:*' cache-path ~/.cache/zsh/zcompcache
+# fzf-tab: directory preview on cd/zoxide; </> cycles completion groups
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always --icons $realpath'
+zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'eza -1 --color=always --icons $realpath'
+zstyle ':fzf-tab:*' switch-group '<' '>'
 
-source "$ZSH/oh-my-zsh.sh"
+# Docker Desktop drops zsh completions here when enabled; no-op if absent.
+[[ ! -d ~/.docker/completions ]] || fpath+=(~/.docker/completions)
 
-# ── PATH ─────────────────────────────────────────────────────────────────────
+# ── Plugins (turbo: everything loads just after the first prompt paints) ──────
+# zinit only has wait sub-slots a/b/c; within one slot, registration order wins.
+#   0a  extra completions on fpath + OMZ snippets (git aliases, sudo, man colors)
+#   0b  compinit + compdef replay, then fzf-tab — must run after compinit but
+#       before any plugin that wraps ZLE widgets
+#   0c  autosuggestions (atload starts it since ZLE is already live), then
+#       fast-syntax-highlighting LAST — wraps every widget defined before it
+zinit wait'0a' lucid light-mode for \
+    blockf atpull'zinit creinstall -q .' zsh-users/zsh-completions \
+    OMZL::git.zsh \
+    OMZP::git \
+    OMZP::sudo \
+    OMZP::colored-man-pages
+zinit wait'0b' lucid atinit'zicompinit; zicdreplay' light-mode for \
+    Aloxaf/fzf-tab
+zinit wait'0c' lucid atload'_zsh_autosuggest_start' light-mode for \
+    zsh-users/zsh-autosuggestions
+zinit wait'0c' lucid light-mode for \
+    zdharma-continuum/fast-syntax-highlighting
+
+# ── PATH ──────────────────────────────────────────────────────────────────────
 # User-local binaries (claude; fnm on Linux); in .zshrc not .zprofile so tmux panes get it too.
 export PATH="$HOME/.local/bin:$PATH"
+# opencode installer appends this to ~/.zshrc if missing; keep it managed here
+# so chezmoi apply doesn't fight it.
+[[ ! -d "$HOME/.opencode/bin" ]] || export PATH="$HOME/.opencode/bin:$PATH"
 
-# ── Language Managers ────────────────────────────────────────────────────────
+# ── Language Managers ─────────────────────────────────────────────────────────
 # Guard each so a missing/uninstalled tool doesn't spam errors on shell startup.
 command -v fnm >/dev/null 2>&1 && eval "$(fnm env --use-on-cd --shell zsh)"
 
-# ── Tool Config ──────────────────────────────────────────────────────────────
+# ── Tool Config ───────────────────────────────────────────────────────────────
 # Without this, eza looks for theme.yml in ~/Library/Application Support on
 # macOS; pin the XDG path (where chezmoi puts it) on both OSes.
 export EZA_CONFIG_DIR="$HOME/.config/eza"
+# Same XDG pinning for lazygit (defaults to ~/Library/Application Support on macOS).
+export LG_CONFIG_FILE="$HOME/.config/lazygit/config.yml"
+# fzf: fd-powered sources (respect .gitignore, include dotfiles), bat preview on Ctrl-T.
+export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_COMMAND='fd --type d --hidden --exclude .git'
+export FZF_CTRL_T_OPTS="--preview 'bat --style=numbers --color=always {} 2>/dev/null || eza -1 --color=always --icons {}'"
 
-# ── Aliases ──────────────────────────────────────────────────────────────────
+# ── Aliases ───────────────────────────────────────────────────────────────────
 [[ ! -f ~/.zsh_aliases ]] || source ~/.zsh_aliases
 
-# ── Functions ────────────────────────────────────────────────────────────────
+# ── Functions ─────────────────────────────────────────────────────────────────
 [[ ! -f ~/.zsh_functions ]] || source ~/.zsh_functions
 
-# ── Environment ──────────────────────────────────────────────────────────────
+# ── Environment ───────────────────────────────────────────────────────────────
 {{- if eq .chezmoi.os "darwin" }}
 export EDITOR="subl --wait"
 {{- else }}
 export EDITOR="vi"
 {{- end }}
 export VISUAL="$EDITOR"
-export HISTSIZE=50000
-export SAVEHIST=50000
 
-# zoxide docs: init at the end of .zshrc (must run after compinit; only
-# syntax-highlighting may follow, since it wraps existing widgets).
+# ── Tool hooks — ORDER MATTERS below this line ────────────────────────────────
+command -v direnv >/dev/null 2>&1 && eval "$(direnv hook zsh)"
 command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
+# fzf keybindings (needs fzf >= 0.48): Ctrl-T files, Alt-C cd. Its Ctrl-R is
+# deliberately overridden by atuin at the bottom.
+command -v fzf >/dev/null 2>&1 && source <(fzf --zsh)
 
-# ── Syntax highlighting — MUST stay the last thing sourced ───────────────────
-# Wraps existing ZLE widgets (zoxide above), so must be manual and last — not in the plugins array.
-ZSYH="${ZSH_CUSTOM:-$ZSH/custom}/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-[[ ! -f $ZSYH ]] || source "$ZSYH"
-unset ZSYH
+# ── Prompt: starship (config in ~/.config/starship.toml) ─────────────────────
+command -v starship >/dev/null 2>&1 && eval "$(starship init zsh)"
+# Ink right-side ✔/✗ status hook — must stay below the starship init, since
+# its precmd has to register after starship's (see the file's header comment).
+[[ ! -f ~/.config/zsh/ink-status.zsh ]] || source ~/.config/zsh/ink-status.zsh
+
+# ── atuin — keep LAST so its Ctrl-R binding wins over fzf's; the plain zsh
+#    history file above still accrues as a fallback. --disable-up-arrow keeps
+#    up-arrow on prefix-search (with autosuggestions) instead of the atuin UI.
+command -v atuin >/dev/null 2>&1 && eval "$(atuin init zsh --disable-up-arrow)"

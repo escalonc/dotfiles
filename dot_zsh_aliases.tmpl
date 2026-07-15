@@ -7,9 +7,7 @@ if command -v bat >/dev/null 2>&1; then
   alias less="bat --paging=always"
 fi
 
-# List files (eza). l/lsa also override Oh My Zsh's `ls -lah` defaults, which
-# would otherwise show hidden files (sourced after oh-my-zsh.sh, so these win).
-# Long listings share one flag set: git column, headers, 12-hour dates,
+# List files (eza). Long listings share one flag set: git column, headers, 12-hour dates,
 # clickable filenames (OSC 8). Trees honor .gitignore. ll/lm add a per-repo
 # branch/status column for directories; lm sorts by mtime with an age-tinted
 # date column.
@@ -39,12 +37,14 @@ alias dprune="docker system prune -a"
 # Claude Code
 alias c="claude"
 
+# lazygit (also bound to prefix+g in tmux)
+alias lg="lazygit"
+
 # Misc
 alias reload="source ~/.zshrc"
 alias myip="curl -s ifconfig.me; echo"
 {{- if eq .chezmoi.os "darwin" }}
 alias zshconfig="subl ~/.zshrc"
-alias ohmyzsh="subl ~/.oh-my-zsh"
 alias hosts="sudo subl /etc/hosts"
 alias localip="ipconfig getifaddr en0"
 alias flushdns="sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder && echo 'DNS flushed'"
@@ -52,7 +52,6 @@ alias cleanup="find . -name '.DS_Store' -delete"
 alias brewup="brew update && brew upgrade && brew cleanup"
 {{- else }}
 alias zshconfig='$EDITOR ~/.zshrc'
-alias ohmyzsh='$EDITOR ~/.oh-my-zsh'
 alias hosts='sudo $EDITOR /etc/hosts'
 alias localip="hostname -I | awk '{print \$1}'"
 alias flushdns="sudo resolvectl flush-caches && echo 'DNS flushed'"

@@ -3,13 +3,15 @@
 Notes from a review of this repo (2026-07-05): what's already covered, and what to add
 next for a fully terminal-centric workflow. Roughly ordered by impact within each section.
 
-**Shortlist for maximum return on effort:** 1Password SSH/signing, lazygit + tmux popup
-binding, fzf-tab, and sesh.
+**Shortlist for maximum return on effort:** 1Password SSH/signing and sesh
+(lazygit, fzf-tab, atuin, direnv all landed 2026-07-14).
 
 ## Already solid — don't churn
 
-- Ghostty, tmux (resurrect/continuum), Oh My Zsh (theme: refined)
-- Modern CLI kit: fzf, zoxide, eza, bat, delta, ripgrep, fd, btop, hyperfine
+- Ghostty, tmux (resurrect/continuum), zinit (turbo) + fzf-tab/autosuggestions/
+  fast-syntax-highlighting, Starship (Ink)
+- Modern CLI kit: fzf, zoxide, eza, bat, delta, ripgrep, fd, btop, hyperfine,
+  atuin, direnv, lazygit
 - Git config already better than most: histogram diff, zdiff3 conflicts, rerere,
   `rebase.updateRefs`, branch sort, delta side-by-side
 - macOS defaults script is more thorough than most published ones
@@ -17,6 +19,10 @@ binding, fzf-tab, and sesh.
   in maintenance mode and its config was hard to maintain; see tag `pre-starship`.)
   (2026-07-13: dropped starship too — the custom "Ink" config was still bespoke
   upkeep; now OMZ's `refined` theme, zero config to own. Ink lives at `5a510eb`.)
+  (2026-07-14: reversed the refined decision — back to starship/Ink, and replaced
+  Oh My Zsh entirely with a zinit turbo stack; the refined-era state lives at the
+  "Checkpoint: OMZ refined state" commit. Plugin updates are now manual:
+  `zinit update --all` — chezmoi's weekly refresh covers only zinit itself.)
 
 ## Round 1 — wiring together what's already installed
 
@@ -39,16 +45,13 @@ Plus `IdentityAgent` in `~/.ssh/config` (see also: manage SSH config via chezmoi
 
 ### 2. lazygit
 
-The one big missing tool. Sublime Merge covers deep work; lazygit inside tmux covers
-the 90% case (stage hunks, fixup, rebase, branch hopping) without leaving the terminal.
-Picks up the existing delta pager config for diffs. Classic combo: bind it to a tmux popup.
+Resolved 2026-07-14: installed, delta pager wired via `~/.config/lazygit/config.yml`
+(`LG_CONFIG_FILE` pins the XDG path on macOS), bound to `prefix + g` tmux popup.
 
 ### 3. fzf-tab
 
-fzf already handles files (Ctrl-T) and history (Ctrl-R), but tab completion is still
-the plain zsh menu. fzf-tab makes every completion (cd, kill, git checkout, ssh hosts)
-a fuzzy-searchable list with bat/eza previews. Fetch it via `.chezmoiexternal.toml`
-like the other zsh plugins.
+Resolved 2026-07-14: loaded via zinit turbo (after compinit, before widget-wrapping
+plugins), with eza directory previews on cd/zoxide completions.
 
 ### 4. tmux session picker — sesh
 
@@ -59,14 +62,13 @@ from "a multiplexer" into an actual project workflow.
 
 ### 5. atuin
 
-Synced, SQLite-backed shell history with context (directory, exit code, duration).
-Natural fit with the two-clone chezmoi setup across machines. Skip if cross-machine
-sync doesn't matter — `HISTSIZE=50000` + fzf Ctrl-R is fine otherwise.
+Resolved 2026-07-14: installed, owns Ctrl-R (init last in zshrc; `--disable-up-arrow`
+keeps up-arrow on prefix-search). Plain `~/.zsh_history` still accrues as a fallback.
+Cross-machine sync not set up yet — `atuin register`/`login` when wanted.
 
 ### 6. direnv
 
-Auto-loads per-project env vars from `.envrc` on cd. One line in zshrc:
-`eval "$(direnv hook zsh)"`. Pairs well with zoxide/sesh project jumping.
+Resolved 2026-07-14: installed and hooked in zshrc.
 
 ### Smaller Brewfile additions (take or leave)
 

@@ -1,0 +1,4 @@
+# Stale trees from the OMZ era: externals aren't pruned once their entry is
+# removed from .chezmoiexternal.toml, so delete explicitly on every machine.
+# Safe to keep permanently (no-op once gone).
+.oh-my-zsh

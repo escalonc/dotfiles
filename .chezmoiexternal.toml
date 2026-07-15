@@ -1,31 +1,13 @@
 # Shell stack auto-refreshed by chezmoi; exact=true prunes deleted files; stripComponents drops wrapper dir.
 
-[".oh-my-zsh"]
-    type = "archive"
-    url = "https://github.com/ohmyzsh/ohmyzsh/archive/master.tar.gz"
-    exact = true
-    stripComponents = 1
-    refreshPeriod = "168h"
-
-[".oh-my-zsh/custom/plugins/zsh-autosuggestions"]
-    type = "archive"
-    url = "https://github.com/zsh-users/zsh-autosuggestions/archive/master.tar.gz"
-    exact = true
-    stripComponents = 1
-    refreshPeriod = "168h"
-
-[".oh-my-zsh/custom/plugins/zsh-syntax-highlighting"]
-    type = "archive"
-    url = "https://github.com/zsh-users/zsh-syntax-highlighting/archive/master.tar.gz"
-    exact = true
-    stripComponents = 1
-    refreshPeriod = "168h"
-
-[".oh-my-zsh/custom/plugins/zsh-completions"]
-    type = "archive"
-    url = "https://github.com/zsh-users/zsh-completions/archive/master.tar.gz"
-    exact = true
-    stripComponents = 1
+# zinit itself (git-repo, not archive: zinit compiles .zwc files into its own
+# tree at runtime, which exact-archive pruning would churn on every apply; a
+# git-repo external just pulls). Never run `zinit self-update` — this entry
+# owns updates. Plugins/snippets are cloned BY zinit into ~/.local/share/zinit/
+# on first shell start (network, once per machine); update via `zinit update --all`.
+[".local/share/zinit/zinit.git"]
+    type = "git-repo"
+    url = "https://github.com/zdharma-continuum/zinit.git"
     refreshPeriod = "168h"
 
 # tmux plugins pre-placed (no `prefix + I`); main-branch archives, no .git; theme in ~/.tmux.conf.
