@@ -1,9 +1,18 @@
+# ── PATH/fpath hygiene ────────────────────────────────────────────────────────
+# Keep Zsh's tied path arrays unique as login startup, Zinit, fnm, and other
+# integrations add entries.
+typeset -gU path fpath
+
 # ── zinit (plugin manager) ────────────────────────────────────────────────────
 # zinit.git itself is cloned/refreshed weekly by chezmoi (.chezmoiexternal.toml);
 # never run `zinit self-update`. Plugins/snippets below are cloned by zinit on
 # the first shell start (needs network once per machine); `zinit update --all`.
 ZINIT_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/zinit/zinit.git"
-[[ ! -r "$ZINIT_HOME/zinit.zsh" ]] || source "$ZINIT_HOME/zinit.zsh"
+if [[ -r "$ZINIT_HOME/zinit.zsh" ]]; then
+  source "$ZINIT_HOME/zinit.zsh"
+else
+  print -u2 -- "zinit: manager missing at $ZINIT_HOME; starting without plugins"
+fi
 
 # ── Shell options (replaces the OMZ lib defaults we relied on) ────────────────
 setopt AUTO_CD INTERACTIVE_COMMENTS
@@ -22,12 +31,15 @@ setopt EXTENDED_HISTORY SHARE_HISTORY HIST_EXPIRE_DUPS_FIRST HIST_IGNORE_DUPS \
 # ~/.zsh_functions is sourced so hist() bakes it in at parse time.
 alias history='fc -il 1'
 
-# Arrow keys prefix-search history; Home/End/Delete (subset of OMZ key-bindings).
+# Arrow keys prefix-search history; support both CSI and SS3 terminal encodings.
+# Home/End/Delete retain the relevant subset of OMZ key-bindings.
 autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
 zle -N up-line-or-beginning-search
 zle -N down-line-or-beginning-search
 bindkey '^[[A' up-line-or-beginning-search
+bindkey '^[OA' up-line-or-beginning-search
 bindkey '^[[B' down-line-or-beginning-search
+bindkey '^[OB' down-line-or-beginning-search
 bindkey '^[[H' beginning-of-line
 bindkey '^[[F' end-of-line
 bindkey '^[[3~' delete-char
@@ -54,18 +66,23 @@ zstyle ':fzf-tab:*' switch-group '<' '>'
 #       before any plugin that wraps ZLE widgets
 #   0c  autosuggestions (atload starts it since ZLE is already live), then
 #       fast-syntax-highlighting LAST — wraps every widget defined before it
-zinit wait'0a' lucid light-mode for \
-    blockf atpull'zinit creinstall -q .' zsh-users/zsh-completions \
-    OMZL::git.zsh \
-    OMZP::git \
-    OMZP::sudo \
-    OMZP::colored-man-pages
-zinit wait'0b' lucid atinit'zicompinit; zicdreplay' light-mode for \
-    Aloxaf/fzf-tab
-zinit wait'0c' lucid atload'_zsh_autosuggest_start' light-mode for \
-    zsh-users/zsh-autosuggestions
-zinit wait'0c' lucid light-mode for \
-    zdharma-continuum/fast-syntax-highlighting
+if (( ${+functions[zinit]} )); then
+  zinit wait'0a' lucid light-mode for \
+      blockf atpull'zinit creinstall -q .' zsh-users/zsh-completions \
+      OMZL::git.zsh \
+      OMZP::git \
+      OMZP::sudo \
+      OMZP::colored-man-pages
+
+  zinit wait'0b' lucid atinit'zicompinit; zicdreplay' light-mode for \
+      Aloxaf/fzf-tab
+
+  zinit wait'0c' lucid atload'_zsh_autosuggest_start' light-mode for \
+      zsh-users/zsh-autosuggestions
+
+  zinit wait'0c' lucid light-mode for \
+      zdharma-continuum/fast-syntax-highlighting
+fi
 
 # ── PATH ──────────────────────────────────────────────────────────────────────
 # User-local binaries (claude; fnm on Linux); in .zshrc not .zprofile so tmux panes get it too.
