@@ -2,7 +2,7 @@
 # "Ink" — Starship × Monokai Pro Spectrum
 # Pure typography: no pills, no backgrounds. Hierarchy from weight + dimming.
 #   place = orange · ok/clean = green · error/conflict = red · dirty git = yellow
-#   duration & vi command mode = purple · detail/meta = grays
+#   duration, vi mode & subshell = purple · remote host = blue · meta = grays
 #
 # Port of the former p10k-ink theme (git history: tag pre-starship).
 # The right-side ✔/✗ status comes from the INK_OK / INK_ERR env vars, set by
@@ -10,10 +10,10 @@
 # ✔ on success without also printing the raw exit code.
 # ═══════════════════════════════════════════════════════════════════════════
 
-# Blank line between prompts; dir + git on top, prompt char below
-add_newline = true
-format = '${custom.path_parent}$directory${custom.git_branch_clean}${custom.git_branch_dirty}${custom.git_branch_conflict}$git_status$line_break$character'
-right_format = '${env_var.INK_OK}${env_var.INK_ERR}$cmd_duration$jobs$username$hostname$time'
+# Dir + git on top, prompt char below; don't insert an extra blank line.
+add_newline = false
+format = '${custom.path_parent}$directory${custom.git_branch_clean}${custom.git_branch_dirty}$git_status$line_break$character'
+right_format = '${env_var.INK_SUBSH}$username$hostname$jobs${env_var.INK_OK}${env_var.INK_ERR}$cmd_duration$time'
 
 palette = 'ink'
 
@@ -25,6 +25,8 @@ red = '#fc618d'      # error / conflict
 green = '#7bd88f'    # ok / clean
 yellow = '#fce566'   # dirty git
 purple = '#948ae3'   # duration, vi command mode
+blue = '#5ad4e6'     # SSH host
+ink = '#f7f1ff'      # primary foreground / SSH user
 
 # ── Directory: muted parent path, bold orange last element ──────────────────
 # Starship can't style path elements individually, so this is two modules:
@@ -44,29 +46,25 @@ truncation_symbol = ''
 read_only = ''       # no Nerd Font padlock
 format = '[$path]($style)  '
 
-# ── Git: branch takes the state color — green clean, yellow dirty, red conflict
-# git_branch can't restyle itself by repo state, so the branch is three custom
-# modules with mutually exclusive `when` guards (each ~1 git call per prompt);
-# git_status appends the counts. Detached HEAD falls back to the short SHA.
+# ── Git: branch color follows repo state, per the Ink mock ──────────────────
+# The design turns the whole `⎇ main !7 ?3` unit yellow when the tree is dirty.
+# Starship's native git_branch can't restyle from repo state, so two mutually
+# exclusive custom modules carry the branch: green when `git status --porcelain`
+# is empty, yellow otherwise (staged/modified/untracked all count as dirty;
+# stash-only and ahead/behind stay green). Costs one extra porcelain run per
+# prompt on top of git_status's own — fine at dotfiles-repo scale.
 [custom.git_branch_clean]
 require_repo = true
-when = 'test -z "$(git status --porcelain 2>/dev/null)"'
-command = 'b=$(git branch --show-current 2>/dev/null); [ -n "$b" ] || b=$(git rev-parse --short HEAD 2>/dev/null); printf "%.32s" "$b"'
+when = 'test -z "$(git status --porcelain 2>/dev/null | head -c1)"'
+command = 'git symbolic-ref -q --short HEAD || git rev-parse --short HEAD'
 style = 'green'
 format = '[⎇ $output]($style) '
 
 [custom.git_branch_dirty]
 require_repo = true
-when = 'test -n "$(git status --porcelain 2>/dev/null)" && test -z "$(git ls-files --unmerged 2>/dev/null)"'
-command = 'b=$(git branch --show-current 2>/dev/null); [ -n "$b" ] || b=$(git rev-parse --short HEAD 2>/dev/null); printf "%.32s" "$b"'
+when = 'test -n "$(git status --porcelain 2>/dev/null | head -c1)"'
+command = 'git symbolic-ref -q --short HEAD || git rev-parse --short HEAD'
 style = 'yellow'
-format = '[⎇ $output]($style) '
-
-[custom.git_branch_conflict]
-require_repo = true
-when = 'test -n "$(git ls-files --unmerged 2>/dev/null)"'
-command = 'b=$(git branch --show-current 2>/dev/null); [ -n "$b" ] || b=$(git rev-parse --short HEAD 2>/dev/null); printf "%.32s" "$b"'
-style = 'red'
 format = '[⎇ $output]($style) '
 
 [git_status]
@@ -92,7 +90,39 @@ vimcmd_replace_symbol = '[❮](purple)'
 vimcmd_replace_one_symbol = '[❮](purple)'
 vimcmd_visual_symbol = '[❮](purple)'
 
-# ── Right side: green ✔ / red ✗ status, purple duration, dim timestamp ──────
+# ── Right side: context, jobs, status, duration, timestamp ──────────────────
+# Subshell depth: hidden for the initial shell; ↳2, ↳3… for nested shells.
+# Raw SHLVL misfires here — Warp and tmux each add wrapper shell levels, so the
+# native [shlvl] module showed ↳2/↳4 on fresh top-level panes. ink-status.zsh
+# anchors a per-session baseline (INK_SHLVL_BASE) and exports INK_SUBSH only
+# for genuinely nested shells; this module just prints it.
+[env_var.INK_SUBSH]
+variable = 'INK_SUBSH'
+format = '([$env_value](purple)  )'
+
+# user@host: hidden locally; ink-white user + bold blue host over SSH,
+# with root called out in red. Known edge: a LOCAL root shell renders a
+# dangling "root@" (hostname is ssh_only, and starship can't conditionally
+# drop the @). Accepted — fixing it needs custom shell-out modules.
+[username]
+show_always = false
+style_user = 'ink'
+style_root = 'bold red'
+format = '[$user]($style)[@](faint)'
+
+[hostname]
+ssh_only = true
+style = 'bold blue'
+format = '[$hostname]($style)  '
+
+# Background jobs: green gear + count.
+[jobs]
+symbol = '⚙︎'
+symbol_threshold = 1
+number_threshold = 1
+style = 'green'
+format = '[$symbol$number]($style)  '
+
 # INK_OK='✔' on success; INK_ERR='1' / 'INT' / '1|0' on failure (exit code,
 # signal name, or per-command pipe codes) — both exported by the _ink_status
 # precmd in .zshrc. The (…) groups vanish when the variable is unset.
@@ -108,25 +138,6 @@ format = '([✗ $env_value](bold red)  )'
 [cmd_duration]
 min_time = 3000
 format = '[took ](faint)[$duration](bold purple)  '
-
-# Background jobs: yellow &N
-[jobs]
-symbol = '&'
-symbol_threshold = 1
-number_threshold = 1
-format = '[$symbol$number](yellow)  '
-
-# user@host: hidden locally, muted over ssh, red when root
-[username]
-show_always = false
-style_user = 'muted'
-style_root = 'bold red'
-format = '[$user]($style)[@](muted)'
-
-[hostname]
-ssh_only = true
-style = 'muted'
-format = '[$hostname]($style)  '
 
 [time]
 disabled = false

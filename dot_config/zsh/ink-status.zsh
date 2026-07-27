@@ -22,3 +22,19 @@ _ink_status() {
 }
 # (Ie) exact-match guard: don't register twice if this file is re-sourced
 (( ${precmd_functions[(Ie)_ink_status]} )) || precmd_functions+=(_ink_status)
+
+# Ink right-side ↳N subshell depth for [env_var.INK_SUBSH] in starship.toml.
+# Raw SHLVL counts every wrapper (Warp injects a level, tmux another), which
+# made starship's native [shlvl] show ↳2/↳4 on fresh top-level panes. Instead:
+# a shell whose parent is NOT a shell (terminal, tmux server, sshd, sudo) is a
+# top-level prompt and re-anchors the exported baseline; a shell whose parent
+# IS a shell inherits the baseline, so only genuine nesting renders ↳2, ↳3…
+# Depth is fixed for a shell's lifetime, so this runs once at source time.
+() {
+  case ${$(ps -o comm= -p $PPID 2>/dev/null):t} in
+    (*zsh|*bash|*fish|*dash|sh) ;;
+    (*) export INK_SHLVL_BASE=$SHLVL ;;
+  esac
+  local depth=$(( SHLVL - ${INK_SHLVL_BASE:-$SHLVL} + 1 ))
+  if (( depth >= 2 )); then export INK_SUBSH="↳$depth"; else unset INK_SUBSH; fi
+}
