@@ -10,3 +10,4 @@ install.sh
 .DS_Store
 LICENSE
 provisioning/
+iterm2/

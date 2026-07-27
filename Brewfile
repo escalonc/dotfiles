@@ -44,6 +44,7 @@ cask "visual-studio-code"
 
 # Terminals
 cask "ghostty"
+cask "iterm2"
 
 # API & Network
 cask "bruno"
