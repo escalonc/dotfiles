@@ -1168,6 +1168,8 @@
 	</array>
 	<key>SoundForEsc</key>
 	<false/>
+	<key>StretchTabsToFillBar</key>
+	<false/>
 	<key>TabStyleWithAutomaticOption</key>
 	<integer>5</integer>
 	<key>VisualIndicatorForEsc</key>
