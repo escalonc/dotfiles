@@ -7,23 +7,23 @@ if command -v bat >/dev/null 2>&1; then
   alias less="bat --paging=always"
 fi
 
-# List files (eza). Long listings share one flag set: git column, headers, 12-hour dates,
-# clickable filenames (OSC 8). Trees honor .gitignore. ll/lm add a per-repo
+# List files (eza). Long listings share one flag set: git column, headers,
+# 12-hour dates. Trees honor .gitignore. ll/lm add a per-repo
 # branch/status column for directories; lm sorts by mtime with an age-tinted
 # date column.
 # The time-style newline is intentional: line 1 formats older files (year),
 # line 2 recent ones (12-hour clock).
 if command -v eza >/dev/null 2>&1; then
-  _eza_long="eza -l --icons --group-directories-first --git --header --hyperlink --time-style='+%-d %b  %Y
+  _eza_long="eza -l --icons --group-directories-first --git --header --time-style='+%-d %b  %Y
 %-d %b %I:%M %p'"
-  alias ls="eza --icons --group-directories-first --hyperlink"
+  alias ls="eza --icons --group-directories-first"
   alias l="$_eza_long"
   alias ll="$_eza_long --git-repos"
   alias la="$_eza_long -a"
   alias lsa="$_eza_long -a"
   alias lm="$_eza_long --git-repos --sort=modified --color-scale=age"
-  alias lt="eza --tree --icons --level=2 --git-ignore --hyperlink"
-  alias ltt="eza --tree --icons --level=3 --git-ignore --hyperlink"
+  alias lt="eza --tree --icons --level=2 --git-ignore"
+  alias ltt="eza --tree --icons --level=3 --git-ignore"
   unset _eza_long
 fi
 
